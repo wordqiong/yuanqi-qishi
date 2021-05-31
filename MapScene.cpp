@@ -1,5 +1,5 @@
 #include "MapScene.h"
-#define MAP_SIZE 32*100
+#define MAP_WALL 203
 USING_NS_CC;
 
 Scene* MapScene::createScene()
@@ -23,6 +23,8 @@ bool MapScene::init()
     }
     //add map to the scene
     map = TMXTiledMap::create("map.tmx");
+    layer2 = map->getLayer("layer2");
+    layer2->setVisible(false);
     if (map == nullptr)
     {
         log("tile map not found");
@@ -33,7 +35,7 @@ bool MapScene::init()
        map->setPosition(0,-32*(100-18) );
         addChild(map);
     }
-    //ÏÂÃæÎª²âÊÔÄÚÈİ
+    //ä¸‹é¢ä¸ºæµ‹è¯•å†…å®¹
     size = Director::getInstance()->getVisibleSize();
     sprite = Sprite::create("sprite.png");
     map->addChild(sprite);
@@ -52,25 +54,53 @@ void MapScene::MapMove()
         {
             case EventKeyboard::KeyCode::KEY_S:
                     y += 1;
-                    map->setPosition(0 + x * 32, -32 * (100 - 18) + y*32);
-                    sprite->setPosition(32 * 10.0 - x * 32, 32 * 92.0 - y * 32);
-               
+                    if (isCanReach(32 * 10 - x * 32, 32 * 92 - y * 32)) 
+                    {
+                        map->setPosition(0 + x * 32, -32 * (100 - 18) + y * 32);
+                        sprite->setPosition(32 * 10 - x * 32, 32 * 92 - y * 32);
+                        log("çºµåæ ‡%d", (32 * 92 - y * 32 -16)/32);
+                    }
+                    else
+                    {
+                        y--;
+                    }
                
                 break;
             case EventKeyboard::KeyCode::KEY_D:
                 x -= 1;
-                map->setPosition(0+x*32, -32 * (100 - 18) + y * 32);
-                sprite->setPosition(32 * 10.0 - x * 32, 32 * 92.0 - y * 32);
+                if (isCanReach(32 * 10 - x * 32, 32 * 92 - y * 32))
+                {
+                    map->setPosition(0 + x * 32, -32 * (100 - 18) + y * 32);
+                    sprite->setPosition(32 * 10.0 - x * 32, 32 * 92.0 - y * 32);
+                }
+                else
+                {
+                    x++;
+                }
                 break;
             case EventKeyboard::KeyCode::KEY_W:
                 y -= 1;
-                map->setPosition(0 + x * 32, -32 * (100 - 18) + y * 32);
-                sprite->setPosition(32 * 10.0 - x * 32, 32 * 92.0 - y * 32);
+                if (isCanReach(32 * 10 - x * 32, 32 * 92 - y * 32))
+                {
+                    map->setPosition(0 + x * 32, -32 * (100 - 18) + y * 32);
+                    sprite->setPosition(32 * 10.0 - x * 32, 32 * 92.0 - y * 32);
+                }
+                else
+                {
+                    y++;
+                }
                 break;
             case EventKeyboard::KeyCode::KEY_A:
                 x += 1;
-                map->setPosition(0 + x * 32, -32 * (100 - 18) + y * 32);
-                sprite->setPosition(32 * 10.0 - x * 32, 32 * 92.0 - y * 32);
+                if (isCanReach(32 * 10 - x * 32, 32 * 92 - y * 32))
+                {
+                    map->setPosition(0 + x * 32, -32 * (100 - 18) + y * 32);
+                    sprite->setPosition(32 * 10.0 - x * 32, 32 * 92.0 - y * 32);
+                }
+                else
+                {
+                    x--;
+                }
                 break;
             default:
                 break;
@@ -79,6 +109,20 @@ void MapScene::MapMove()
     };
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, sprite);
 }
-
-
-
+bool MapScene::isCanReach(float x, float y)
+{
+    bool result;
+    int mapX = (int)((x - 16) / 32+1);
+    int mapY = (int)(99-(y - 16) / 32);
+    int tileGid = layer2->getTileGIDAt(Vec2(mapX, mapY));
+    log("e:%d\nY:%d,X:%d",tileGid, mapY, mapX);
+    if (tileGid == MAP_WALL)
+    {
+        result = false;//ä¸å¯ç§»åŠ¨
+    }
+    else
+    {
+        result = true;//å¯ç§»åŠ¨
+    }
+    return result;
+}
