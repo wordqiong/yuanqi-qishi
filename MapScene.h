@@ -9,10 +9,11 @@ public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
-    //测试用的成员
+    //娴嬭瘯鐢ㄧ殑鎴愬憳
     cocos2d::Size size;
     cocos2d::Sprite* sprite;
     cocos2d::TMXTiledMap* map;
+    cocos2d::TMXLayer* layer2;
 
 
     CREATE_FUNC(MapScene);
@@ -36,8 +37,12 @@ public:
     *@author wyh
     */
     void MapMove();
-    int x = 0, y = 0;//起点
-
+    int x = 0, y = 0;//膯膽木膬
+  /*
+    *@brief  Judge next movement whether or not barrier
+    *@author wyh
+    */
+    bool MapScene::isCanReach(float x, float y);
 
 };
 
