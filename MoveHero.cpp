@@ -60,24 +60,21 @@ void MoveHero::update(float delta)
     {
         offsetX = -2;
     }
-    else if (keys[rightArrow])
+    if (keys[rightArrow])
     {
         offsetX = 2;
     }
-    else if (keys[upArrow])
+    if (keys[upArrow])
     {
         offsetY = 2;
     }
-    else if (keys[downArrow])
+    if (keys[downArrow])
     {
         offsetY = -2;
     }
-    else
-    {
-        offsetY = offsetX = 0;
-    }
-    auto moveTo = MoveTo::create(0.3, Vec2(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY));
+    auto moveTo = MoveTo::create(1.0/1000, Vec2(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY));
     hero->runAction(moveTo);
+    offsetX = offsetY = 0;
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
     
