@@ -1,5 +1,9 @@
 #include "Enemy.h"
+#include "MapScene.h"
+#include "MoveHero.h"
 USING_NS_CC;
+
+
 
 
 Scene* EnemyMonster::createScene()
@@ -11,9 +15,9 @@ Scene* EnemyMonster::createScene()
 }
 EnemyMonster* EnemyMonster::createMonster()
 {
-	
+
 	EnemyMonster* monster = new EnemyMonster();
-	
+
 	if (monster && monster->init())
 	{
 		monster->autorelease();
@@ -21,7 +25,7 @@ EnemyMonster* EnemyMonster::createMonster()
 		return monster;
 	}
 	CC_SAFE_DELETE(monster);
-	
+
 	return NULL;
 }
 
@@ -32,9 +36,9 @@ bool EnemyMonster::init()
 	{
 		return false;
 	}
-	
+
 	srand((unsigned)time(NULL));
-	
+
 	for (int i = 0; i < MonsterNumber; i++)
 	{
 		monster[i] = new EnemyMonster();
@@ -43,9 +47,9 @@ bool EnemyMonster::init()
 		monster[i]->start(monster[i]->MonsterType, monster[i]->PositionX, monster[i]->PositionY);
 		addChild(monster[i]->Monster);
 	}
-	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::MyUpdate), 1.0);
+	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::MoveUpdate), 0.5);
 	return true;
-	
+
 }
 
 void EnemyMonster::MonsterInit()
@@ -53,10 +57,10 @@ void EnemyMonster::MonsterInit()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	MonsterType = 0;//初始化类型为0
-	
-	
-	PositionX = rand() % 300+10 + origin.x;
-	PositionY = rand() %300+10 + origin.y;//写好OriginalPosition()函数后，改为用该函数生成初始坐标
+
+
+	PositionX = rand() % 300 + 10 + origin.x;
+	PositionY = rand() % 300 + 10 + origin.y;//写好OriginalPosition()函数后，改为用该函数生成初始坐标
 }
 
 void EnemyMonster::start(int type, int positionX, int positionY)
@@ -84,67 +88,31 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 		Monster->setScale(0.6f);
 	}
 	Monster->setPosition(PositionX, PositionY);
-	
+
 }
 
 void EnemyMonster::MoveMonster()
 {
-	
-	int direction = rand() % 9;//用产生的随机数来判断小怪移动的方向或是不移动（0为不移动）
-	int offsetX = 0;
-	int offsetY = 0;
 
-	if (direction == 1|| direction == 0)
-	{
-		offsetX = speed*2;
-	}
-	else if (direction == 2)
-	{
-		offsetY = speed * 2;
-	}
-	else if (direction == 3)
-	{
-		offsetX = -speed * 2;
-	}
-	else if (direction == 4)
-	{
-		offsetY = -speed * 2;
-	}
-	else if (direction == 5)
-	{
-		offsetX = speed * 2;
-		offsetY = speed * 2;
-	}
-	else if (direction == 6)
-	{
-		offsetX = speed * 2;
-		offsetY = -speed * 2;
-	}
-	else if (direction == 7)
-	{
-		offsetX = -speed * 2;
-		offsetY = speed * 2;
-	}
-	else if (direction == 8)
-	{
-		offsetX = -speed * 2;
-		offsetY = -speed * 2;
-	}
-	
-	auto moveTo = MoveTo::create(1.0, Vec2(Monster->getPositionX() + offsetX, Monster->getPositionY() + offsetY));
-	Monster->runAction(moveTo);
+	auto dr = MoveHero::sharedLayer->hero->getPosition()-Monster->getPosition();//位移向量
+	auto v = dr / dr.length() * speed;//速度向量
+	auto dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
+		(rand() % (200 * speed) - 100 * speed) / 100.0);//随机偏差向量
+	auto ds = v + dx;//实际位移向量
+	auto moveBy = MoveBy::create(0.5, ds);
+	Monster->runAction(moveBy);
 }
 
 
 
-void EnemyMonster::MyUpdate(float dt)//移动所有小怪（测试用）
+void EnemyMonster::MoveUpdate(float dt)//移动所有小怪（测试用）
 {
-	
+
 	for (int i = 0; i < MonsterNumber; i++)
 	{
-	    monster[i]->MoveMonster();
+		monster[i]->MoveMonster();
 	}
-	
+
 }
 
 void EnemyMonster::isDead()
@@ -154,3 +122,8 @@ void EnemyMonster::isDead()
 		MonsterType = 0;
 	}
 }
+
+/*bool inAttack()
+{
+
+}*/
