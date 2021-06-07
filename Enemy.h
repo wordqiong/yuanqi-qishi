@@ -8,21 +8,22 @@
 class EnemyMonster : public cocos2d::Layer
 {
 public:
-    int MonsterType;//Ğ¡¹ÖµÄÖÖÀà
-    float PositionX, PositionY;//Ğ¡¹ÖµÄÉú³ÉÎ»ÖÃµÄ×ø±ê£¬ÓÉsetPosition£¨£©º¯ÊıÉú³É
-    int blood;//Ğ¡¹ÖµÄÑªÁ¿
-    cocos2d::Sprite* Monster;//Ğ¡¹ÖµÄ¾«ÁéÊµÀı 
+    int MonsterType;//å°æ€ªçš„ç§ç±»
+    float PositionX, PositionY;//å°æ€ªçš„ç”Ÿæˆä½ç½®çš„åæ ‡ï¼Œç”±setPositionï¼ˆï¼‰å‡½æ•°ç”Ÿæˆ
+    int blood;//å°æ€ªçš„è¡€é‡
+    int speed;//å°æ€ªçš„é€Ÿåº¦
+    cocos2d::Sprite* Monster;//å°æ€ªçš„ç²¾çµå®ä¾‹ 
     static EnemyMonster* createMonster();
     static cocos2d::Scene* createScene();
     virtual bool init();
-    void MonsterInit();//³õÊ¼»¯
-    void OriginalPosition();//Ëæ»úÉú³ÉµĞÈËµÄÎ»ÖÃ×ø±ê£¨Î´¿ª·¢£©
-    void start(int type, int positionX, int positionY);//ÉèÖÃĞ¡¹ÖµÄÖÖÀàºÍÆğÊ¼Î»ÖÃ
-    void isDead();//Ğ¡¹ÖËÀÍöÖ®ºó½«MonsterTypeÖØÖÃÎª0
-    void MoveMonster();//Ğ¡¹ÖÒÆ¶¯º¯Êı
+    void MonsterInit();//åˆå§‹åŒ–
+    void OriginalPosition();//éšæœºç”Ÿæˆæ•Œäººçš„ä½ç½®åæ ‡ï¼ˆæœªå¼€å‘ï¼‰
+    void start(int type, int positionX, int positionY);//è®¾ç½®å°æ€ªçš„ç§ç±»å’Œèµ·å§‹ä½ç½®
+    void isDead();//å°æ€ªæ­»äº¡ä¹‹åå°†MonsterTypeé‡ç½®ä¸º0
+    void MoveMonster();//å°æ€ªç§»åŠ¨å‡½æ•°
     CREATE_FUNC(EnemyMonster);
     EnemyMonster* monster[MonsterNumber];
-    void  MyUpdate(float dt);//¸üĞÂĞ¡¹ÖµÄÒÆ¶¯
+    void  MyUpdate(float dt);//æ›´æ–°å°æ€ªçš„ç§»åŠ¨
 };
 
 
