@@ -66,18 +66,21 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 	{
 		Monster = Sprite::create("master.png");
 		blood = 20;
+		speed = 6;
 		Monster->setScale(0.6f);
 	}
 	else if (MonsterType == 2)
 	{
 		Monster = Sprite::create("shooter.png");
 		blood = 8;
+		speed = 10;
 		Monster->setScale(0.6f);
 	}
 	else if (MonsterType == 3)
 	{
 		Monster = Sprite::create("pig.png");
 		blood = 8;
+		speed = 8;
 		Monster->setScale(0.6f);
 	}
 	Monster->setPosition(PositionX, PositionY);
@@ -87,26 +90,47 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 void EnemyMonster::MoveMonster()
 {
 	
-	int direction = rand() % 5;//用产生的随机数来判断小怪移动的方向或是不移动（0为不移动）
+	int direction = rand() % 9;//用产生的随机数来判断小怪移动的方向或是不移动（0为不移动）
 	int offsetX = 0;
 	int offsetY = 0;
 
-	if (direction == 1)
+	if (direction == 1|| direction == 0)
 	{
-		offsetX = 20;
+		offsetX = speed*2;
 	}
 	else if (direction == 2)
 	{
-		offsetY = 20;
+		offsetY = speed * 2;
 	}
 	else if (direction == 3)
 	{
-		offsetX = -20;
+		offsetX = -speed * 2;
 	}
 	else if (direction == 4)
 	{
-		offsetY = -20;
+		offsetY = -speed * 2;
 	}
+	else if (direction == 5)
+	{
+		offsetX = speed * 2;
+		offsetY = speed * 2;
+	}
+	else if (direction == 6)
+	{
+		offsetX = speed * 2;
+		offsetY = -speed * 2;
+	}
+	else if (direction == 7)
+	{
+		offsetX = -speed * 2;
+		offsetY = speed * 2;
+	}
+	else if (direction == 8)
+	{
+		offsetX = -speed * 2;
+		offsetY = -speed * 2;
+	}
+	
 	auto moveTo = MoveTo::create(1.0, Vec2(Monster->getPositionX() + offsetX, Monster->getPositionY() + offsetY));
 	Monster->runAction(moveTo);
 }
