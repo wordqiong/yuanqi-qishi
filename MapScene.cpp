@@ -57,7 +57,7 @@ void MapScene::update(float delta)
     listener->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event* event)
     {
         keys[keyCode] = true;
-        log("%d", keyCode);
+       /* log("%d", keyCode);*/
     };
 
     listener->onKeyReleased = [=](EventKeyboard::KeyCode keyCode, Event* event)
@@ -68,25 +68,89 @@ void MapScene::update(float delta)
     int offsetX = 0, offsetY = 0;
     if (keys[leftArrow])
     {
-        offsetX = -4;
-        FinalMove(offsetX, offsetY, 'a', 'd');
+        if (keys[upArrow]|| keys[downArrow])
+        {
+            offsetX = -2;
+            if (keys[upArrow])
+            {
+                FinalMove(offsetX, offsetY, 'a', 'd', 'w');
+            }
+            if (keys[downArrow])
+            {
+                FinalMove(offsetX, offsetY, 'a', 'd', 's');
+            }
+        }
+        else 
+        {
+            offsetX = -4; 
+            FinalMove(offsetX, offsetY, 'a', 'd');
+        }
+      
     }
     if (keys[rightArrow])
     {
-        offsetX = 4;
-        FinalMove(offsetX, offsetY, 'd', 'a');
+        if (keys[upArrow] || keys[downArrow])
+        {
+            offsetX = 2;
+            if (keys[upArrow])
+            {
+                FinalMove(offsetX, offsetY, 'd', 'a', 'w');
+            }
+            if (keys[downArrow])
+            {
+                FinalMove(offsetX, offsetY, 'd', 'a', 's');
+            }
+        }
+        else
+        {
+            offsetX = 4;
+            FinalMove(offsetX, offsetY, 'd', 'a');
+        }
+      
 
     }
     if (keys[upArrow])
     {
-        offsetY = 4;
-        FinalMove(offsetX, offsetY, 'w', 's');
+        if (keys[rightArrow] || keys[leftArrow])
+        {
+            offsetY = 2;
+            if (keys[rightArrow])
+            {
+                FinalMove(offsetX, offsetY, 'w', 's', 'd');
+            }
+            if (keys[leftArrow])
+            {
+                FinalMove(offsetX, offsetY, 'w', 's', 'a');
+            }
+        }
+        else
+        {
+            offsetY = 4;
+            FinalMove(offsetX, offsetY, 'w', 's');
+        }
+       
 
     }
     if (keys[downArrow])
     {
-        offsetY = -4;
-        FinalMove(offsetX, offsetY, 's', 'w');
+        if (keys[rightArrow] || keys[leftArrow])
+        {
+            offsetY = -2;
+            if (keys[rightArrow])
+            {
+                FinalMove(offsetX, offsetY, 's', 'w', 'd');
+            }
+            if (keys[leftArrow])
+            {
+                FinalMove(offsetX, offsetY, 's', 'w', 'a');
+            }
+        }
+        else
+        {
+            offsetY = -4; 
+            FinalMove(offsetX, offsetY, 's', 'w');
+        }
+       
     }
     offsetX = offsetY = 0;
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
@@ -139,7 +203,7 @@ bool MapScene::JudgeWall(int offsetX, int offsetY, char key_arrow)
             hero->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), MAP_WALL))
         {
 
-            log("i=%d", i);
+           /* log("i=%d", i);*/
             break;
         }
         else
@@ -152,7 +216,29 @@ bool MapScene::JudgeWall(int offsetX, int offsetY, char key_arrow)
     else
         return false;
 }
-void MapScene::FinalMove(int offsetX, int offsetY, char key_arrow_1, char key_arrow_2)
+//bool MapScene::JudgeWall(int offsetX, int offsetY, char key_arrow_1, char key_arrow_2)
+//{
+//    int i = 1;
+//    while (i <= 8)
+//    {
+//        if (!isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow) * (1) * (i * 32) + ('a' == key_arrow) * (-1) * (i * 32),
+//            hero->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), MAP_WALL))
+//        {
+//
+//            /* log("i=%d", i);*/
+//            break;
+//        }
+//        else
+//            i++;
+//
+//    }
+//
+//    if (i <= 5)
+//        return true;//五格范围内有墙
+//    else
+//        return false;
+//}
+void MapScene::FinalMove(int offsetX, int offsetY, char key_arrow_1, char key_arrow_2,char key_arrow_3)
 {
     if (((JudgeWall(offsetX, offsetY, key_arrow_1)
         && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL))
@@ -160,13 +246,33 @@ void MapScene::FinalMove(int offsetX, int offsetY, char key_arrow_1, char key_ar
             && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL))))
         && isCanReach(hero->getPositionX() + offsetX+ ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1*16), hero->getPositionY() + offsetY+ ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL))
     {
-        PureHeroMove(offsetX, offsetY);
+        if (key_arrow_3 != '-')
+        {
+            if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL))
+            {
+                PureHeroMove(offsetX, offsetY);
+            }
+        }
+        else
+        {
+            PureHeroMove(offsetX, offsetY);
+        }
     }
     else
     {
         if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL))
         {
-            AllMove(offsetX, offsetY);
+            if (key_arrow_3 != '-')
+            {
+                if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL))
+                {
+                    AllMove(offsetX, offsetY);
+                }
+            }
+            else
+            {
+                AllMove(offsetX, offsetY);
+            }
         }
     }
 }

@@ -56,7 +56,8 @@ protected:
     void MapScene::PureMapMove(int offsetX, int offsetY);
     void MapScene::PureHeroMove(int offsetX, int offsetY);
     bool MapScene::JudgeWall(int offsetX, int offsetY, char key_arrow);
-    void MapScene::FinalMove(int offsetX, int offsetY, char key_arrow_1, char key_arrow_2);
+    bool MapScene::JudgeWall(int offsetX, int offsetY, char key_arrow_1, char key_arrow_2);
+    void MapScene::FinalMove(int offsetX, int offsetY, char key_arrow_1, char key_arrow_2 , char key_arrow_3='-');
     int MonsterNum;
     bool PositionDoor = true;//in room ->ture in lobby->false 
 };
