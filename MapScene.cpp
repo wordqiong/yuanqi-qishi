@@ -40,12 +40,41 @@ bool MapScene::init()
         addChild(map);
     }
     //创建hero，将它放在地图中央
-    hero = Sprite::create("sprite.png");
-    map->addChild(hero);
-    hero->setAnchorPoint(Vec2::ZERO);
-    hero->setPosition(32 * 10.0f, 32 * 92.0f);
+    heroInit();
+   
     scheduleUpdate();
     return true;
+}
+void  MapScene::heroInit()
+{
+    hero = Sprite::create("hero.png");
+    direction = 2;//初始朝向设置为向右
+    isStand = true;//初始状态为站立
+    isDirectionChange = false;
+    map->addChild(hero);
+    hero->setAnchorPoint(Vec2::ZERO);
+    hero->setPosition(32 * 10.0f, 32 * 92.0f);//创建hero，将它放在地图中央
+}
+Animate* MapScene::createAnimate(int direction, int num)
+{
+    auto* m_frameCache = SpriteFrameCache::getInstance();
+    m_frameCache->addSpriteFramesWithFile("herorun.plist", "herorun.png");
+    Vector<SpriteFrame*>frameArray;
+    for (int i = 1; i <= num; i++)
+    {
+        auto* frame = m_frameCache->getSpriteFrameByName(
+            StringUtils::format("%d%d.png", direction, i));
+        frameArray.pushBack(frame);
+    }
+    Animation* animation = Animation::createWithSpriteFrames(frameArray);
+    animation->setLoops(-1);
+    animation->setDelayPerUnit(0.1f);
+    return Animate::create(animation);
+}
+void MapScene::HeroResume()
+{
+    hero->stopAllActions();
+    hero->runAction(createAnimate(this->direction, 1));
 }
 
 void MapScene::update(float delta)
@@ -65,12 +94,17 @@ void MapScene::update(float delta)
         keys[keyCode] = false;
 
     };
-    int offsetX = 0, offsetY = 0;
+    float offsetX = 0, offsetY = 0;
     if (keys[leftArrow])
     {
+        if (direction == 2)
+        {
+            isDirectionChange = true;
+        }
+        direction = 1;//代表向左
         if (keys[upArrow]|| keys[downArrow])
         {
-            offsetX = -2;
+            offsetX = -1.41;
             if (keys[upArrow])
             {
                 FinalMove(offsetX, offsetY, 'a', 'd', 'w');
@@ -89,9 +123,14 @@ void MapScene::update(float delta)
     }
     if (keys[rightArrow])
     {
+        if (direction == 1)
+        {
+            isDirectionChange = true;
+        }
+        direction = 2;//代表向右
         if (keys[upArrow] || keys[downArrow])
         {
-            offsetX = 2;
+            offsetX = 1.41;
             if (keys[upArrow])
             {
                 FinalMove(offsetX, offsetY, 'd', 'a', 'w');
@@ -113,7 +152,7 @@ void MapScene::update(float delta)
     {
         if (keys[rightArrow] || keys[leftArrow])
         {
-            offsetY = 2;
+            offsetY = 1.41;
             if (keys[rightArrow])
             {
                 FinalMove(offsetX, offsetY, 'w', 's', 'd');
@@ -135,7 +174,7 @@ void MapScene::update(float delta)
     {
         if (keys[rightArrow] || keys[leftArrow])
         {
-            offsetY = -2;
+            offsetY = -1.41;
             if (keys[rightArrow])
             {
                 FinalMove(offsetX, offsetY, 's', 'w', 'd');
@@ -152,7 +191,13 @@ void MapScene::update(float delta)
         }
        
     }
+    if (offsetX == 0 && offsetY == 0)
+    {
+        HeroResume();
+        isStand = true;
+    }
     offsetX = offsetY = 0;
+   
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 }
@@ -178,23 +223,31 @@ bool MapScene::isCanReach(float x, float y, int Type_Wall)
     return result;
 }
 
-void MapScene::PureMapMove(int offsetX, int offsetY)
+void MapScene::PureMapMove(float offsetX, float offsetY)
 {
+    auto* animate = createAnimate(direction, 3);
     auto moveTo = MoveTo::create(1.0 / 1000, Vec2(map->getPositionX() - offsetX, map->getPositionY() - offsetY));
+    if (isStand == true || isDirectionChange == true)
+    {
+        HeroResume();
+        hero->runAction(animate);
+        isStand = false;
+        isDirectionChange = false;
+    }
     map->runAction(moveTo);
 }
-void MapScene::PureHeroMove(int offsetX, int offsetY)
+void MapScene::PureHeroMove(float offsetX, float offsetY)
 {
     auto moveTo = MoveTo::create(1.0 / 1000, Vec2(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY));
     hero->runAction(moveTo);
 }
-void MapScene::AllMove(int offsetX, int offsetY)
+void MapScene::AllMove(float offsetX, float offsetY)
 {
     PureMapMove(offsetX, offsetY);
     PureHeroMove(offsetX, offsetY);
 }
 
-bool MapScene::JudgeWall(int offsetX, int offsetY, char key_arrow)
+bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow)
 {
     int i = 1;
     while (i <= 8)
@@ -216,29 +269,8 @@ bool MapScene::JudgeWall(int offsetX, int offsetY, char key_arrow)
     else
         return false;
 }
-//bool MapScene::JudgeWall(int offsetX, int offsetY, char key_arrow_1, char key_arrow_2)
-//{
-//    int i = 1;
-//    while (i <= 8)
-//    {
-//        if (!isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow) * (1) * (i * 32) + ('a' == key_arrow) * (-1) * (i * 32),
-//            hero->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), MAP_WALL))
-//        {
-//
-//            /* log("i=%d", i);*/
-//            break;
-//        }
-//        else
-//            i++;
-//
-//    }
-//
-//    if (i <= 5)
-//        return true;//五格范围内有墙
-//    else
-//        return false;
-//}
-void MapScene::FinalMove(int offsetX, int offsetY, char key_arrow_1, char key_arrow_2,char key_arrow_3)
+
+void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2,char key_arrow_3)
 {
     if (((JudgeWall(offsetX, offsetY, key_arrow_1)
         && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL))
