@@ -45,7 +45,7 @@ bool EnemyMonster::init()
 		monster[i]->MonsterInit();
 		monster[i]->MonsterType = rand() % 3 + 1;
 		monster[i]->start(monster[i]->MonsterType, monster[i]->PositionX, monster[i]->PositionY);
-		addChild(monster[i]->Monster);
+		MapScene::sharedScene->map->addChild(monster[i]->Monster);
 	}
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::MoveUpdate), 0.5);
 	return true;
@@ -57,10 +57,11 @@ void EnemyMonster::MonsterInit()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	MonsterType = 0;//初始化类型为0
-
-
+	direction = 1;//初始状态向右
+	isStand = true;//初始状态为站立
+	isDirectionChange = false;
 	PositionX = rand() % 300 + 10 + origin.x;
-	PositionY = rand() % 300 + 10 + origin.y;//写好OriginalPosition()函数后，改为用该函数生成初始坐标
+	PositionY = rand() % 300 + 32*82 + origin.y;//写好OriginalPosition()函数后，改为用该函数生成初始坐标
 }
 
 void EnemyMonster::start(int type, int positionX, int positionY)
@@ -68,9 +69,9 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 	this->MonsterType = type;
 	if (MonsterType == 1)
 	{
-		Monster = Sprite::create("master.png");
-		blood = 20;
-		speed = 6;
+		Monster = Sprite::create("pig.png");
+		blood = 5;
+		speed = 20;
 		Monster->setScale(0.6f);
 	}
 	else if (MonsterType == 2)
@@ -82,9 +83,9 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 	}
 	else if (MonsterType == 3)
 	{
-		Monster = Sprite::create("pig.png");
-		blood = 8;
-		speed = 8;
+		Monster = Sprite::create("archer.png");
+		blood = 12;
+		speed = 6;
 		Monster->setScale(0.6f);
 	}
 	Monster->setPosition(PositionX, PositionY);
@@ -93,18 +94,65 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 
 void EnemyMonster::MoveMonster()
 {
-
-	auto dr = MoveHero::sharedLayer->hero->getPosition()-Monster->getPosition();//位移向量
+	auto dr = MapScene::sharedScene->hero->getPosition() - Monster->getPosition();//位移向量
 	auto v = dr / dr.length() * speed;//速度向量
 	auto dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
 		(rand() % (200 * speed) - 100 * speed) / 100.0);//随机偏差向量
 	auto ds = v + dx;//实际位移向量
+	if (ds.x > 0)
+	{
+		if (direction == 2)
+		{
+			direction = 1;
+			isDirectionChange = true;
+		}
+	}
+	else if (ds.x < 0)
+	{
+		if (direction == 1)
+		{
+			direction = 2;
+			isDirectionChange = true;
+		}
+	}
+	if ((isStand==false)&&(ds.x==0.0f&&ds.y==0.0f))
+	{
+		MonsterResume();
+		isStand = true;
+	}
+	auto* animate = createAnimate(MonsterType,direction,  5);
+	if (isDirectionChange||((isStand)&& (ds.x!= 0.0f || ds.y != 0.0f)))
+	{
+		MonsterResume();
+		isStand = false;
+		Monster->runAction(animate);
+	}
 	auto moveBy = MoveBy::create(0.5, ds);
 	Monster->runAction(moveBy);
 }
 
+Animate* EnemyMonster::createAnimate(int MonsterType, int direction, int num)
+{
+	auto* m_frameCache= SpriteFrameCache::getInstance();
+	m_frameCache->addSpriteFramesWithFile("monsterrun.plist", "monsterrun.png");
+	Vector<SpriteFrame*>frameArray;
+	for (int i = 1; i <= num; i++)
+	{
+		auto* frame = m_frameCache->getSpriteFrameByName(
+			StringUtils::format("%d%d%d.png", MonsterType, direction, i));
+		frameArray.pushBack(frame);
+	}
+	Animation* animation = Animation::createWithSpriteFrames(frameArray);
+	animation->setLoops(-1);
+	animation->setDelayPerUnit(0.1f);
+	return Animate::create(animation);
+}
 
-
+void EnemyMonster::MonsterResume()
+{
+	Monster->stopAllActions();
+	Monster->runAction(createAnimate(MonsterType, direction, 1));
+}
 void EnemyMonster::MoveUpdate(float dt)//移动所有小怪（测试用）
 {
 

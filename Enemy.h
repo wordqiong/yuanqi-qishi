@@ -1,3 +1,4 @@
+
 #pragma once
 #ifndef __ENEMY_H__
 #define __ENEMY_H__
@@ -8,23 +9,49 @@
 class EnemyMonster : public cocos2d::Layer
 {
 public:
-    int MonsterType;//å°æ€ªçš„ç§ç±»
-    float PositionX, PositionY;//å°æ€ªçš„ç”Ÿæˆä½ç½®çš„åæ ‡ï¼Œç”±setPositionï¼ˆï¼‰å‡½æ•°ç”Ÿæˆ
-    int blood;//å°æ€ªçš„è¡€é‡
-    int speed;//å°æ€ªçš„é€Ÿåº¦
-    cocos2d::Sprite* Monster;//å°æ€ªçš„ç²¾çµå®ä¾‹ 
+    int MonsterType;//Ğ¡¹ÖµÄÖÖÀà
+
+    float PositionX, PositionY;//Ğ¡¹ÖµÄÉú³ÉÎ»ÖÃµÄ×ø±ê£¬ÓÉ OriginalPosition£¨£©º¯ÊıÉú³É
+
+    int blood;//Ğ¡¹ÖµÄÑªÁ¿
+
+    int speed;//Ğ¡¹ÖµÄËÙ¶È
+
+    bool isDirectionChange;//ÅĞ¶ÏĞ¡¹ÖÒÆ¶¯·½ÏòÊÇ·ñ±ä»¯
+
+    bool isStand;//ÅĞ¶ÏĞ¡¹ÖÊÇ·ñÕ¾Á¢²»¶¯
+
+    cocos2d::Sprite* Monster;//Ğ¡¹ÖµÄ¾«ÁéÊµÀı 
+
+    int direction;//»ñÈ¡Ğ¡¹ÖÒÆ¶¯µÄ·½Ïò
+
     static EnemyMonster* createMonster();
+
     static cocos2d::Scene* createScene();
+
     virtual bool init();
-    void MonsterInit();//åˆå§‹åŒ–
-    void OriginalPosition();//éšæœºç”Ÿæˆæ•Œäººçš„ä½ç½®åæ ‡ï¼ˆæœªå¼€å‘ï¼‰
-    void start(int type, int positionX, int positionY);//è®¾ç½®å°æ€ªçš„ç§ç±»å’Œèµ·å§‹ä½ç½®
-    void isDead();//å°æ€ªæ­»äº¡ä¹‹åå°†MonsterTypeé‡ç½®ä¸º0
-    void MoveMonster();//å°æ€ªç§»åŠ¨å‡½æ•°
+    
+    void MonsterInit();//³õÊ¼»¯
+
+    void OriginalPosition();//Ëæ»úÉú³ÉµĞÈËµÄÎ»ÖÃ×ø±ê£¨Î´¿ª·¢£©
+
+    void start(int type, int positionX, int positionY);//ÉèÖÃĞ¡¹ÖµÄÖÖÀàºÍÆğÊ¼Î»ÖÃ
+
+    virtual void isDead();//Ğ¡¹ÖËÀÍöÖ®ºó½«MonsterTypeÖØÖÃÎª0
+
+    void MoveMonster();//Ğ¡¹ÖÒÆ¶¯º¯Êı
+
     CREATE_FUNC(EnemyMonster);
+
     EnemyMonster* monster[MonsterNumber];
-    void  MyUpdate(float dt);//æ›´æ–°å°æ€ªçš„ç§»åŠ¨
+
+    void  MoveUpdate(float dt);//¸üĞÂĞ¡¹ÖµÄÒÆ¶¯
+
+    bool inAttack();
+
+    cocos2d::Animate* createAnimate(int MonsterType, int direction, int num);//´´½¨ÒÆ¶¯¶¯»­
+
+    void MonsterResume();
+
 };
-
-
 #endif
