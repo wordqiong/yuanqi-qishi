@@ -1,27 +1,78 @@
-#include "Bullet.h"
+#include"Gun.h"
+#include "cocos2d.h"
 
-bool Bullet::init() {
+USING_NS_CC;
+
+bool Gun::init() {
 	if (!Entity::init()) {
 		return false;
 	}
-
+	is_fire = false;//æ²¡å¼€ç«
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate),0.20);//ä¸çŸ¥é“å’‹å›äº‹
 	return true;
+}
+
+//è¿™ä¸ªå‡½æ•°å‚æ•°å¯ä»¥ä¼ æªæ”¯çš„åæ ‡ï¼Œè¿™æ ·è®©å­å¼¹çš„åˆå§‹åæ ‡åœ¨æªæ”¯å‰é¢ä¸€ç‚¹ã€‚
+void Gun::createBullets(Point X_Y_of_Gun,Point direction_vector) {
+	Bullet* bullet = Bullet::create(); 
+	
+	bullet->bindSprite(Sprite::create("fireBullet.png"));
+	int y = (int)direction_vector.y; int x = (int)direction_vector.x; int L = x * x + y * y;
+	int s = (int)sqrt((double)(L));
+	
+	unsigned seed = time(0);
+	srand(seed);
+	float f = (float)(rand() % bullet->Bullet_accuracy + 7) / 10;
+	log("%f", f);
+	bullet->numx = (f)*x;
+	bullet->numy = y;
+
+	bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Gun.x + 45 * (int)(direction_vector.x) / s), (float)(5 + (int)X_Y_of_Gun.y + 45 * (int)(direction_vector.y) / s)));//è®¾ç½®å­å¼¹çš„åˆå§‹ä½ç½®
+	
+	float radians = atan2(-direction_vector.y, direction_vector.x);//å°†å¼§åº¦è½¬æ¢æˆè§’åº¦
+	float degree = CC_RADIANS_TO_DEGREES(radians);
+	bullet->getSprite()->setRotation(degree);
+
+	this->addChild(bullet);//æ˜¾ç¤ºå‡ºå­å¼¹
+	
+	this->BulletsVector.pushBack(bullet);//æŠŠåˆ›å»ºçš„å­å¼¹æ’åˆ°è‡ªå·±çš„vectorä¸­
 	
 }
 
-//ÕâÊÇÔİ¶¨µÄx·½Ïò×Óµ¯
-void Bullet::MovebyLine() {
-		this->getSprite()->setPositionX(this->getSprite()->getPositionX() + 6);
-}
-	
-////ÔÙĞ´¸ö¸ù¾İĞ¡¹ÖÎ»ÖÃ¶¨ÏòµÄMovebyLineº¯Êı,´«Èë·½Ïò²ÎÊıXºÍYºÍËÙ¶È²ÎÊıV,´Ëº¯ÊıÔİ¶¨£¡£¡£¡
-
-//void Bullet::MovebyLine(int X,int Y,int V) {
-//	this->getSprite()->setPositionX(this->getSprite()->getPositionX() + (V * X / (X * X + Y * Y)));
-//	this->getSprite()->setPositionY(this->getSprite()->getPositionY() + (V * Y / (X * X + Y * Y)));
+//void Gun::Bullet_direction() {
+//
+//
 //}
 
-//×Óµ¯ÏûÊ§º¯Êı£¬ÚÀÕâ¸öÓ¦¸ÃĞ´ÔÚGunÀàÀï£¬Ö±½Ó½«Âú×ãÏûÊ§Ìõ¼şµÄ×Óµ¯´ÓBulletsVectorÖĞÒÆ³ı¼´¿É
-void Bullet::Fade() {
+void Gun::Fire() {
+	this->createBullets(this->getSprite()->getPosition(),this->shootVector);
 
+}
+
+//ä¼ è§’åº¦æ—‹è½¬
+void Gun::revolve(float degree) {
+
+	/*this->getSprite()->runAction(RotateTo::create(0.5f, degree));*/
+	this->getSprite()->setRotation(degree);//????? ?????  ???? ???????? ?? ?  ?? ???  ?????
+}
+
+//é”å®šæœ€è¿‘æ•Œäººç®—å‡ºè§’åº¦
+float Gun::bindEnemy(Monster* monster1) {
+	//å°„å‡»æ–¹å‘å‘é‡
+	
+		
+			this->shootVector= monster1->getSprite()->getPosition() - this->getSprite()->getPosition();
+			float radians = atan2(-shootVector.y, shootVector.x);
+			/*float s = sqrt((shootVector.x * shootVector.x) + (shootVector.y * shootVector.y));
+			log("%d", shootVector.x);*/
+			//å°†å¼§åº¦è½¬æ¢æˆè§’åº¦
+			float degree = CC_RADIANS_TO_DEGREES(radians);
+			return degree;
+	
+}
+
+void Gun::myupdate(float dt) {
+	if (this->is_fire) {
+		this->Fire();
+	}
 }
