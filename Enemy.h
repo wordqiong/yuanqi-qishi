@@ -5,6 +5,7 @@
 
 #define MonsterNumber 10
 
+
 #include "cocos2d.h"
 class EnemyMonster : public cocos2d::Layer
 {
@@ -37,8 +38,6 @@ public:
 
     void start(int type, int positionX, int positionY);//设置小怪的种类和起始位置
 
-    virtual void isDead();//小怪死亡之后将MonsterType重置为0
-
     void MoveMonster();//小怪移动函数
 
     CREATE_FUNC(EnemyMonster);
@@ -47,11 +46,24 @@ public:
 
     void  MoveUpdate(float dt);//更新小怪的移动
 
-    bool inAttack();
+    void  AttackUpdate(float dt);//更新小怪的攻击
 
-    cocos2d::Animate* createAnimate(int MonsterType, int direction, int num);//创建移动动画
+    cocos2d::Animate* createAnimate_move(int MonsterType, int direction, int num);//创建移动动画
 
+    cocos2d::Animate* createAnimate_dead(int MonsterType, int direction, int num);//创建死亡动画
+    
     void MonsterResume();
+
+    void isDead();//小怪死亡
+
+    bool isAllDead();//判断所有小怪是否都死亡
+  
+    void AllMonstersfade();//所有小怪从地图中消失
+
+    bool inAttack[4];//三种小怪的攻击状态
+
+    int AttackTime[4];//三种小怪的攻击间隔
+
 
 };
 #endif

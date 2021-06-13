@@ -2,9 +2,13 @@
 #include "MapScene.h"
 #include "MoveHero.h"
 USING_NS_CC;
-
-
-
+#define Range_of_attack_pig 20
+#define attack_of_pig 5
+#define attack_of_shooter 10
+#define attack_of_archer 15
+#define attack_time_of_pig 3
+#define attack_time_of_shooter 4
+#define attack_time_of_archer 5
 
 Scene* EnemyMonster::createScene()
 {
@@ -13,6 +17,7 @@ Scene* EnemyMonster::createScene()
 	scene->addChild(layer);
 	return scene;
 }
+
 EnemyMonster* EnemyMonster::createMonster()
 {
 
@@ -29,14 +34,13 @@ EnemyMonster* EnemyMonster::createMonster()
 	return NULL;
 }
 
-
 bool EnemyMonster::init()
 {
 	if (!Layer::init())
 	{
 		return false;
 	}
-
+	
 	srand((unsigned)time(NULL));
 
 	for (int i = 0; i < MonsterNumber; i++)
@@ -48,6 +52,7 @@ bool EnemyMonster::init()
 		MapScene::sharedScene->map->addChild(monster[i]->Monster);
 	}
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::MoveUpdate), 0.5);
+	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::AttackUpdate), 3.0f);
 	return true;
 
 }
@@ -59,9 +64,15 @@ void EnemyMonster::MonsterInit()
 	MonsterType = 0;//初始化类型为0
 	direction = 1;//初始状态向右
 	isStand = true;//初始状态为站立
-	isDirectionChange = false;
+	for(int i=1;i<=3;i++)
+	   inAttack[i] = false;//初始状态为不攻击
+	AttackTime[1] = attack_time_of_pig;
+	AttackTime[2] = attack_time_of_shooter;
+	AttackTime[3] = attack_time_of_archer;//设置怪物攻击间隔
+	isDirectionChange = false;//初始状态为方向不改变
 	PositionX = rand() % 300 + 10 + origin.x;
 	PositionY = rand() % 300 + 32*82 + origin.y;//写好OriginalPosition()函数后，改为用该函数生成初始坐标
+	
 }
 
 void EnemyMonster::start(int type, int positionX, int positionY)
@@ -89,7 +100,7 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 		Monster->setScale(0.6f);
 	}
 	Monster->setPosition(PositionX, PositionY);
-
+	Monster->setVisible(true);
 }
 
 void EnemyMonster::MoveMonster()
@@ -115,13 +126,13 @@ void EnemyMonster::MoveMonster()
 			isDirectionChange = true;
 		}
 	}
-	if ((isStand==false)&&(ds.x==0.0f&&ds.y==0.0f))
+	if ((isStand == false) && (ds.x == 0.0f && ds.y == 0.0f))
 	{
 		MonsterResume();
 		isStand = true;
 	}
-	auto* animate = createAnimate(MonsterType,direction,  5);
-	if (isDirectionChange||((isStand)&& (ds.x!= 0.0f || ds.y != 0.0f)))
+	auto* animate = createAnimate_move(MonsterType, direction, 5);
+	if (isDirectionChange || ((isStand) && (ds.x != 0.0f || ds.y != 0.0f)))
 	{
 		MonsterResume();
 		isStand = false;
@@ -129,9 +140,12 @@ void EnemyMonster::MoveMonster()
 	}
 	auto moveBy = MoveBy::create(0.5, ds);
 	Monster->runAction(moveBy);
+
+	
+	
 }
 
-Animate* EnemyMonster::createAnimate(int MonsterType, int direction, int num)
+Animate* EnemyMonster::createAnimate_move(int MonsterType, int direction, int num)
 {
 	auto* m_frameCache= SpriteFrameCache::getInstance();
 	m_frameCache->addSpriteFramesWithFile("monsterrun.plist", "monsterrun.png");
@@ -148,30 +162,101 @@ Animate* EnemyMonster::createAnimate(int MonsterType, int direction, int num)
 	return Animate::create(animation);
 }
 
+Animate* EnemyMonster::createAnimate_dead(int MonsterType, int direction, int num)
+{
+	auto* m_frameCache = SpriteFrameCache::getInstance();
+	m_frameCache->addSpriteFramesWithFile("deadmonster.plist", "deadmonster.png");
+	Vector<SpriteFrame*>frameArray;
+	for (int i = 1; i <= num; i++)
+	{
+		auto* frame = m_frameCache->getSpriteFrameByName(
+			StringUtils::format("dead%d%d%d.png", MonsterType, direction, i));
+		frameArray.pushBack(frame);
+	}
+	Animation* animation = Animation::createWithSpriteFrames(frameArray);
+	animation->setLoops(1);
+	animation->setDelayPerUnit(2.0f);
+	animation->setRestoreOriginalFrame(true);
+	return Animate::create(animation);
+}
+
 void EnemyMonster::MonsterResume()
 {
 	Monster->stopAllActions();
-	Monster->runAction(createAnimate(MonsterType, direction, 1));
+	Monster->runAction(createAnimate_move(MonsterType, direction, 1));
 }
-void EnemyMonster::MoveUpdate(float dt)//移动所有小怪（测试用）
+
+void EnemyMonster::MoveUpdate(float dt)//移动所有小怪
 {
 
 	for (int i = 0; i < MonsterNumber; i++)
 	{
-		monster[i]->MoveMonster();
+		if (!monster[i]->inAttack[monster[i]->MonsterType])
+			monster[i]->MoveMonster();
 	}
+	
 
 }
 
 void EnemyMonster::isDead()
 {
-	if (blood == 0)
+	Monster->stopAllActions();
+	auto* animate = createAnimate_dead(MonsterType, direction, 2);
+	auto *moveBy = MoveBy::create(3.0f,Point(0.0f,-30.0f));
+    Monster->runAction(animate);
+	Monster->runAction(moveBy);
+}
+
+bool EnemyMonster::isAllDead()
+{
+	for (int i = 0; i <MonsterNumber; i++)
 	{
-		MonsterType = 0;
+		if (monster[i]->blood != 0)
+			return false;
+	}
+	return true;
+}
+
+void EnemyMonster::AllMonstersfade()
+{
+	for (int i = 0; i < MonsterNumber; i++)
+	{
+		Monster->setVisible(false);
 	}
 }
 
-/*bool inAttack()
+void EnemyMonster::AttackUpdate(float dt)
 {
+	static int k = 1;//记录是否处于攻击状态
+	k++;
+	for (int i = 0; i < MonsterNumber; i++)
+	{
+		if (k % monster[i]->AttackTime[monster[i]->MonsterType] == 0)
+			monster[i]->inAttack[monster[i]->MonsterType] = true;
+		else
+			monster[i]->inAttack[monster[i]->MonsterType] = false;
+		if (monster[i]->inAttack[monster[i]->MonsterType] == true)
+		{
+			auto ds = MapScene::sharedScene->hero->getPosition() - monster[i]->getPosition();
+			auto s = ds.length();
+			monster[i]->MonsterResume();
+			/*if (monster[i]->MonsterType == 1)
+			{
+				if (Range_of_attack_pig >= s)
+				{
+					MapScene::sharedScene->heroblood = MapScene::sharedScene->heroblood - attack_of_pig;
+				}
+			}
+			else if (MonsterType == 2)
+			{
 
-}*/
+			}
+
+			else
+			{
+
+			}*/
+		}
+	}
+	
+}
