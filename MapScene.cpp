@@ -48,6 +48,7 @@ bool MapScene::init()
 void  MapScene::heroInit()
 {
     hero = Sprite::create("hero.png");
+   hero->setScale(0.8f);
     direction = 2;//初始朝向设置为向右
     isStand = true;//初始状态为站立
     isDirectionChange = false;
@@ -264,7 +265,7 @@ bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow)
 
     }
 
-    if (i <= 5)
+    if (i <= 2)
         return true;//五格范围内有墙
     else
         return false;

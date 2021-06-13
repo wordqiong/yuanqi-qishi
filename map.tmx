@@ -5,6 +5,11 @@
  </editorsettings>
  <tileset firstgid="1" name="地图" tilewidth="32" tileheight="32" tilecount="20000" columns="200">
   <image source="地图.png" width="6400" height="3200"/>
+  <tile id="202">
+   <properties>
+    <property name="Collidable" type="bool" value="true"/>
+   </properties>
+  </tile>
  </tileset>
  <layer id="1" name="图块层 1" width="73" height="100" locked="1">
   <data encoding="base64" compression="zlib">
