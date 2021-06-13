@@ -5,6 +5,8 @@
 #include"Bullet.h"
 #include <iostream>
 #include <string>
+#include"Monster.h"
+#include <cmath>
 using namespace std;
 
 class Gun :public Entity {
@@ -12,19 +14,22 @@ public:
 
 	CREATE_FUNC(Gun);
 	virtual bool init();
-	
+	void myupdate(float dt);
 
 public:
-	void Fire();//¿ª»ğ
-	void createBullets(int X,int Y);//´´½¨×Óµ¯¶ÔÏó
+	void Fire();//å¼€ç«
+	void createBullets(Point X_Y_of_Gun, Point direction_vector);//åˆ›å»ºå­å¼¹å¯¹è±¡
+	void revolve(float degree);
+	float bindEnemy(Monster* monster1);//é”å®šæœ€è¿‘æ•Œäººï¼Œè¿”å›æªéœ€è¦æ—‹è½¬çš„è§’åº¦
+	/*void Bullet_direction();*/
+	Point shootVector;//æªç¦»æ€ªçš„æ–¹å‘å‘é‡
 
 
-	//ÉÔºóÉèÎªprivate£¬ÔÙ¸ø¸öº¯Êı½Ó¿Úµ÷¾ÍºÃÀ²
-
-	Vector<Bullet*> BulletsVector;//ÓÃÓÚ´¢´æ×Óµ¯
-	//string imgload_of_Gun;//Ç¹µÄÍ¼Æ¬Â·¾¶
-	//string imagload_of_Bullet;//×Óµ¯µÄÍ¼Æ¬Â·¾¶
+	//ç¨åè®¾ä¸ºprivateï¼Œå†ç»™ä¸ªå‡½æ•°æ¥å£è°ƒå°±å¥½å•¦
+	bool is_fire;//
+	Vector<Bullet*> BulletsVector;//ç”¨äºå‚¨å­˜å­å¼¹
+	string imgload_of_Gun;//æªçš„å›¾ç‰‡è·¯å¾„
+	//string imagload_of_Bullet;//å­å¼¹çš„å›¾ç‰‡è·¯å¾„
 };
 
 #endif // !_GUN_H__
-
