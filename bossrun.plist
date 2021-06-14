@@ -4,213 +4,183 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>attack111.png</key>
+            <key>boss111.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{1,0}</string>
+                <string>{5,-8}</string>
                 <key>spriteSize</key>
-                <string>{97,119}</string>
+                <string>{89,103}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{108,183},{97,119}}</string>
+                <string>{{1,215},{89,103}}</string>
                 <key>textureRotated</key>
-                <true/>
+                <false/>
             </dict>
-            <key>attack112.png</key>
+            <key>boss112.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{6,-3}</string>
-                <key>spriteSize</key>
-                <string>{87,117}</string>
-                <key>spriteSourceSize</key>
-                <string>{115,131}</string>
-                <key>textureRect</key>
-                <string>{{203,1},{87,117}}</string>
-                <key>textureRotated</key>
-                <true/>
-            </dict>
-            <key>attack113.png</key>
-            <dict>
-                <key>aliases</key>
-                <array/>
-                <key>spriteOffset</key>
-                <string>{3,3}</string>
-                <key>spriteSize</key>
-                <string>{81,99}</string>
-                <key>spriteSourceSize</key>
-                <string>{115,131}</string>
-                <key>textureRect</key>
-                <string>{{1,1},{81,99}}</string>
-                <key>textureRotated</key>
-                <true/>
-            </dict>
-            <key>attack114.png</key>
-            <dict>
-                <key>aliases</key>
-                <array/>
-                <key>spriteOffset</key>
-                <string>{3,-6}</string>
+                <string>{5,-7}</string>
                 <key>spriteSize</key>
                 <string>{89,105}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{1,84},{89,105}}</string>
+                <string>{{1,1},{89,105}}</string>
                 <key>textureRotated</key>
-                <true/>
+                <false/>
             </dict>
-            <key>attack115.png</key>
+            <key>boss113.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{4,-1}</string>
+                <string>{6,-7}</string>
                 <key>spriteSize</key>
-                <string>{91,99}</string>
+                <string>{87,107}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{215,90},{91,99}}</string>
+                <string>{{1,595},{87,107}}</string>
                 <key>textureRotated</key>
-                <true/>
+                <false/>
             </dict>
-            <key>attack116.png</key>
+            <key>boss114.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{10,-5}</string>
+                <string>{0,-7}</string>
                 <key>spriteSize</key>
-                <string>{99,107}</string>
-                <key>spriteSourceSize</key>
-                <string>{119,131}</string>
-                <key>textureRect</key>
-                <string>{{350,183},{99,107}}</string>
-                <key>textureRotated</key>
-                <true/>
-            </dict>
-            <key>attack117.png</key>
-            <dict>
-                <key>aliases</key>
-                <array/>
-                <key>spriteOffset</key>
-                <string>{4,-1}</string>
-                <key>spriteSize</key>
-                <string>{91,99}</string>
+                <string>{83,105}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{215,90},{91,99}}</string>
+                <string>{{1,813},{83,105}}</string>
                 <key>textureRotated</key>
-                <true/>
+                <false/>
             </dict>
-            <key>attack121.png</key>
+            <key>boss115.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{-2,0}</string>
+                <string>{4,1}</string>
                 <key>spriteSize</key>
-                <string>{97,119}</string>
+                <string>{83,93}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{229,183},{97,119}}</string>
+                <string>{{1,1027},{83,93}}</string>
                 <key>textureRotated</key>
-                <true/>
+                <false/>
             </dict>
-            <key>attack122.png</key>
+            <key>boss116.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{-6,-3}</string>
+                <string>{3,-1}</string>
                 <key>spriteSize</key>
-                <string>{87,117}</string>
+                <string>{83,89}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{322,1},{87,117}}</string>
+                <string>{{1,425},{83,89}}</string>
                 <key>textureRotated</key>
                 <true/>
             </dict>
-            <key>attack123.png</key>
+            <key>boss121.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{-3,3}</string>
+                <string>{-6,-8}</string>
                 <key>spriteSize</key>
-                <string>{81,99}</string>
+                <string>{89,103}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{102,1},{81,99}}</string>
+                <string>{{1,320},{89,103}}</string>
                 <key>textureRotated</key>
-                <true/>
+                <false/>
             </dict>
-            <key>attack124.png</key>
+            <key>boss122.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{-4,-6}</string>
+                <string>{-6,-7}</string>
                 <key>spriteSize</key>
                 <string>{89,105}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{108,90},{89,105}}</string>
+                <string>{{1,108},{89,105}}</string>
                 <key>textureRotated</key>
-                <true/>
+                <false/>
             </dict>
-            <key>attack125.png</key>
+            <key>boss123.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{-6,-7}</string>
+                <key>spriteSize</key>
+                <string>{87,107}</string>
+                <key>spriteSourceSize</key>
+                <string>{115,131}</string>
+                <key>textureRect</key>
+                <string>{{1,704},{87,107}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>boss124.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{-1,-7}</string>
+                <key>spriteSize</key>
+                <string>{83,105}</string>
+                <key>spriteSourceSize</key>
+                <string>{115,131}</string>
+                <key>textureRect</key>
+                <string>{{1,920},{83,105}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>boss125.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{-4,1}</string>
+                <key>spriteSize</key>
+                <string>{83,93}</string>
+                <key>spriteSourceSize</key>
+                <string>{115,131}</string>
+                <key>textureRect</key>
+                <string>{{1,1122},{83,93}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>boss126.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{-4,-1}</string>
                 <key>spriteSize</key>
-                <string>{91,99}</string>
+                <string>{83,89}</string>
                 <key>spriteSourceSize</key>
                 <string>{115,131}</string>
                 <key>textureRect</key>
-                <string>{{316,90},{91,99}}</string>
-                <key>textureRotated</key>
-                <true/>
-            </dict>
-            <key>attack126.png</key>
-            <dict>
-                <key>aliases</key>
-                <array/>
-                <key>spriteOffset</key>
-                <string>{-9,-5}</string>
-                <key>spriteSize</key>
-                <string>{97,105}</string>
-                <key>spriteSourceSize</key>
-                <string>{115,131}</string>
-                <key>textureRect</key>
-                <string>{{1,175},{97,105}}</string>
-                <key>textureRotated</key>
-                <true/>
-            </dict>
-            <key>attack127.png</key>
-            <dict>
-                <key>aliases</key>
-                <array/>
-                <key>spriteOffset</key>
-                <string>{-4,-1}</string>
-                <key>spriteSize</key>
-                <string>{91,99}</string>
-                <key>spriteSourceSize</key>
-                <string>{115,131}</string>
-                <key>textureRect</key>
-                <string>{{316,90},{91,99}}</string>
+                <string>{{1,510},{83,89}}</string>
                 <key>textureRotated</key>
                 <true/>
             </dict>
@@ -224,13 +194,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>bossattack.png</string>
+            <string>bossrun.png</string>
             <key>size</key>
-            <string>{458,283}</string>
+            <string>{91,1216}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:9ba118e8712050efb96bae3ef03291a7:31907ded49cd840a49c267ec2f6b4807:c4ffb662f2a2dfa908be523355efceb0$</string>
+            <string>$TexturePacker:SmartUpdate:84b42c562c77f78977bf6398224a7663:c523d4e7e3b7170b051725e291f58c04:1c2ec1c0680bf1e7baea061e7b79294f$</string>
             <key>textureFileName</key>
-            <string>bossattack.png</string>
+            <string>bossrun.png</string>
         </dict>
     </dict>
 </plist>
