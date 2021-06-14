@@ -5,83 +5,10 @@
 #include"Gun.h"
 #include "Bullet.h"
 #include"ui/UIWidget.h"
+#include "Potion.h"
 
 
-//class MapScene : public cocos2d::Scene
-//{
-//public:
-//    static cocos2d::Scene* createScene();
-//
-//    virtual bool init();
-//    int direction;//»ñÈ¡ÈËÎïÒÆ¶¯µÄ·½Ïò
-//
-//    bool isStand;//ÅĞ¶ÏÈËÎïÊÇ·ñÕ¾Á¢²»¶¯
-//
-//    bool isDirectionChange;//ÅĞ¶ÏÈËÎïÒÆ¶¯·½ÏòÊÇ·ñ±ä»¯
-//    void heroInit();
-//
-//     void touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type);//°´Å¥¼àÌı
-//    /*void menuCloseCallback(cocos2d::Ref* pSender);*/
-//    //²âÊÔÓÃµÄ³ÉÔ±
-//   //ÍßÆ¬³õÊ¼µØÍ¼
-//    cocos2d::TMXTiledMap* map;
-//    //ÕÏ°­ÎïËùÔÚÍ¼²ã
-//    cocos2d::TMXLayer* layer2;
-//    //heroµ¥Î»
-//    cocos2d::Sprite* hero;
-//    //ÒÆ¶¯ËùĞèµÄÓï¾ä
-//    void update(float delta) override;
-//    void addGun();
-//    vector<Gun*> GunsVector;//Ç¹ĞµÈİÆ÷
-//    vector<Monster*> MonsterVector;
-//    std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
-//    CREATE_FUNC(MapScene);
-//    /*
-//    *@brief  open doors
-//    *@author wyh
-//    */
-//    void OpenDoor() {}
-//    /*
-//   *@brief  close doors
-//   *@author wyh
-//   */
-//    void CloseDoor() {}
-//    /*
-//   *@brief  create Mosters
-//   *@author wyh
-//   */
-//    void MosterCreate() {}
-//    /*
-//    *@brief  Map move
-//    *@author wyh
-//    */
-//    int x = 0, y = 0;//Æğµã
-//    /*
-//    *@brief  Judge next movement whether or not barrier
-//    *@author wyh
-//    */
-//    bool MapScene::isCanReach(float x, float y, int Type_Wall);
-//    /*
-//    *@brief  Judge the state of door
-//    *@author wyh
-//    * @return ture Door
-//    */
-//    bool StateDoor();
-//
-//    cocos2d::Animate* createAnimate(int direction, int num);
-//
-//    void HeroResume();
-//protected:
-//    //×ÔÓÃ
-//    void MapScene::AllMove(float offsetX, float offsetY);
-//    void MapScene::PureMapMove(float offsetX, float offsetY);
-//    void MapScene::PureHeroMove(float offsetX, float offsetY);
-//    bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow);
-//    void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3 = '-');
-//    int MonsterNum;
-//    bool PositionDoor = true;//in room ->ture in lobby->false 
-//};
-//#endif 
+
 
 
 class MapScene : public cocos2d::Scene
@@ -89,36 +16,44 @@ class MapScene : public cocos2d::Scene
 public:
 
 
-    static MapScene* sharedScene;//´´½¨Ö¸Ïò¸Ã³¡¾°µÄÖ¸Õë
+    static MapScene* sharedScene;//åˆ›å»ºæŒ‡å‘è¯¥åœºæ™¯çš„æŒ‡é’ˆ
 
-    int direction;//»ñÈ¡ÈËÎïÒÆ¶¯µÄ·½Ïò
+    int direction;//è·å–äººç‰©ç§»åŠ¨çš„æ–¹å‘
 
-    bool isStand;//ÅĞ¶ÏÈËÎïÊÇ·ñÕ¾Á¢²»¶¯
+    bool isStand;//åˆ¤æ–­äººç‰©æ˜¯å¦ç«™ç«‹ä¸åŠ¨
 
-    bool isDirectionChange;//ÅĞ¶ÏÈËÎïÒÆ¶¯·½ÏòÊÇ·ñ±ä»¯
+    bool isDirectionChange;//åˆ¤æ–­äººç‰©ç§»åŠ¨æ–¹å‘æ˜¯å¦å˜åŒ–
 
-    void heroInit();//ÈËÎï³õÊ¼»¯
+    void heroInit();//äººç‰©åˆå§‹åŒ–
 
-    void touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type);//°´Å¥¼àÌı
+    void touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type);//æŒ‰é’®ç›‘å¬
+    void menuCloseCallback(cocos2d::Ref* pSender);//ä¿¡å·æŒ‰é’®ç›‘å¬
 
-    void flipped(int direction);//°ÑÇ¹·´×ª
+    void flipped(int direction);//æŠŠæªåè½¬
+
+
+
+    void addPotion();
 
     static cocos2d::Scene* createScene();
 
     virtual bool init();
-    //²âÊÔÓÃµÄ³ÉÔ±
-   //ÍßÆ¬³õÊ¼µØÍ¼
+    //æµ‹è¯•ç”¨çš„æˆå‘˜
+   //ç“¦ç‰‡åˆå§‹åœ°å›¾
     cocos2d::TMXTiledMap* map;
-    //ÕÏ°­ÎïËùÔÚÍ¼²ã
+    //éšœç¢ç‰©æ‰€åœ¨å›¾å±‚
     cocos2d::TMXLayer* layer2;
-    //heroµ¥Î»
+    //heroå•ä½
     cocos2d::Sprite* hero;
-    //ÒÆ¶¯ËùĞèµÄÓï¾ä
+    //ç§»åŠ¨æ‰€éœ€çš„è¯­å¥
     void update(float delta) override;
 
         void addGun();
-    vector<Gun*> GunsVector;//Ç¹ĞµÈİÆ÷
+    vector<Gun*> GunsVector;//æªæ¢°å®¹å™¨
     vector<Monster*> MonsterVector;
+    vector<Potion*> PotionVector;
+    Potion* BindedPotion;
+    MenuItemImage* signalItem;//ä¿¡å·æŒ‰é’®
 
     std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
     CREATE_FUNC(MapScene);
@@ -141,7 +76,7 @@ public:
     *@brief  Map move
     *@author wyh
     */
-    int x = 0, y = 0;//Æğµã
+    int x = 0, y = 0;//èµ·ç‚¹
     /*
     *@brief  Judge next movement whether or not barrier
     *@author wyh
@@ -159,7 +94,7 @@ public:
 
     void HeroResume();
 protected:
-    //×ÔÓÃ
+    //è‡ªç”¨
     void MapScene::AllMove(float offsetX, float offsetY);
     void MapScene::PureMapMove(float offsetX, float offsetY);
     void MapScene::PureHeroMove(float offsetX, float offsetY);
