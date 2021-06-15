@@ -24,7 +24,7 @@
 
 #include "BackGroundMusic.h"
 #include "SimpleAudioEngine.h"
-
+#include "ui/CocosGUI.h"
 USING_NS_CC;
 using namespace CocosDenshion;
 Scene* BackGroundMusic::createScene()
@@ -48,12 +48,44 @@ bool BackGroundMusic::init()
     {
         return false;
     }
-
-    auto audio = SimpleAudioEngine::sharedEngine();
+    audio = SimpleAudioEngine::sharedEngine();
 
     // set the background music and continuously play it.
     audio->playBackgroundMusic("mymusic.mp3", true);
-   
+    auto checkbox = ui::CheckBox::create("MusicControl.png",
+        "MusicContolSelected.png",
+        "MusicContolSelected.png",
+        "CheckBoxNode_Normal.png",
+        "CheckBoxNode_Disable.png"
+        );
+   /* float x = checkbox->getContentSize().width / 2+100 ;
+        float y = checkbox->getContentSize().height / 2+100;
+        checkbox->setPosition(Vec2(x, y));
+        */
+    checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) {
+        switch (type)
+        {
+            case ui::Widget::TouchEventType::BEGAN:
+                log("checkbox 2 clicked");
+                break;
+            case ui::Widget::TouchEventType::ENDED:
+                if (audio->isBackgroundMusicPlaying()) {
+                    log("pause 1 clicked");
+                    audio->stopBackgroundMusic();
+                }
+                else
+                {
+                  audio->playBackgroundMusic("mymusic.mp3", true);
+                  log("play1 clicked");
+                }
+                log("checkbox 1 clicked");
+                break;
+            default:
+                break;
+        }
+        });
+
+    this->addChild(checkbox);
     return true;
 }
 

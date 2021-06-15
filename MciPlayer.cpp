@@ -3,7 +3,7 @@
 #include "CCFileUtils.h"
 #define WIN_CLASS_NAME        "CocosDenshionCallbackWnd"
 #define BREAK_IF(cond)      if (cond) break;
-
+#include<digitalv.h>
 namespace CocosDenshion {
 
 static HINSTANCE s_hInstance;
@@ -169,7 +169,24 @@ UINT MciPlayer::GetSoundID()
 {
     return m_SoundID;
 }
-
+void MciPlayer::SetVolume(UINT volume)
+{
+    if (!m_Dev)
+        return;
+    MCI_DGV_SETAUDIO_PARMS mciParams = { 0 };
+    mciParams.dwItem = MCI_DGV_SETAUDIO_VOLUME;
+    mciParams.dwValue = volume;
+    mciSendCommand(m_Dev, MCI_SETAUDIO, MCI_DGV_SETAUDIO_ITEM | MCI_DGV_SETAUDIO_VALUE, (DWORD)&mciParams);
+}
+UINT MciPlayer::GetVolumn()const
+{
+    if (!m_Dev)
+        return 0;
+    MCI_STATUS_PARMS mciParams = { 0 };
+    mciParams.dwItem = MCI_DGV_STATUS_VOLUME;
+    mciSendCommand(m_Dev, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)&mciParams);
+    return mciParams.dwReturn;
+}
 //////////////////////////////////////////////////////////////////////////
 // private member
 //////////////////////////////////////////////////////////////////////////

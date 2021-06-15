@@ -26,16 +26,14 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
-#include "AudioEngine.h"
+#include "SimpleAudioEngine.h"
 class BackGroundMusic : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
+    CocosDenshion::SimpleAudioEngine* audio;
     
     // implement the "static create()" method manually
     CREATE_FUNC(BackGroundMusic);

@@ -55,6 +55,13 @@ public:
     */
     UINT GetSoundID();
 
+    /**
+    @brief 获取当前音量
+    @return 音量大小
+    */
+    void MciPlayer::SetVolume(UINT volume);
+    UINT MciPlayer::GetVolumn()const;
+
 private:
     friend LRESULT WINAPI _SoundPlayProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 

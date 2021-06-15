@@ -235,20 +235,26 @@ namespace CocosDenshion {
 
     float SimpleAudioEngine::getBackgroundMusicVolume()
     {
-        return 1.0;
+        return sharedMusic().GetVolumn() / 1000.0f;
     }
 
     void SimpleAudioEngine::setBackgroundMusicVolume(float volume)
     {
+        sharedMusic().SetVolume((UINT)(volume * 1000.0));
     }
 
     float SimpleAudioEngine::getEffectsVolume()
     {
-        return 1.0;
+        return sharedList().begin()->second->GetVolumn() / 1000.0f;
     }
 
     void SimpleAudioEngine::setEffectsVolume(float volume)
     {
+        EffectList::iterator iter;
+        for (iter = sharedList().begin(); iter != sharedList().end(); iter++)
+        {
+            iter->second->SetVolume((UINT)(volume * 1000.0));
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
