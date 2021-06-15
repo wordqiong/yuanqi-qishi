@@ -1,10 +1,8 @@
 #include "MapScene.h"
 #include "Enemy.h"
 #include"box.h"
-#define MAP_WALL 203
-#define MAP_LOBBY 12254
-#define MAP_ROOM 11853
-#define HERO_BLOOD 100
+#include"Boss.h"
+
 USING_NS_CC;
 
 MapScene* MapScene::sharedScene = nullptr;
@@ -43,14 +41,31 @@ bool MapScene::init()
         map->setPosition(0, -32 * (100 - 18));
         addChild(map);
     }
+    for (int i = 0; i <= 4; i++)
+        isMonsterCreated[i] = false;
     //创建hero，将它放在地图中央
     Hero=Hero::createHero() ;
     addChild(Hero);
-    auto monster = EnemyMonster::createMonster();
-    addChild(monster);
-    auto box = Box::createBox();
-    addChild(box);
+    schedule(CC_SCHEDULE_SELECTOR(MapScene::CreateUpdate));
     return true;
+}
+
+void MapScene::CreateUpdate(float dt)
+{
+    if (Hero->RoomPosition != 0 && isMonsterCreated[Hero->RoomPosition] == false)
+    {
+        auto monster = EnemyMonster::createMonster();
+        addChild(monster);
+        auto box = Box::createBox();
+        addChild(box);
+        isMonsterCreated[Hero->RoomPosition] = true;
+        if (Hero->RoomPosition == 4)
+        {
+            auto boss = Boss::createBoss();
+            addChild(boss);
+        }
+    }
+    
 }
 
 bool MapScene::isCanReach(float x, float y, int Type_Wall)

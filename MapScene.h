@@ -1,6 +1,10 @@
 #ifndef __MAP_SCENE_H__
 #define __MAP_SCENE_H__
 
+#define MAP_WALL 203
+#define MAP_LOBBY 12254
+#define MAP_ROOM 11853
+#define HERO_BLOOD 100
 #include"Hero.h"
 #include "cocos2d.h"
 class Hero;
@@ -12,6 +16,10 @@ public:
     static MapScene* sharedScene;//创建指向该场景的指针
 
     static cocos2d::Scene* createScene();
+
+    bool isMonsterCreated[5];
+
+    void CreateUpdate(float dt);
 
     virtual bool init();
     //测试用的成员
