@@ -1,6 +1,7 @@
 #ifndef __MAP_SCENE_H__
 #define __MAP_SCENE_H__
 #include"Hero.h"
+#include "Enemy.h"
 #include "cocos2d.h"
 class Hero;
 class MapScene : public cocos2d::Scene
@@ -20,7 +21,8 @@ public:
     cocos2d::TMXLayer* layer2;
     //hero单位
     Hero* Hero;
-    
+    //Monster
+    EnemyMonster* monster;
     CREATE_FUNC(MapScene);
     /*
     *@brief  open doors
@@ -60,9 +62,16 @@ protected:
     int MonsterNum;
     bool PositionDoor = true;//in room ->ture in lobby->false 
 
+    void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3, int ROOM_NUM);
+
+
+    int MapScene::NumJudgeWhichRoom(int ValueRoom);
 
 
     bool MapScene::StateDoor(int ValueWall);
     int JudgeOpenTime = 0;
+    int MapScene::JudgeWhichRoomIn();
+private:
+    int Room[4] = {1};//1表示未曾进入 0表示已经进入
 };
 #endif 

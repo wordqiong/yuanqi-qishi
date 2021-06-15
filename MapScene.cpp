@@ -1,8 +1,8 @@
 #include "MapScene.h"
+
 #include "AnimationUtil.h"
 #define MAP_WALL 203
 #define MAP_LOBBY 12254
-#define MAP_ROOM 11853
 #define MAP_BARRIER_TREE 1456
 #define MAP_ROOM_1 11652
 #define MAP_ROOM_2 11246
@@ -48,8 +48,9 @@ bool MapScene::init()
     }
     //创建hero，将它放在地图中央
     Hero = Hero::createHero();
-    addChild(Hero);
-
+    map->addChild(Hero);
+    /*monster = EnemyMonster::createMonster();*/
+    /*addChild(monster);*/
     scheduleUpdate();
     return true;
 }
@@ -144,100 +145,9 @@ bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow)
 }
 void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2,char key_arrow_3)
 {
-    if (StateDoor(MAP_ROOM_1))
-    {
-        if (WhetherHeroMove(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, MAP_WALL)&& WhetherHeroMove(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, MAP_DOOR))
-        {
-            if (key_arrow_3 != '-')
-            {
-                if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
-                    && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
-                    )
-                {
-                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
-                    {
-                        PureHeroMove(offsetX, offsetY);
-                    }
-                }
-            }
-            else
-            {
-                if (JudgeBarrier(offsetX, offsetY, key_arrow_1))
-                {
+    RoomIn(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, JudgeWhichRoomIn());
 
-                    PureHeroMove(offsetX, offsetY);
-                }
-            }
-        }
-        else
-        {
-            if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
-                && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
-                )
-            {
-                if (key_arrow_3 != '-')
-                {
-                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
-                    {
-                        AllMove(offsetX, offsetY);
-                    }
-                }
-                else
-                {
-                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
-                    {
-                        AllMove(offsetX, offsetY);
-                    }
-                }
-            }
-        }
-    }
-    else
-    {
-        if (WhetherHeroMove(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, MAP_WALL))
-        {
-            if (key_arrow_3 != '-')
-            {
-                if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
-                    )
-                {
-                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
-                    {
-                        PureHeroMove(offsetX, offsetY);
-                    }
-                }
-            }
-            else
-            {
-                if (JudgeBarrier(offsetX, offsetY, key_arrow_1))
-                {
 
-                    PureHeroMove(offsetX, offsetY);
-                }
-            }
-        }
-        else
-        {
-            if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
-               )
-            {
-                if (key_arrow_3 != '-')
-                {
-                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
-                    {
-                        AllMove(offsetX, offsetY);
-                    }
-                }
-                else
-                {
-                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
-                    {
-                        AllMove(offsetX, offsetY);
-                    }
-                }
-            }
-        }
-    }
 }
 void MapScene::OpenDoor()
 {
@@ -332,10 +242,12 @@ bool MapScene::StateDoor(int ValueWall)
     if (PositionDoor&& JudgeOpenTime==1)
     {
         CloseDoor();
+        Room[NumJudgeWhichRoom(ValueWall)] = 0;
         JudgeOpenTime++;
+        
         return true;//此刻房间封锁
     }
-    else if(/*isalldead*/0)
+    else if(/*monster->isAllDead()*/0)
     {
         OpenDoor();
         PositionDoor = false;
@@ -349,5 +261,136 @@ bool MapScene::StateDoor(int ValueWall)
     else
     {
         return false;
+    }
+}
+int MapScene::JudgeWhichRoomIn()
+{
+    for (int i = 0; i <= 3; i++)
+    {
+        if (0 == i&& Room[i])
+        {
+            return MAP_ROOM_1;
+        }
+        if (1 == i && Room[i])
+        {
+            return MAP_ROOM_2;
+        }
+        if (2 == i && Room[i])
+        {
+            return MAP_ROOM_3;
+        }
+        if (3 == i && Room[i])
+        {
+            return MAP_ROOM_4;
+        }
+    }
+
+}
+int MapScene::NumJudgeWhichRoom(int ValueRoom)
+{
+    if (ValueRoom == MAP_ROOM_1)
+        return 0;
+    if (ValueRoom == MAP_ROOM_2)
+        return 1;
+    if (ValueRoom == MAP_ROOM_3)
+        return 2;
+    if (ValueRoom == MAP_ROOM_4)
+        return 3;
+}
+void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3, int ROOM_NUM)
+{
+    if (StateDoor(ROOM_NUM))
+    {
+        if (WhetherHeroMove(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, MAP_WALL) && WhetherHeroMove(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, MAP_DOOR))
+        {
+            if (key_arrow_3 != '-')
+            {
+                if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
+                    && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
+                    )
+                {
+                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
+                    {
+                        PureHeroMove(offsetX, offsetY);
+                    }
+                }
+            }
+            else
+            {
+                if (JudgeBarrier(offsetX, offsetY, key_arrow_1))
+                {
+
+                    PureHeroMove(offsetX, offsetY);
+                }
+            }
+        }
+        else
+        {
+            if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
+                && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
+                )
+            {
+                if (key_arrow_3 != '-')
+                {
+                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
+                    {
+                        AllMove(offsetX, offsetY);
+                    }
+                }
+                else
+                {
+                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
+                    {
+                        AllMove(offsetX, offsetY);
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        if (WhetherHeroMove(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, MAP_WALL))
+        {
+            if (key_arrow_3 != '-')
+            {
+                if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
+                    )
+                {
+                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
+                    {
+                        PureHeroMove(offsetX, offsetY);
+                    }
+                }
+            }
+            else
+            {
+                if (JudgeBarrier(offsetX, offsetY, key_arrow_1))
+                {
+
+                    PureHeroMove(offsetX, offsetY);
+                }
+            }
+        }
+        else
+        {
+            if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
+                )
+            {
+                if (key_arrow_3 != '-')
+                {
+                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
+                    {
+                        AllMove(offsetX, offsetY);
+                    }
+                }
+                else
+                {
+                    if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
+                    {
+                        AllMove(offsetX, offsetY);
+                    }
+                }
+            }
+        }
     }
 }
