@@ -9,11 +9,13 @@ public:
 	CREATE_FUNC(Bullet);
 	virtual bool init();
 public:
-	void MovebyLine();//å­å¼¹æ²¿çº¿ç§»åŠ¨
-	void Fade();//ç¢°å£æ‰“äººæ¶ˆå¤±
-	float numx; float numy; int S;//é€šè¿‡æ–¹å‘å‘é‡ç¡®å®šè½¨è¿¹
-	int Bullet_accuracy=7;//å­å¼¹å‡†åº¦
-private:
-	bool isNeedFade;//åˆ¤æ–­æ˜¯å¦éœ€è¦æ¶ˆå¤±
+	void MovebyLine();//×Óµ¯ÑØÏßÒÆ¶¯
+	void Fade();//Åö±Ú´òÈËÏûÊ§
+	float numx; float numy; int S;//Í¨¹ı·½ÏòÏòÁ¿È·¶¨¹ì¼£
+	int Bullet_accuracy=7;//×Óµ¯×¼¶È
+
+	bool isNeedFade= false;//ÅĞ¶ÏÊÇ·ñĞèÒªÏûÊ§
 };
 #endif // !_BULLET_H__
+
+

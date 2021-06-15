@@ -17,19 +17,22 @@ public:
 	void myupdate(float dt);
 
 public:
-	void Fire();//å¼€ç«
-	void createBullets(Point X_Y_of_Gun, Point direction_vector);//åˆ›å»ºå­å¼¹å¯¹è±¡
+	void Fire();//¿ª»ğ
+	void createBullets(Point X_Y_of_Gun, Point direction_vector);//´´½¨×Óµ¯¶ÔÏó
 	void revolve(float degree);
-	float bindEnemy(Monster* monster1);//é”å®šæœ€è¿‘æ•Œäººï¼Œè¿”å›æªéœ€è¦æ—‹è½¬çš„è§’åº¦
+	float bindEnemy(Monster* monster1);//Ëø¶¨×î½üµĞÈË£¬·µ»ØÇ¹ĞèÒªĞı×ªµÄ½Ç¶È
 	/*void Bullet_direction();*/
-	Point shootVector;//æªç¦»æ€ªçš„æ–¹å‘å‘é‡
+	Point shootVector;//Ç¹Àë¹ÖµÄ·½ÏòÏòÁ¿
+	bool is_be_binded = false;//ÊÇ·ñÒÑ¾­±»hero°ó¶¨ÁË
+	/*string GunImageLoad = "fireGun.png";*/
+	bool is_can_be_used = true;
 
-
-	//ç¨åè®¾ä¸ºprivateï¼Œå†ç»™ä¸ªå‡½æ•°æ¥å£è°ƒå°±å¥½å•¦
+	//ÉÔºóÉèÎªprivate£¬ÔÙ¸ø¸öº¯Êı½Ó¿Úµ÷¾ÍºÃÀ²
 	bool is_fire;//
-	Vector<Bullet*> BulletsVector;//ç”¨äºå‚¨å­˜å­å¼¹
-	string imgload_of_Gun;//æªçš„å›¾ç‰‡è·¯å¾„
-	//string imagload_of_Bullet;//å­å¼¹çš„å›¾ç‰‡è·¯å¾„
+	Vector<Bullet*> BulletsVector;//ÓÃÓÚ´¢´æ×Óµ¯
+	string imgload_of_Gun;//Ç¹µÄÍ¼Æ¬Â·¾¶
+	//string imagload_of_Bullet;//×Óµ¯µÄÍ¼Æ¬Â·¾¶
 };
 
 #endif // !_GUN_H__
+

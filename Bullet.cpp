@@ -11,7 +11,7 @@ bool Bullet::init() {
 	
 }
 
-//è¿™æ˜¯æš‚å®šçš„xæ–¹å‘å­å¼¹
+//ÕâÊÇÔÝ¶¨µÄx·½Ïò×Óµ¯
 void Bullet::MovebyLine() {
 	
 	this->S = (int)sqrt((float)(numx * numx) + (float)(numy * numy));
@@ -20,14 +20,14 @@ void Bullet::MovebyLine() {
 	this->getSprite()->setPositionY(this->getSprite()->getPositionY() + 20 * numy / S);
 }
 	
-////å†å†™ä¸ªæ ¹æ®å°æ€ªä½ç½®å®šå‘çš„MovebyLineå‡½æ•°,ä¼ å…¥æ–¹å‘å‚æ•°Xå’ŒYå’Œé€Ÿåº¦å‚æ•°V,æ­¤å‡½æ•°æš‚å®šï¼ï¼ï¼
+////ÔÙÐ´¸ö¸ù¾ÝÐ¡¹ÖÎ»ÖÃ¶¨ÏòµÄMovebyLineº¯Êý,´«Èë·½Ïò²ÎÊýXºÍYºÍËÙ¶È²ÎÊýV,´Ëº¯ÊýÔÝ¶¨£¡£¡£¡
 
 //void Bullet::MovebyLine(int X,int Y,int V) {
 //	this->getSprite()->setPositionX(this->getSprite()->getPositionX() + (V * X / (X * X + Y * Y)));
 //	this->getSprite()->setPositionY(this->getSprite()->getPositionY() + (V * Y / (X * X + Y * Y)));
 //}
 
-//å­å¼¹æ¶ˆå¤±å‡½æ•°ï¼Œè¯¶è¿™ä¸ªåº”è¯¥å†™åœ¨Gunç±»é‡Œï¼Œç›´æŽ¥å°†æ»¡è¶³æ¶ˆå¤±æ¡ä»¶çš„å­å¼¹ä»ŽBulletsVectorä¸­ç§»é™¤å³å¯
+//×Óµ¯ÏûÊ§º¯Êý£¬ÚÀÕâ¸öÓ¦¸ÃÐ´ÔÚGunÀàÀï£¬Ö±½Ó½«Âú×ãÏûÊ§Ìõ¼þµÄ×Óµ¯´ÓBulletsVectorÖÐÒÆ³ý¼´¿É
 void Bullet::Fade() {
 
 }

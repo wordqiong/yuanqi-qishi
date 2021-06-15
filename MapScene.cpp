@@ -30,7 +30,7 @@ void MapScene::addPotion() {
     potion->final_load = potion->load1 + load2 + potion->load3;
     potion->bindSprite(Sprite::create(potion->final_load));
 
-    potion->getSprite()->setPosition(Point(this->hero->getPositionX() + 200, this->hero->getPositionY() + 100));
+    potion->getSprite()->setPosition(Point(this->hero->getSprite()->getPositionX() + 200, this->hero->getSprite()->getPositionY() + 100));
     this->PotionVector.push_back(potion);
     this->map->addChild(potion);
 }
@@ -38,21 +38,33 @@ void MapScene::addPotion() {
 void MapScene::addGun() {
     Gun* fireGun = Gun::create();
     fireGun->bindSprite(Sprite::create("fireGun.png"));
-    fireGun->getSprite()->setPosition(Point(100, 0));//æš‚æ—¶å…ˆå›ºå®šä½ç½®
+    fireGun->getSprite()->setPosition(Point(100, 0));//ÔİÊ±ÏÈ¹Ì¶¨Î»ÖÃ
     fireGun->getSprite()->setAnchorPoint(Point(0.5,0.45));
-    
+    fireGun->is_can_be_used = false;//ÏÈÖ±½Ó±»°ó¶¨
+    this->hero->GunOfHero.push_back(fireGun);//²åµ½heroÇ¹×éÀï
     map->addChild(fireGun);
 
     this->GunsVector.push_back(fireGun);
 }
 
 void MapScene::flipped(int direction) {
-    switch (direction) {
-    case 1:
-       this->GunsVector[0]->getSprite()->setFlippedY(true);
-       break;
-    case 2:
-        this->GunsVector[0]->getSprite()->setFlippedY(false);
+    if (this->hero->GunOfHero.size() == 1) {
+        switch (direction) {
+        case 1:
+            this->hero->GunOfHero[0]->getSprite()->setFlippedY(true);
+            break;
+        case 2:
+            this->hero->GunOfHero[0]->getSprite()->setFlippedY(false);
+        }
+    }
+    if (this->hero->GunOfHero.size() == 2) {
+        switch (direction) {
+        case 1:
+            this->hero->GunOfHero[1]->getSprite()->setFlippedY(true);
+            break;
+        case 2:
+            this->hero->GunOfHero[1]->getSprite()->setFlippedY(false);
+        }
     }
 }
 
@@ -62,7 +74,7 @@ bool MapScene::init()
     {
         return false;
     }
-    //å°†å‡ºç”Ÿç‚¹è®¾ç½®åœ¨çª—å£ä¸‹
+    //½«³öÉúµãÉèÖÃÔÚ´°¿ÚÏÂ
     map = TMXTiledMap::create("map.tmx");
     layer2 = map->getLayer("layer2");
     layer2->setVisible(false);
@@ -78,24 +90,33 @@ bool MapScene::init()
         map->setPosition(0, -32 * (100 - 18));
         addChild(map);
     }
-    //åˆ›å»ºheroï¼Œå°†å®ƒæ”¾åœ¨åœ°å›¾ä¸­å¤®
+    //´´½¨hero£¬½«Ëü·ÅÔÚµØÍ¼ÖĞÑë
     heroInit();
 
     this->addGun();
-    //ç”Ÿæˆæªæ”¯    å¯¹äº†ï¼Œåœ¨æ“ä½œæªæ”¯æ—¶è¿˜è¦å…ˆé”å®šéœ€è¦æ“ä½œçš„æªæ”¯ï¼Œè¿™ä¸ªå‡½æ•°åç»­å†åŠ 
-    this->GunsVector[0]->getSprite()->setPosition(Point(this->hero->getPositionX()+18 , this->hero->getPositionY() + 17));
+
+    //ÊÔÑéÓÃÇ¹
+    Gun* fireGun = Gun::create();
+    fireGun->bindSprite(Sprite::create("fireGun.png"));
+    fireGun->getSprite()->setPosition(Point(this->hero->getSprite()->getPositionX() -200, this->hero->getSprite()->getPositionY() -100));//ÔİÊ±ÏÈ¹Ì¶¨Î»ÖÃ
+    fireGun->getSprite()->setAnchorPoint(Point(0.5, 0.45));
+    map->addChild(fireGun);
+    this->GunsVector.push_back(fireGun);
+
+    //Éú³ÉÇ¹Ö§    ¶ÔÁË£¬ÔÚ²Ù×÷Ç¹Ö§Ê±»¹ÒªÏÈËø¶¨ĞèÒª²Ù×÷µÄÇ¹Ö§£¬Õâ¸öº¯ÊıºóĞøÔÙ¼Ó
+    this->GunsVector[0]->getSprite()->setPosition(Point(this->hero->getSprite()->getPositionX()+18 , this->hero->getSprite()->getPositionY() + 17));
    
-    this->addPotion();//ç”Ÿæˆè¡€ç“¶
+    this->addPotion();//Éú³ÉÑªÆ¿
     
 
-    //å»ºä¸€ä¸ªæ€ªè¯•éªŒä¸€ä¸‹
+    //½¨Ò»¸ö¹ÖÊÔÑéÒ»ÏÂ
     Monster* monster = Monster::create();
     monster->bindSprite(Sprite::create("MonsterShooter.png"));
-    monster->getSprite()->setPosition(Point(this->hero->getPositionX() + 120, this->hero->getPositionY() + 90));
+    monster->getSprite()->setPosition(Point(this->hero->getSprite()->getPositionX() + 120, this->hero->getSprite()->getPositionY() + 90));
     map->addChild(monster);
     this->MonsterVector.push_back(monster);
 
-    //æŒ‰ä½å¼€æª
+    //°´×¡¿ªÇ¹
     Button* ShootButton = Button::create("ShootButton2.png", "ShootButton.png");
     float x = origin.x + visibleSize.width - ShootButton->getContentSize().width / 2;
     float y = origin.y + ShootButton->getContentSize().height / 2;
@@ -104,7 +125,7 @@ bool MapScene::init()
     this->addChild(ShootButton);
 //   // //posted by mxy
 
-    //ä¿¡å·æŒ‰é’®
+    //ĞÅºÅ°´Å¥
      signalItem = MenuItemImage::create(
         "signalButton.png",
         "shootButton.png",
@@ -128,34 +149,83 @@ bool MapScene::init()
     auto menu = Menu::create(signalItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
+
+    //»»Ç¹°´Å¥
+    changGunItem = MenuItemImage::create(
+        "CloseNormal.png",
+        "CloseSelected.png",
+        CC_CALLBACK_1(MapScene::changeGunCallback, this));
+
+    if (changGunItem == nullptr ||
+        changGunItem->getContentSize().width <= 0 ||
+        changGunItem->getContentSize().height <= 0)
+    {
+        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
+    }
+    else
+    {
+        float x = origin.x + visibleSize.width - changGunItem->getContentSize().width / 2;
+        float y = origin.y + changGunItem->getContentSize().height / 2;
+        changGunItem->setPosition(Vec2(x, y+150));
+    }
+
+    // create menu, it's an autorelease object
+    auto menu2 = Menu::create(changGunItem, NULL);
+    menu2->setPosition(Vec2::ZERO);
+    this->addChild(menu2, 1);
     
     scheduleUpdate();
     return true;
 }
 
 
-//å°„å‡»æŒ‰é’®çš„å›è°ƒ
+//Éä»÷°´Å¥µÄ»Øµ÷
 void MapScene::touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type) {
-    switch (type)
-    {
-    case Widget::TouchEventType::BEGAN:
-        this->GunsVector.at(0)->is_fire = true;
-        break;
+    if (this->hero->GunOfHero.size() == 1) {
+        switch (type)
+        {
+        case Widget::TouchEventType::BEGAN:
+            this->hero->GunOfHero[0]->is_fire = true;
+            break;
 
-    case Widget::TouchEventType::MOVED:
-       
-        break;
+        case Widget::TouchEventType::MOVED:
 
-    case Widget::TouchEventType::ENDED:
-        this->GunsVector.at(0)->is_fire = false;
-        break;
+            break;
 
-    case Widget::TouchEventType::CANCELED:
-       
-        break;
+        case Widget::TouchEventType::ENDED:
+            this->hero->GunOfHero[0]->is_fire = false;
+            break;
 
-    default:
-        break;
+        case Widget::TouchEventType::CANCELED:
+
+            break;
+
+        default:
+            break;
+        }
+    }
+    if (this->hero->GunOfHero.size() == 2) {
+        switch (type)
+        {
+        case Widget::TouchEventType::BEGAN:
+            this->hero->GunOfHero[1]->is_fire = true;
+            break;
+
+        case Widget::TouchEventType::MOVED:
+
+            break;
+
+        case Widget::TouchEventType::ENDED:
+            this->hero->GunOfHero[1]->is_fire = false;
+            break;
+
+        case Widget::TouchEventType::CANCELED:
+
+            break;
+
+        default:
+            break;
+        }
     }
 
 }
@@ -164,13 +234,14 @@ void MapScene::touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType ty
 
 void  MapScene::heroInit()
 {
-    hero = Sprite::create("knight.png");
-    direction = 2;//åˆå§‹æœå‘è®¾ç½®ä¸ºå‘å³
-    isStand = true;//åˆå§‹çŠ¶æ€ä¸ºç«™ç«‹
+    hero = Hero::create();
+    hero->bindSprite(Sprite::create("knight.png"));
+    direction = 2;//³õÊ¼³¯ÏòÉèÖÃÎªÏòÓÒ
+    isStand = true;//³õÊ¼×´Ì¬ÎªÕ¾Á¢
     isDirectionChange = false;
     map->addChild(hero);
-    hero->setAnchorPoint(Vec2::ZERO);
-    hero->setPosition(32 * 10.0f, 32 * 92.0f);//åˆ›å»ºheroï¼Œå°†å®ƒæ”¾åœ¨åœ°å›¾ä¸­å¤®
+    hero->getSprite()->setAnchorPoint(Vec2::ZERO);
+    hero->getSprite()->setPosition(32 * 10.0f, 32 * 92.0f);//´´½¨hero£¬½«Ëü·ÅÔÚµØÍ¼ÖĞÑë
 }
 
 Animate* MapScene::createAnimate(int direction, int num)
@@ -192,8 +263,8 @@ Animate* MapScene::createAnimate(int direction, int num)
 
 void MapScene::HeroResume()
 {
-    hero->stopAllActions();
-    hero->runAction(createAnimate(this->direction, 1));
+    hero->getSprite()->stopAllActions();
+    hero->getSprite()->runAction(createAnimate(this->direction, 1));
 }
 
 
@@ -221,7 +292,7 @@ void MapScene::update(float delta)
         {
             isDirectionChange = true;
         }
-        direction = 1;//ä»£è¡¨å‘å·¦
+        direction = 1;//´ú±íÏò×ó
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = -1.41;
@@ -247,7 +318,7 @@ void MapScene::update(float delta)
         {
             isDirectionChange = true;
         }
-        direction = 2;//ä»£è¡¨å‘å³
+        direction = 2;//´ú±íÏòÓÒ
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = 1.41;
@@ -317,48 +388,113 @@ void MapScene::update(float delta)
         isStand = true;
     }
 
-    //æªæ¢°è·Ÿéš
-    this->GunsVector[0]->getSprite()->setPosition(Point(this->hero->getPositionX() + 45, this->hero->getPositionY() + 17));
+    //Ç¹Ğµ¸úËæ
+    for (auto gun : this->hero->GunOfHero) {
+        gun->getSprite()->setPosition(Point(this->hero->getSprite()->getPositionX() + 45, this->hero->getSprite()->getPositionY() + 17));
+    }
+    
 
-    //å¼€æª
-    if (!this->GunsVector.at(0)->BulletsVector.empty()) {
-                    for (auto Bullet : this->GunsVector.at(0)->BulletsVector) {
-                        Bullet->MovebyLine();
-                        if (!(MapScene::isCanReach(Bullet->getSprite()->getPositionX()+2*(Bullet->numx / Bullet->S), Bullet->getSprite()->getPositionY()+ 2 * (Bullet->numy / Bullet->S), MAP_WALL))) {
-                            this->GunsVector.at(0)->removeChild(Bullet,true);
-                        }
+    //¿ªÇ¹£¨Ä¿Ç°»¹ÊÇmapÀïµÄÇ¹×é£¬µÈ»á»»³ÉheroµÄÇ¹×é£©ÓĞÒ»°ÑÇ¹Ê±µÚ0¸ö¿ªÇ¹£¬ÓĞÁ½°ÑÇ¹Ê±µÚ1¸ö¿ªÇ¹
+    if (this->hero->GunOfHero.size() == 1) {
+        if (!this->hero->GunOfHero[0]->BulletsVector.empty()) {
+            for (auto Bullet : this->hero->GunOfHero[0]->BulletsVector) {
+                if (!Bullet->isNeedFade) {
+                    Bullet->MovebyLine();
+                    if (!(MapScene::isCanReach(Bullet->getSprite()->getPositionX() - 5, Bullet->getSprite()->getPositionY() - 5, MAP_WALL))) {
+                        /*this->GunsVector.at(0)->removeChild(Bullet,true);*///+2 * (Bullet->numx / Bullet->S)
+                        Bullet->getSprite()->setVisible(false);
+                        Bullet->isNeedFade = true;
+
                     }
                 }
-        //ç¡®å®šå¼€æªæ–¹å‘ï¼ˆæ—‹è½¬ï¼‰
-    for (auto monster : this->MonsterVector) {
-        
-                    this->GunsVector.at(0)->revolve(this->GunsVector.at(0)->bindEnemy(monster));
+
+            }
+        }
+    }
+    if (this->hero->GunOfHero.size() == 2) {
+        if (!this->hero->GunOfHero[1]->BulletsVector.empty()) {
+            for (auto Bullet : this->hero->GunOfHero[1]->BulletsVector) {
+                if (!Bullet->isNeedFade) {
+                    Bullet->MovebyLine();
+                    if (!(MapScene::isCanReach(Bullet->getSprite()->getPositionX() - 5, Bullet->getSprite()->getPositionY() - 5, MAP_WALL))) {
+                        /*this->GunsVector.at(0)->removeChild(Bullet,true);*///+2 * (Bullet->numx / Bullet->S)
+                        Bullet->getSprite()->setVisible(false);
+                        Bullet->isNeedFade = true;
+
+                    }
                 }
 
-    //åˆ¤æ–­ä»€ä¹ˆæ—¶å€™ï¼ˆæ¡æªï¼‰å’Œè¡€ç“¶
+            }
+        }
+    }
+    
+        //È·¶¨¿ªÇ¹·½Ïò£¨Ğı×ª£©
+    for (auto monster : this->MonsterVector) {
+        if (this->hero->GunOfHero.size() == 1) {
+            this->hero->GunOfHero[0]->revolve(this->hero->GunOfHero[0]->bindEnemy(monster));
+        }
+        else if (this->hero->GunOfHero.size() == 2) {
+            this->hero->GunOfHero[1]->revolve(this->hero->GunOfHero[1]->bindEnemy(monster));
+        }                  
+                }
+
+    //ÅĞ¶ÏÊ²Ã´Ê±ºò£¨¼ñÇ¹£©ºÍÑªÆ¿
     if (!this->PotionVector.empty()) {
         for (auto potion : this->PotionVector) {
-            //å¦‚æœæ²¡è¢«ä½¿ç”¨è¿‡
+            //Èç¹ûÃ»±»Ê¹ÓÃ¹ı
             if (potion->is_can_be_used) {
-                int x = (int)potion->getSprite()->getPositionX() - (int)hero->getPositionX();
-                int y = (int)potion->getSprite()->getPositionY() - (int)hero->getPositionY();
+                int x = (int)potion->getSprite()->getPositionX()-30 - (int)hero->getSprite()->getPositionX();
+                int y = (int)potion->getSprite()->getPositionY()-30 - (int)hero->getSprite()->getPositionY();
                 int s_s = x * x + y * y;
 
                 int s = (int)sqrt((float)s_s);
-                log("%d", s);
-                if (s <= 20) {
+
+             
+                if (s <= 40) {
+                    
                     this->BindedPotion = potion;
+                    this->is_Bind_Potion = true;
                     this->signalItem->setVisible(true);
                 }
                 else {
+                    this->is_Bind_Potion = false;
                     this->signalItem->setVisible(false);
                 }
             }
         }
     }
-    //æªéšäººç‰©åè½¬
+    
+    for (auto gun : this->GunsVector) {
+        if (gun->is_can_be_used) {
+            int x = (int)gun->getSprite()->getPositionX() - 30 - (int)hero->getSprite()->getPositionX();
+            int y = (int)gun->getSprite()->getPositionY() - 30 - (int)hero->getSprite()->getPositionY();
+            int s_s = x * x + y * y;
+
+            int s = (int)sqrt((float)s_s);
+            log("%d", s);
+            if (s <= 40) {
+                this->BindedGun = gun;
+                this->is_Bind_Gun = true;
+                this->signalItem->setVisible(true);
+            }
+            else {
+                this->is_Bind_Gun = false;
+                if (!this->is_Bind_Potion) {
+                    this->signalItem->setVisible(false);
+                }
+                
+            }
+        }
+    }
+
+
+    //Ç¹ËæÈËÎï·´×ª
     this->flipped(this->direction);
 
+    if (this->hero->GunOfHero.size() == 2) {
+        this->hero->GunOfHero[0]->getSprite()->setVisible(false);
+        this->hero->GunOfHero[1]->getSprite()->setVisible(true);
+    }
 
     offsetX = offsetY = 0;
 
@@ -366,13 +502,33 @@ void MapScene::update(float delta)
 
 }
 
-//ä¿¡å·æŒ‰é’®çš„å›è°ƒ,è®©åˆ¤æ–­åˆ°äººåœ¨æ—è¾¹æ—¶æ‰æ˜¾ç¤ºä¿¡å·æŒ‰é’®è¿™æ ·å°±ä¸ä¼šå¤šæ¬¡åˆ é™¤
+//ĞÅºÅ°´Å¥µÄ»Øµ÷,ÈÃÅĞ¶Ïµ½ÈËÔÚÅÔ±ßÊ±²ÅÏÔÊ¾ĞÅºÅ°´Å¥ÕâÑù¾Í²»»á¶à´ÎÉ¾³ı
 void MapScene::menuCloseCallback(Ref* pSender)
 {
-    this->BindedPotion->setVisible(false);
-    this->BindedPotion->is_can_be_used = false;
-    this->signalItem->setVisible(false);//è¯æ°´ä½¿ç”¨åéšè—ä¿¡å·æŒ‰é’®
-    //åŠ è¡€åŠ è“ä¹‹ååŠ å‡½æ•°
+    if (this->is_Bind_Potion) {
+        this->BindedPotion->setVisible(false);
+        this->BindedPotion->is_can_be_used = false;
+        this->is_Bind_Potion = false;
+        this->signalItem->setVisible(false);//Ò©Ë®Ê¹ÓÃºóÒş²ØĞÅºÅ°´Å¥
+        //¼ÓÑª¼ÓÀ¶Ö®ºó¼Óº¯Êı
+
+    }
+    if (this->is_Bind_Gun) {
+        this->BindedGun->is_can_be_used = false;
+        this->hero->addGun(this->BindedGun);//Ç¹²åÈëheroµÄÇ¹×é
+        this->is_Bind_Gun = false;
+        this->signalItem->setVisible(false);//¼ñÆğÇ¹ºóÒş²ØĞÅºÅ°´Å¥
+    }       
+}
+
+void MapScene::changeGunCallback(cocos2d::Ref* pSender) {
+    if(this->hero->GunOfHero.size()==2){
+        vector<Gun*> changeVector;
+        changeVector.push_back(this->hero->GunOfHero[0]);
+        this->hero->GunOfHero[0] = this->hero->GunOfHero[1];
+        this->hero->GunOfHero[1] = changeVector[0];
+        
+    }
 
 }
 
@@ -390,11 +546,11 @@ bool MapScene::isCanReach(float x, float y, int Type_Wall)
     log("e:%d\nY:%d,X:%d", tileGid, mapY, mapX);
     if (tileGid == Type_Wall)
     {
-        result = false;//ä¸å¯ç§»åŠ¨
+        result = false;//²»¿ÉÒÆ¶¯
     }
     else
     {
-        result = true;//å¯ç§»åŠ¨
+        result = true;//¿ÉÒÆ¶¯
     }
     return result;
 }
@@ -406,7 +562,7 @@ void MapScene::PureMapMove(float offsetX, float offsetY)
     if (isStand == true || isDirectionChange == true)
     {
         HeroResume();
-        hero->runAction(animate);
+        hero->getSprite()->runAction(animate);
         isStand = false;
         isDirectionChange = false;
     }
@@ -414,8 +570,8 @@ void MapScene::PureMapMove(float offsetX, float offsetY)
 }
 void MapScene::PureHeroMove(float offsetX, float offsetY)
 {
-    auto moveTo = MoveTo::create(1.0 / 1000, Vec2(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY));
-    hero->runAction(moveTo);
+    auto moveTo = MoveTo::create(1.0 / 1000, Vec2(hero->getSprite()->getPositionX() + offsetX, hero->getSprite()->getPositionY() + offsetY));
+    hero->getSprite()->runAction(moveTo);
 }
 void MapScene::AllMove(float offsetX, float offsetY)
 {
@@ -428,8 +584,8 @@ bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow)
     int i = 1;
     while (i <= 8)
     {
-        if (!isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow) * (1) * (i * 32) + ('a' == key_arrow) * (-1) * (i * 32),
-            hero->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), MAP_WALL))
+        if (!isCanReach(hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow) * (1) * (i * 32) + ('a' == key_arrow) * (-1) * (i * 32),
+            hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), MAP_WALL))
         {
 
             /* log("i=%d", i);*/
@@ -441,7 +597,7 @@ bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow)
     }
 
     if (i <= 5)
-        return true;//äº”æ ¼èŒƒå›´å†…æœ‰å¢™
+        return true;//Îå¸ñ·¶Î§ÄÚÓĞÇ½
     else
         return false;
 }
@@ -450,14 +606,14 @@ bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow)
 void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3)
 {
     if (((JudgeWall(offsetX, offsetY, key_arrow_1)
-        && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL))
+        && isCanReach(hero->getSprite()->getPositionX() + offsetX, hero->getSprite()->getPositionY() + offsetY, MAP_WALL))
         || ((JudgeWall(offsetX, offsetY, key_arrow_2)
-            && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL))))
-        && isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL))
+            && isCanReach(hero->getSprite()->getPositionX() + offsetX, hero->getSprite()->getPositionY() + offsetY, MAP_WALL))))
+        && isCanReach(hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL))
     {
         if (key_arrow_3 != '-')
         {
-            if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL))
+            if (isCanReach(hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL))
             {
                 PureHeroMove(offsetX, offsetY);
             }
@@ -469,11 +625,11 @@ void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char ke
     }
     else
     {
-        if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL))
+        if (isCanReach(hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL))
         {
             if (key_arrow_3 != '-')
             {
-                if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL))
+                if (isCanReach(hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL))
                 {
                     AllMove(offsetX, offsetY);
                 }
@@ -489,7 +645,7 @@ void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char ke
 //void MapScene::menuCloseCallback(Ref* pSender)
 //{
 //    //Close the cocos2d-x game scene and quit the application
-//    this->GunsVector.at(0)->Fire();//å¼€ç«å‡½æ•°é‡Œå°±æ˜¯createBulletså’Œç§»åŠ¨å‡½æ•°ï¼Œç¨åå†æ”¹
+//    this->GunsVector.at(0)->Fire();//¿ª»ğº¯ÊıÀï¾ÍÊÇcreateBulletsºÍÒÆ¶¯º¯Êı£¬ÉÔºóÔÙ¸Ä
 //
 //    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
 //
@@ -502,7 +658,7 @@ void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char ke
 //{
 //    if (StateDoor())
 //    {
-//        //æ¶ˆé™¤æ·»åŠ çš„é‚£å‡ ä¸ªç²¾çµå¢™å—
+//        //Ïû³ıÌí¼ÓµÄÄÇ¼¸¸ö¾«ÁéÇ½¿é
 //    }
 //
 //}
@@ -510,14 +666,14 @@ void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char ke
 //{
 //    if (!StateDoor())
 //    {
-//        //åœ¨æ¥çš„è·¯ä¸Šæ·»åŠ å¢™ä½“
+//        //ÔÚÀ´µÄÂ·ÉÏÌí¼ÓÇ½Ìå
 //    }
 //}
 //bool MapScene::StateDoor()
 //{
-//    //è®¡åˆ’ç›®æ ‡ è¯»å»å½“å‰
-//    //true åˆ™å¼€é—¨ ä»£è¡¨æ‰“å®Œæ€ª å¼€é—¨
-//    //false ä»èµ°å»Šèµ°è¿›æˆ¿é—´
+//    //¼Æ»®Ä¿±ê ¶ÁÈ¥µ±Ç°
+//    //true Ôò¿ªÃÅ ´ú±í´òÍê¹Ö ¿ªÃÅ
+//    //false ´Ó×ßÀÈ×ß½ø·¿¼ä
 //    if (PositionDoor)
 //    {
 //        if (!isCanReach(32 * (10 - x), 32 * (92 - y), MAP_LOBBY))

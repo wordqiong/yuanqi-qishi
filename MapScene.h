@@ -6,6 +6,7 @@
 #include "Bullet.h"
 #include"ui/UIWidget.h"
 #include "Potion.h"
+#include"Hero.h"
 
 
 
@@ -16,20 +17,21 @@ class MapScene : public cocos2d::Scene
 public:
 
 
-    static MapScene* sharedScene;//åˆ›å»ºæŒ‡å‘è¯¥åœºæ™¯çš„æŒ‡é’ˆ
+    static MapScene* sharedScene;//´´½¨Ö¸Ïò¸Ã³¡¾°µÄÖ¸Õë
 
-    int direction;//è·å–äººç‰©ç§»åŠ¨çš„æ–¹å‘
+    int direction;//»ñÈ¡ÈËÎïÒÆ¶¯µÄ·½Ïò
 
-    bool isStand;//åˆ¤æ–­äººç‰©æ˜¯å¦ç«™ç«‹ä¸åŠ¨
+    bool isStand;//ÅĞ¶ÏÈËÎïÊÇ·ñÕ¾Á¢²»¶¯
 
-    bool isDirectionChange;//åˆ¤æ–­äººç‰©ç§»åŠ¨æ–¹å‘æ˜¯å¦å˜åŒ–
+    bool isDirectionChange;//ÅĞ¶ÏÈËÎïÒÆ¶¯·½ÏòÊÇ·ñ±ä»¯
 
-    void heroInit();//äººç‰©åˆå§‹åŒ–
+    void heroInit();//ÈËÎï³õÊ¼»¯
 
-    void touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type);//æŒ‰é’®ç›‘å¬
-    void menuCloseCallback(cocos2d::Ref* pSender);//ä¿¡å·æŒ‰é’®ç›‘å¬
+    void touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type);//°´Å¥¼àÌı
+    void menuCloseCallback(cocos2d::Ref* pSender);//ĞÅºÅ°´Å¥¼àÌı
+    void changeGunCallback(cocos2d::Ref* pSender);//ĞÅºÅ°´Å¥¼àÌı
 
-    void flipped(int direction);//æŠŠæªåè½¬
+    void flipped(int direction);//°ÑÇ¹·´×ª
 
 
 
@@ -38,22 +40,26 @@ public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
-    //æµ‹è¯•ç”¨çš„æˆå‘˜
-   //ç“¦ç‰‡åˆå§‹åœ°å›¾
+    //²âÊÔÓÃµÄ³ÉÔ±
+   //ÍßÆ¬³õÊ¼µØÍ¼
     cocos2d::TMXTiledMap* map;
-    //éšœç¢ç‰©æ‰€åœ¨å›¾å±‚
+    //ÕÏ°­ÎïËùÔÚÍ¼²ã
     cocos2d::TMXLayer* layer2;
-    //heroå•ä½
-    cocos2d::Sprite* hero;
-    //ç§»åŠ¨æ‰€éœ€çš„è¯­å¥
+    //heroµ¥Î»
+    Hero* hero;
+    //ÒÆ¶¯ËùĞèµÄÓï¾ä
     void update(float delta) override;
 
         void addGun();
-    vector<Gun*> GunsVector;//æªæ¢°å®¹å™¨
+    vector<Gun*> GunsVector;//Ç¹ĞµÈİÆ÷
     vector<Monster*> MonsterVector;
     vector<Potion*> PotionVector;
-    Potion* BindedPotion;
-    MenuItemImage* signalItem;//ä¿¡å·æŒ‰é’®
+    Potion* BindedPotion;//ÏûÏ¢°´Å¥°ó¶¨µÄÎïÆ·
+    Gun* BindedGun;
+    bool is_Bind_Potion = false;
+    bool is_Bind_Gun = false;
+    MenuItemImage* signalItem;//ĞÅºÅ°´Å¥
+    MenuItemImage* changGunItem;//»»Ç¹°´Å¥
 
     std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
     CREATE_FUNC(MapScene);
@@ -76,7 +82,7 @@ public:
     *@brief  Map move
     *@author wyh
     */
-    int x = 0, y = 0;//èµ·ç‚¹
+    int x = 0, y = 0;//Æğµã
     /*
     *@brief  Judge next movement whether or not barrier
     *@author wyh
@@ -94,7 +100,7 @@ public:
 
     void HeroResume();
 protected:
-    //è‡ªç”¨
+    //×ÔÓÃ
     void MapScene::AllMove(float offsetX, float offsetY);
     void MapScene::PureMapMove(float offsetX, float offsetY);
     void MapScene::PureHeroMove(float offsetX, float offsetY);
