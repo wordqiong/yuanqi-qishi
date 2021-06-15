@@ -1,9 +1,10 @@
 #ifndef __MAP_SCENE_H__
 #define __MAP_SCENE_H__
-#include"Hero.h"
 #include "Enemy.h"
+#include "Hero.h"
 #include "cocos2d.h"
 class Hero;
+class SlideState;
 class MapScene : public cocos2d::Scene
 {
 public:
@@ -21,6 +22,8 @@ public:
     cocos2d::TMXLayer* layer2;
     //hero单位
     Hero* Hero;
+    //Slide
+    SlideState* slide;
     //Monster
     EnemyMonster* monster;
     CREATE_FUNC(MapScene);
@@ -73,5 +76,10 @@ protected:
     int MapScene::JudgeWhichRoomIn();
 private:
     int Room[4] = {1};//1表示未曾进入 0表示已经进入
+    void MapScene::BloodCreate();
+    float MapScene::TransPencent(int type);
+    void MapScene::MpCreate();
+    void MapScene::AcCreate();
+    void  MapScene::BoardCreate();
 };
 #endif 

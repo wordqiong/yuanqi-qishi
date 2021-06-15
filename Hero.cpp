@@ -22,6 +22,7 @@ Hero* Hero::createHero()
     {
         hero->autorelease();
         hero->HeroInit();
+
         return hero;
     }
     CC_SAFE_DELETE(hero);
@@ -40,6 +41,8 @@ void Hero::HeroInit()
     hero->setScale(0.6f);
     hero->setPosition(32 * 10.0f, 32 * 92.0f);//创建hero，将它放在地图中央
     blood = HeroBlood;
+    Mp = HeroMp;
+    Ac = HeroAc;
 }
 
 Animate* Hero::createAnimate(int direction, int num)

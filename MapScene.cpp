@@ -1,5 +1,5 @@
 #include "MapScene.h"
-
+#include "ui/CocosGUI.h"
 #include "AnimationUtil.h"
 #define MAP_WALL 203
 #define MAP_LOBBY 12254
@@ -48,11 +48,25 @@ bool MapScene::init()
     }
     //创建hero，将它放在地图中央
     Hero = Hero::createHero();
+    //创建状态栏
+    Sprite* Board = Sprite::create("board.png");
+    Board->setPosition(100, 580);
+    Board->setScale(0.5f);
+    addChild(Board);
+
+    BoardCreate();
     map->addChild(Hero);
     /*monster = EnemyMonster::createMonster();*/
     /*addChild(monster);*/
     scheduleUpdate();
     return true;
+}
+//当人物受到攻击时，需要调用此函数
+void  MapScene::BoardCreate()
+{
+    BloodCreate();
+    MpCreate();
+    AcCreate();
 }
 bool MapScene::isCanReach(float x, float y, int Type_Wall)
 {
@@ -146,7 +160,6 @@ bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow)
 void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2,char key_arrow_3)
 {
     RoomIn(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, JudgeWhichRoomIn());
-
 
 }
 void MapScene::OpenDoor()
@@ -392,5 +405,63 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
                 }
             }
         }
+    }
+}
+void MapScene::BloodCreate()
+{
+    //////////////////////////////
+
+    auto loadingBar = ui::LoadingBar::create("blood.png", 100);
+
+    // set the direction of the loading bars progress
+    loadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+    // something happened, change the percentage of the loading bar
+    loadingBar->setPercent(TransPencent(1));
+    loadingBar->setScale(0.5f);
+    Node::addChild(loadingBar);
+    loadingBar->setPosition(Vec2(112,605));
+}
+void MapScene::MpCreate()
+{
+    //////////////////////////////
+
+    auto loadingBar = ui::LoadingBar::create("Mp.png", 100);
+
+    // set the direction of the loading bars progress
+    loadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+    // something happened, change the percentage of the loading bar
+    loadingBar->setPercent(TransPencent(2));
+    loadingBar->setScale(0.5f);
+    Node::addChild(loadingBar);
+    loadingBar->setPosition(Vec2(112, 555));
+}
+void MapScene::AcCreate()
+{
+    //////////////////////////////
+
+    auto loadingBar = ui::LoadingBar::create("Ac.png", 100);
+
+    // set the direction of the loading bars progress
+    loadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+    // something happened, change the percentage of the loading bar
+    loadingBar->setPercent(TransPencent(2));
+    loadingBar->setScale(0.5f);
+    Node::addChild(loadingBar);
+    loadingBar->setPosition(Vec2(112, 580));
+}
+float MapScene::TransPencent(int type)
+{
+    //1为血量 2为蓝条 3 为护甲
+    if (type == 1)
+    {
+        return (Hero->blood / 7 * 100);
+    }
+    if (type == 2)
+    {
+        return (Hero->Mp / 180 * 100);
+    }
+    if (type == 3)
+    {
+        return (Hero->Ac / 5 * 100);
     }
 }
