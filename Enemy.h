@@ -10,6 +10,9 @@
 class EnemyMonster : public cocos2d::Layer
 {
 public:
+
+    bool iscreated[4];//判断4个房间是否生成过怪物
+        
     int MonsterType;//小怪的种类
 
     float PositionX, PositionY;//小怪的生成位置的坐标，由 OriginalPosition（）函数生成
@@ -32,9 +35,11 @@ public:
 
     virtual bool init();
     
-    void MonsterInit();//初始化
+    void MonsterInit();
+    
+    void monsterInit();//整体初始化
 
-    void OriginalPosition();//随机生成敌人的位置坐标（未开发）
+    virtual void OriginalPosition(int RoomNumber);//随机生成敌人的位置坐标（未开发）
 
     void start(int type, int positionX, int positionY);//设置小怪的种类和起始位置
 
@@ -48,13 +53,19 @@ public:
 
     void  AttackUpdate(float dt);//更新小怪的攻击
 
-    cocos2d::Animate* createAnimate_move(int MonsterType, int direction, int num);//创建移动动画
+    virtual cocos2d::Animate* createAnimate_move(int MonsterType, int direction, int num);//创建移动动画
 
     cocos2d::Animate* createAnimate_dead(int MonsterType, int direction, int num);//创建死亡动画
     
     void MonsterResume();
 
     void isDead();//小怪死亡
+
+    bool isFade;
+
+    bool isAllFade;
+
+    void DeadUpdate(float dt);
 
     bool isAllDead();//判断所有小怪是否都死亡
   

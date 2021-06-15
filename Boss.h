@@ -30,6 +30,10 @@ public:
 	cocos2d::Animate* createAnimate_attack(int BossType, int direction,int num);
 
 	void isDead();
+	
+	bool isFade;
+
+	void DeadUpdate(float dt);
 
 	void AttackUpdate(float dt);
 

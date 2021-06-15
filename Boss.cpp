@@ -21,10 +21,7 @@ Boss* Boss::createBoss()
 void Boss::BossInit(int BossType)
 {
 	Boss::BossType = BossType;
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	PositionX = rand() % 300 + 10 + origin.x;
-	PositionY = rand() % 300 + 32 * 82 + origin.y;//写好OriginalPosition()函数后，改为用该函数生成初始坐标
+	OriginalPosition(MapScene::sharedScene->Hero->RoomPosition);
 	if (BossType == 1)
 	{
 		isStand = true; 
@@ -42,8 +39,10 @@ void Boss::BossInit(int BossType)
 	}
 	direction = 1;
 	inAttack = false;
+	isFade = false;
 	boss->setPosition(PositionX, PositionY);
 	boss->setVisible(true);
+	MapScene::sharedScene->map->addChild(boss);
 	AttackTime[1] = attack_time_of_Boss1;
 	AttackTime[2] = attack_time_of_Boss2;
 }
@@ -57,10 +56,10 @@ bool Boss::init()
 
 	srand((unsigned)time(NULL));
 	BossInit(1);
-	MapScene::sharedScene->map->addChild(boss);
 	if(BossType==1)
 	    schedule(CC_SCHEDULE_SELECTOR(Boss::MoveUpdate), 0.5f);
 	schedule(CC_SCHEDULE_SELECTOR(Boss::AttackUpdate), 3.0f);
+	schedule(CC_SCHEDULE_SELECTOR(Boss::DeadUpdate), 0.1f);
 	return true;
 
 }
@@ -104,6 +103,7 @@ void Boss::isDead()
 {
 	auto* animate = FadeOut::create(3.0f);
 	boss->runAction(animate);
+	CC_SAFE_DELETE(boss);
 }
 
 void Boss::MoveBoss()
@@ -113,6 +113,12 @@ void Boss::MoveBoss()
 	auto dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
 		(rand() % (200 * speed) - 100 * speed) / 100.0);//随机偏差向量
 	auto ds = v + dx;//实际位移向量
+	while (!MapScene::sharedScene->isCanReach(boss->getPositionX() + ds.x, boss->getPositionY() + ds.y, MAP_WALL))
+	{
+		dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
+			(rand() % (200 * speed) - 100 * speed) / 100.0);
+		ds = v + dx;
+	}
 	if (ds.x > 0)
 	{
 		if (direction == 2)
@@ -184,4 +190,14 @@ void Boss::AttackUpdate(float dt)
 		}
 	}
 	
+}
+
+void Boss::DeadUpdate(float dt)
+{
+	if (isFade == false && blood <= 0)
+	{
+		isDead();
+		isFade = true;
+	}
+
 }

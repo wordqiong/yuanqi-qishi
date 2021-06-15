@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "MapScene.h"
 #include "MoveHero.h"
+#include"Hero.h"
 USING_NS_CC;
 #define Range_of_attack_pig 20
 #define attack_of_pig 5
@@ -18,6 +19,41 @@ Scene* EnemyMonster::createScene()
 	return scene;
 }
 
+void EnemyMonster::OriginalPosition(int RoomNumber)
+{
+	int x_min, x_max, y_min, y_max;
+	if (RoomNumber == 1)
+	{
+		x_min = 38 * 32;
+		x_max = 67 * 32;
+		y_min = 81 * 32;
+		y_max = 98 * 32;
+	}
+	else if (RoomNumber == 2)
+	{
+		x_min = 5 * 32;
+		x_max = 19 * 32;
+		y_min = 44 * 32;
+		y_max = 58 * 32;
+	}
+	else if (RoomNumber == 3)
+	{
+		x_min = 39 * 32;
+		x_max = 68* 32;
+		y_min = 40 * 32;
+		y_max = 61 * 32;
+	}
+	else if (RoomNumber == 4)
+	{
+		x_min = 38 * 32;
+		x_max = 69 * 32;
+		y_min = 5 * 32;
+		y_max = 24 * 32;
+	}
+	PositionX = rand() % (x_max - x_min) - 32 + x_min;
+	PositionY = rand() % (y_max - y_min) - 32 + y_min;
+}
+
 EnemyMonster* EnemyMonster::createMonster()
 {
 
@@ -26,7 +62,7 @@ EnemyMonster* EnemyMonster::createMonster()
 	if (monster && monster->init())
 	{
 		monster->autorelease();
-		monster->MonsterInit();
+	    monster->monsterInit();
 		return monster;
 	}
 	CC_SAFE_DELETE(monster);
@@ -42,37 +78,40 @@ bool EnemyMonster::init()
 	}
 	
 	srand((unsigned)time(NULL));
-
-	for (int i = 0; i < MonsterNumber; i++)
-	{
-		monster[i] = new EnemyMonster();
-		monster[i]->MonsterInit();
-		monster[i]->MonsterType = rand() % 3 + 1;
-		monster[i]->start(monster[i]->MonsterType, monster[i]->PositionX, monster[i]->PositionY);
-		MapScene::sharedScene->map->addChild(monster[i]->Monster);
-	}
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::MoveUpdate), 0.5);
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::AttackUpdate), 3.0f);
+	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::DeadUpdate), 0.1f);
 	return true;
 
 }
 
-void EnemyMonster::MonsterInit()
+void EnemyMonster::monsterInit()//对类进行初始化
+{
+	isAllFade = false;
+	for (int i = 0; i < MonsterNumber; i++)
+	{
+		monster[i] = new EnemyMonster();
+		monster[i]->MonsterInit();
+		monster[i]->start(monster[i]->MonsterType, monster[i]->PositionX, monster[i]->PositionY);
+		MapScene::sharedScene->map->addChild(monster[i]->Monster);
+	}
+}
+
+void EnemyMonster::MonsterInit()//对精灵进行初始化
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	MonsterType = 0;//初始化类型为0
 	direction = 1;//初始状态向右
 	isStand = true;//初始状态为站立
+	isFade = false;
 	for(int i=1;i<=3;i++)
 	   inAttack[i] = false;//初始状态为不攻击
 	AttackTime[1] = attack_time_of_pig;
 	AttackTime[2] = attack_time_of_shooter;
 	AttackTime[3] = attack_time_of_archer;//设置怪物攻击间隔
 	isDirectionChange = false;//初始状态为方向不改变
-	PositionX = rand() % 300 + 10 + origin.x;
-	PositionY = rand() % 300 + 32*82 + origin.y;//写好OriginalPosition()函数后，改为用该函数生成初始坐标
-	
+	OriginalPosition(MapScene::sharedScene->Hero->RoomPosition);
+	MonsterType = rand() % 3 + 1;
 }
 
 void EnemyMonster::start(int type, int positionX, int positionY)
@@ -105,11 +144,17 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 
 void EnemyMonster::MoveMonster()
 {
-	auto dr = MapScene::sharedScene->hero->getPosition() - Monster->getPosition();//位移向量
+	auto dr = MapScene::sharedScene->Hero->hero->getPosition() - Monster->getPosition();//位移向量
 	auto v = dr / dr.length() * speed;//速度向量
 	auto dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
 		(rand() % (200 * speed) - 100 * speed) / 100.0);//随机偏差向量
 	auto ds = v + dx;//实际位移向量
+	while (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_WALL))
+	{
+		dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
+			(rand() % (200 * speed) - 100 * speed) / 100.0);
+		ds = v + dx;
+	}
 	if (ds.x > 0)
 	{
 		if (direction == 2)
@@ -182,6 +227,7 @@ Animate* EnemyMonster::createAnimate_dead(int MonsterType, int direction, int nu
 
 void EnemyMonster::MonsterResume()
 {
+	
 	Monster->stopAllActions();
 	Monster->runAction(createAnimate_move(MonsterType, direction, 1));
 }
@@ -191,8 +237,8 @@ void EnemyMonster::MoveUpdate(float dt)//移动所有小怪
 
 	for (int i = 0; i < MonsterNumber; i++)
 	{
-		if (!monster[i]->inAttack[monster[i]->MonsterType])
-			monster[i]->MoveMonster();
+		if(!monster[i]->inAttack[monster[i]->MonsterType])
+		   monster[i]->MoveMonster();
 	}
 	
 
@@ -211,7 +257,7 @@ bool EnemyMonster::isAllDead()
 {
 	for (int i = 0; i <MonsterNumber; i++)
 	{
-		if (monster[i]->blood != 0)
+		if (monster[i]->blood > 0)
 			return false;
 	}
 	return true;
@@ -221,7 +267,9 @@ void EnemyMonster::AllMonstersfade()
 {
 	for (int i = 0; i < MonsterNumber; i++)
 	{
-		Monster->setVisible(false);
+		auto* animate = FadeOut::create(2.0f);
+		monster[i]->Monster->runAction(animate);
+		/*CC_SAFE_DELETE(monster[i]);*/
 	}
 }
 
@@ -237,7 +285,7 @@ void EnemyMonster::AttackUpdate(float dt)
 			monster[i]->inAttack[monster[i]->MonsterType] = false;
 		if (monster[i]->inAttack[monster[i]->MonsterType] == true)
 		{
-			auto ds = MapScene::sharedScene->hero->getPosition() - monster[i]->getPosition();
+			auto ds = MapScene::sharedScene->Hero->hero->getPosition() - monster[i]->getPosition();
 			auto s = ds.length();
 			monster[i]->MonsterResume();
 			/*if (monster[i]->MonsterType == 1)
@@ -259,4 +307,18 @@ void EnemyMonster::AttackUpdate(float dt)
 		}
 	}
 	
+}
+
+void EnemyMonster::DeadUpdate(float dt)
+{
+	for (int i = 0; i < MonsterNumber; i++)
+	{
+		if (monster[i]->blood <= 0 && monster[i]->isFade == false)
+		{
+			monster[i]->isDead();
+			monster[i]->isFade = true;
+		}
+	}
+	if (isAllDead()&&(!isAllFade))
+		AllMonstersfade();
 }
