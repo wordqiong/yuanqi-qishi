@@ -57,11 +57,7 @@ bool BackGroundMusic::init()
         "MusicContolSelected.png",
         "CheckBoxNode_Normal.png",
         "CheckBoxNode_Disable.png"
-        );
-   /* float x = checkbox->getContentSize().width / 2+100 ;
-        float y = checkbox->getContentSize().height / 2+100;
-        checkbox->setPosition(Vec2(x, y));
-        */
+    );
     checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) {
         switch (type)
         {
@@ -84,8 +80,8 @@ bool BackGroundMusic::init()
                 break;
         }
         });
-
-    this->addChild(checkbox);
+    addChild(checkbox);
+    checkbox->setPosition(Vec2(400, 585));
     return true;
 }
 

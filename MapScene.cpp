@@ -1,6 +1,7 @@
 #include "MapScene.h"
 #include "ui/CocosGUI.h"
 #include "AnimationUtil.h"
+#include "BackGroundMusic.h"
 #define MAP_WALL 203
 #define MAP_LOBBY 12254
 #define MAP_BARRIER_TREE 1456
@@ -48,13 +49,20 @@ bool MapScene::init()
     }
     //创建hero，将它放在地图中央
     Hero = Hero::createHero();
+
+
     //创建状态栏
     Sprite* Board = Sprite::create("board.png");
     Board->setPosition(100, 580);
     Board->setScale(0.5f);
     addChild(Board);
-
     BoardCreate();
+
+    auto BackMusic = BackGroundMusic::create();
+
+    addChild(BackMusic);
+
+
     map->addChild(Hero);
     /*monster = EnemyMonster::createMonster();*/
     /*addChild(monster);*/

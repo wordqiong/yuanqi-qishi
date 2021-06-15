@@ -4,7 +4,6 @@
 #include "Hero.h"
 #include "cocos2d.h"
 class Hero;
-class SlideState;
 class MapScene : public cocos2d::Scene
 {
 public:
@@ -22,8 +21,7 @@ public:
     cocos2d::TMXLayer* layer2;
     //heroµ¥Î»
     Hero* Hero;
-    //Slide
-    SlideState* slide;
+
     //Monster
     EnemyMonster* monster;
     CREATE_FUNC(MapScene);

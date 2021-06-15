@@ -24,7 +24,7 @@
 
 #ifndef __HELLOWORLD_SCENE_H__
 #define __HELLOWORLD_SCENE_H__
-
+#include "ui/CocosGUI.h"
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 class BackGroundMusic : public cocos2d::Scene
@@ -34,7 +34,7 @@ public:
 
     virtual bool init();
     CocosDenshion::SimpleAudioEngine* audio;
-    
+    cocos2d::ui::CheckBox checkbox;
     // implement the "static create()" method manually
     CREATE_FUNC(BackGroundMusic);
 };
