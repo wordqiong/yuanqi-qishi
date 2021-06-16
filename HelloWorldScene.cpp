@@ -36,7 +36,7 @@ bool HelloWorld::init()
                                            "button.png",
                                            "button.png",
                                            CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
-    closeItem->setScale(1.8f);
+    closeItem->setScale(1.8f* 0.58f);
 
     if (closeItem == nullptr ||
         closeItem->getContentSize().width <= 0 ||
@@ -46,8 +46,8 @@ bool HelloWorld::init()
     }
     else
     {
-        float x = origin.x + visibleSize.width /24*17- closeItem->getContentSize().width/2-20;
-        float y = origin.y + visibleSize.height -closeItem->getContentSize().height/2-75;
+        float x = origin.x + visibleSize.width /24*17- closeItem->getContentSize().width+15;
+        float y = origin.y + visibleSize.height -closeItem->getContentSize().height/3-210;
         closeItem->setPosition(Vec2(x,y));
     }
 
@@ -73,7 +73,7 @@ bool HelloWorld::init()
     {
         // position the sprite on the center of the screen
         sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
+        sprite->setScale(0.58f);
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }

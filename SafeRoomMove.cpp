@@ -213,6 +213,7 @@ bool SafeRoomMove::isCanReach(float x, float y, int Type_Wall,bool diliver)
     {
         if (tileGid == MAP_DELIVERY)
         {
+
             Director::getInstance()->replaceScene(MapScene::createScene());
         }
     }
