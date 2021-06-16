@@ -2,21 +2,25 @@
 #include "ui/CocosGUI.h"
 #include "AnimationUtil.h"
 #include "BackGroundMusic.h"
-#define MAP_WALL 203
-#define MAP_LOBBY 12254
-#define MAP_BARRIER_TREE 1456
-#define MAP_ROOM_1 11652
-#define MAP_ROOM_2 11246
-#define MAP_ROOM_3 11853
-#define MAP_ROOM_4 11854
-#define MAP_DOOR 1217
+#include "Enemy.h"
+#include"box.h"
+#include"Boss.h"
+#include "ui\UIButton.h"
+#include<cmath>
+#include<string>
+
 USING_NS_CC;
+using namespace ui;
 
 MapScene* MapScene::sharedScene = nullptr;
 Scene* MapScene::createScene()
 {
     return MapScene::create();
 }
+
+
+
+
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
@@ -35,8 +39,14 @@ bool MapScene::init()
     //将出生点设置在窗口下
     sharedScene = this;
     map = TMXTiledMap::create("map.tmx");
+
     layer2 = map->getLayer("layer2");
     layer2->setVisible(false);
+    
+    box_create = map->getLayer("box_create");
+    box_create->setVisible(false);
+
+    
     if (map == nullptr)
     {
         log("tile map not found");
@@ -47,9 +57,14 @@ bool MapScene::init()
         map->setPosition(0, -32 * (100 - 18));
         addChild(map);
     }
+
+    for (int i = 0; i <= 4; i++)
+        isMonsterCreated[i] = false;
+
     //创建hero，将它放在地图中央
     Hero = Hero::createHero();
 
+    schedule(CC_SCHEDULE_SELECTOR(MapScene::CreateUpdate));
 
     //创建状态栏
     Sprite* Board = Sprite::create("board.png");
@@ -63,12 +78,41 @@ bool MapScene::init()
     addChild(BackMusic);
 
 
+
+
     map->addChild(Hero);
-    /*monster = EnemyMonster::createMonster();*/
-    /*addChild(monster);*/
+
     scheduleUpdate();
     return true;
 }
+
+
+
+
+
+//whether create
+void MapScene::CreateUpdate(float dt)
+{
+    if (Hero->RoomPosition != 0 && isMonsterCreated[Hero->RoomPosition] == false)
+    {
+         monster = EnemyMonster::createMonster();
+        addChild(monster);
+        box = Box::createBox();
+        addChild(box);
+        isMonsterCreated[Hero->RoomPosition] = true;
+        if (Hero->RoomPosition == 4)
+        {
+            boss = Boss::createBoss();
+            addChild(boss);
+        }
+    }
+
+}
+
+
+
+
+
 //当人物受到攻击时，需要调用此函数
 void  MapScene::BoardCreate()
 {
@@ -158,7 +202,8 @@ bool MapScene::WhetherHeroMove(float offsetX, float offsetY, char key_arrow_1, c
 }
 bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow)
 {
-    if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16), MAP_BARRIER_TREE))
+    if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16), MAP_BARRIER_TREE)
+        && (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16))))
     {
         return true;
     }
@@ -167,6 +212,7 @@ bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow)
 }
 void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2,char key_arrow_3)
 {
+
     RoomIn(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, JudgeWhichRoomIn());
 
 }
@@ -472,4 +518,29 @@ float MapScene::TransPencent(int type)
     {
         return (Hero->Ac / 5 * 100);
     }
+}
+bool MapScene::isCanReach(float x, float y, char name)
+{
+    int mapX = (int)((x - 16) / 32 + 1);//地图宽从1开始
+    int mapY = (int)(99 - (y - 16) / 32);//地图长为100
+    if (mapX < 0 || mapX>73 || mapY < 0 || mapY>99)
+    {
+        return false;
+    }
+    int tileGid = box_create->getTileGIDAt(Vec2(mapX, mapY));
+    auto properties = map->getPropertiesForGID(tileGid);
+    auto mid = properties.asValueMap().at("box");
+    if (mid.asString().compare("true") == 0)
+    {
+        //TMXLayer* barrier = map->getLayer("box_create");
+        //barrier->removeTileAt(Vec2(mapX, mapY));
+        log("box is using");
+        return false;
+    }
+    else
+    {
+        log("box is using");
+        return true;
+    }
+
 }

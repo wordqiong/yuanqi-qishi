@@ -10,6 +10,7 @@ bool Hero::init()
         return false;
     }
     schedule(CC_SCHEDULE_SELECTOR(Hero::update));
+    schedule(CC_SCHEDULE_SELECTOR(Hero::HeroRoomUpdate));
     return true;
 
 }
@@ -187,8 +188,33 @@ void Hero::update(float delta)
         HeroResume();
         isStand = true;
     }
+
+
+
+
     offsetX = offsetY = 0;
 
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 }
+
+void Hero::HeroRoomUpdate(float dt)
+{
+    if ((hero->getPositionX() >= room1_x_min) && (hero->getPositionX() <= room1_x_max)
+        && (hero->getPositionY() >= room1_y_min) && (hero->getPositionY() <= room1_y_max))
+        RoomPosition = 1;
+    else if ((hero->getPositionX() >= room2_x_min) && (hero->getPositionX() <= room2_x_max)
+        && (hero->getPositionY() >= room2_y_min) && (hero->getPositionY() <= room2_y_max))
+        RoomPosition = 2;
+    else if ((hero->getPositionX() >= room3_x_min) && (hero->getPositionX() <= room3_x_max)
+        && (hero->getPositionY() >= room3_y_min) && (hero->getPositionY() <= room3_y_max))
+        RoomPosition = 3;
+    else if ((hero->getPositionX() >= room4_x_min) && (hero->getPositionX() <= room4_x_max)
+        && (hero->getPositionY() >= room4_y_min) && (hero->getPositionY() <= room4_y_max))
+        RoomPosition = 4;
+    else
+        RoomPosition = 0;
+}
+
+
+
