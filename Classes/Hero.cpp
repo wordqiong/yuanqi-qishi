@@ -5,7 +5,7 @@ USING_NS_CC;
 
 bool Hero::init()
 {
-    if (!Entity::init())
+    if (!Sprite::init())
     {
         return false;
     }
@@ -33,14 +33,14 @@ Hero* Hero::createHero()
 
 void Hero::HeroInit()
 {
-    this->bindSprite( Sprite::create("hero.png"));
+    hero = Sprite::create("hero.png");
     direction = 2;//初始朝向设置为向右
     isStand = true;//初始状态为站立
     isDirectionChange = false;
-    MapScene::sharedScene->map->addChild(this->getSprite());
-    this->getSprite()->setAnchorPoint(Vec2::ZERO);
-    this->getSprite()->setScale(0.6f);
-    this->getSprite()->setPosition(32 * 10.0f, 32 * 92.0f);//创建hero，将它放在地图中央
+    MapScene::sharedScene->map->addChild(hero);
+    hero->setAnchorPoint(Vec2::ZERO);
+    hero->setScale(0.6f);
+    hero->setPosition(32 * 10.0f, 32 * 92.0f);//创建hero，将它放在地图中央
     blood = HeroBlood;
     Mp = HeroMp;
     Ac = HeroAc;
@@ -65,12 +65,13 @@ Animate* Hero::createAnimate(int direction, int num)
 
 void Hero::HeroResume()
 {
-    this->getSprite()->stopAllActions();
-    this->getSprite()->runAction(createAnimate(this->direction, 1));
+    hero->stopAllActions();
+    hero->runAction(createAnimate(this->direction, 1));
 }
 
 void Hero::update(float delta)
 {
+    MapScene::sharedScene->Boardupdate();
     Node::update(delta);
     auto leftArrow = EventKeyboard::KeyCode::KEY_A, rightArrow = EventKeyboard::KeyCode::KEY_D,
         upArrow = EventKeyboard::KeyCode::KEY_W, downArrow = EventKeyboard::KeyCode::KEY_S;
@@ -200,24 +201,22 @@ void Hero::update(float delta)
 
 void Hero::HeroRoomUpdate(float dt)
 {
-    if ((this->getSprite()->getPositionX() >= room1_x_min) && (this->getSprite()->getPositionX() <= room1_x_max)
-        && (this->getSprite()->getPositionY() >= room1_y_min) && (this->getSprite()->getPositionY() <= room1_y_max))
+    if ((hero->getPositionX() >= room1_x_min) && (hero->getPositionX() <= room1_x_max)
+        && (hero->getPositionY() >= room1_y_min) && (hero->getPositionY() <= room1_y_max))
         RoomPosition = 1;
-    else if ((this->getSprite()->getPositionX() >= room2_x_min) && (this->getSprite()->getPositionX() <= room2_x_max)
-        && (this->getSprite()->getPositionY() >= room2_y_min) && (this->getSprite()->getPositionY() <= room2_y_max))
+    else if ((hero->getPositionX() >= room2_x_min) && (hero->getPositionX() <= room2_x_max)
+        && (hero->getPositionY() >= room2_y_min) && (hero->getPositionY() <= room2_y_max))
         RoomPosition = 2;
-    else if ((this->getSprite()->getPositionX() >= room3_x_min) && (this->getSprite()->getPositionX() <= room3_x_max)
-        && (this->getSprite()->getPositionY() >= room3_y_min) && (this->getSprite()->getPositionY() <= room3_y_max))
+    else if ((hero->getPositionX() >= room3_x_min) && (hero->getPositionX() <= room3_x_max)
+        && (hero->getPositionY() >= room3_y_min) && (hero->getPositionY() <= room3_y_max))
         RoomPosition = 3;
-    else if ((this->getSprite()->getPositionX() >= room4_x_min) && (this->getSprite()->getPositionX() <= room4_x_max)
-        && (this->getSprite()->getPositionY() >= room4_y_min) && (this->getSprite()->getPositionY() <= room4_y_max))
+    else if ((hero->getPositionX() >= room4_x_min) && (hero->getPositionX() <= room4_x_max)
+        && (hero->getPositionY() >= room4_y_min) && (hero->getPositionY() <= room4_y_max))
         RoomPosition = 4;
     else
         RoomPosition = 0;
 }
 
 
-void Hero::addGun(Gun* gun) {
-    this->GunOfHero.push_back(gun);
-}
+
 

@@ -49,8 +49,16 @@ void EnemyMonster::OriginalPosition(int RoomNumber)
 		y_min = 5 * 32;
 		y_max = 24 * 32;
 	}
-	PositionX = rand() % (x_max - x_min) - 32 + x_min;
-	PositionY = rand() % (y_max - y_min) - 32 + y_min;
+	do {
+		PositionX = rand() % (x_max - x_min) - 32 + x_min;
+		PositionY = rand() % (y_max - y_min) - 32 + y_min;
+	}
+	while((!MapScene::sharedScene->isCanReach(PositionX, PositionY, MAP_WALL))
+		|| (!MapScene::sharedScene->isCanReach(PositionX, PositionY, MAP_BARRIER_TREE))
+		|| (!MapScene::sharedScene->isCanReach(PositionX, PositionY, MAP_DOOR))
+		|| (!MapScene::sharedScene->isCanReach(PositionX, PositionY))
+
+		)	;
 }
 
 EnemyMonster* EnemyMonster::createMonster()
@@ -92,7 +100,7 @@ void EnemyMonster::monsterInit()//对类进行初始化
 		monster[i] = new EnemyMonster();
 		monster[i]->MonsterInit();
 		monster[i]->start(monster[i]->MonsterType, monster[i]->PositionX, monster[i]->PositionY);
-		MapScene::sharedScene->map->addChild(monster[i]->Monster);
+		MapScene::sharedScene->map->addChild(monster[i]->Monster,1);
 	}
 }
 
@@ -134,27 +142,44 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 	{
 		Monster = Sprite::create("archer.png");
 		blood = 12;
-		speed = 6;
+		speed = 7;
 		Monster->setScale(0.6f);
 	}
 	Monster->setPosition(PositionX, PositionY);
 	Monster->setVisible(true);
 }
 
-void EnemyMonster::MoveMonster()
+void EnemyMonster::MoveMonster(int num)
 {
-	auto dr = MapScene::sharedScene->Hero->hero->getPosition() - Monster->getPosition();//位移向量
-	auto v = dr / dr.length() * speed;//速度向量
-	auto dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
-		(rand() % (200 * speed) - 100 * speed) / 100.0);//随机偏差向量
-	auto ds = v + dx;//实际位移向量
-	while ((!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_WALL))|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_BARRIER_TREE)) || (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_DOOR)))
+	//auto dr = MapScene::sharedScene->Hero->hero->getPosition() - Monster->getPosition();//位移向量
+	//auto v = dr / dr.length() * speed;//速度向量
+	static Point ds[MonsterNumber];
+	static int k[MonsterNumber] = { 0 };
+	if (k[num] == 0)
 	{
-		
-		ds = Vec2(-ds.x, -ds.y);
-		log("15fail");
+		ds[num] = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
+			(rand() % (200 * speed) - 100 * speed) / 100.0);
+		k[num]++;
 	}
-	if (ds.x > 0)
+	while ((!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds[num].x, Monster->getPositionY(), MAP_WALL))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds[num].x, Monster->getPositionY(), MAP_BARRIER_TREE))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds[num].x, Monster->getPositionY(), MAP_DOOR))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds[num].x, Monster->getPositionY()))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX(), Monster->getPositionY() + ds[num].y, MAP_WALL))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX(), Monster->getPositionY() + ds[num].y, MAP_BARRIER_TREE))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX(), Monster->getPositionY() + ds[num].y, MAP_DOOR))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX(), Monster->getPositionY() + ds[num].y))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds[num].x, Monster->getPositionY() + ds[num].y, MAP_WALL))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds[num].x, Monster->getPositionY() + ds[num].y, MAP_BARRIER_TREE))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds[num].x, Monster->getPositionY() + ds[num].y, MAP_DOOR))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds[num].x, Monster->getPositionY() + ds[num].y))
+		)
+	{
+
+		ds[num] = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
+			(rand() % (200 * speed) - 100 * speed) / 100.0);
+	}
+	if (ds[num].x > 0)
 	{
 		if (direction == 2)
 		{
@@ -162,7 +187,7 @@ void EnemyMonster::MoveMonster()
 			isDirectionChange = true;
 		}
 	}
-	else if (ds.x < 0)
+	else if (ds[num].x < 0)
 	{
 		if (direction == 1)
 		{
@@ -170,19 +195,19 @@ void EnemyMonster::MoveMonster()
 			isDirectionChange = true;
 		}
 	}
-	if ((isStand == false) && (ds.x == 0.0f && ds.y == 0.0f))
+	if ((isStand == false) && (ds[num].x == 0.0f && ds[num].y == 0.0f))
 	{
 		MonsterResume();
 		isStand = true;
 	}
 	auto* animate = createAnimate_move(MonsterType, direction, 5);
-	if (isDirectionChange || ((isStand) && (ds.x != 0.0f || ds.y != 0.0f)))
+	if (isDirectionChange || ((isStand) && (ds[num].x != 0.0f || ds[num].y != 0.0f)))
 	{
 		MonsterResume();
 		isStand = false;
 		Monster->runAction(animate);
 	}
-	auto moveBy = MoveBy::create(0.5, ds);
+	auto moveBy = MoveBy::create(0.5, ds[num]);
 	Monster->runAction(moveBy);
 
 	
@@ -237,7 +262,7 @@ void EnemyMonster::MoveUpdate(float dt)//移动所有小怪
 	for (int i = 0; i < MonsterNumber; i++)
 	{
 		if(!monster[i]->inAttack[monster[i]->MonsterType])
-		   monster[i]->MoveMonster();
+		   monster[i]->MoveMonster(i);
 	}
 	
 
@@ -256,7 +281,7 @@ bool EnemyMonster::isAllDead()
 {
 	for (int i = 0; i <MonsterNumber; i++)
 	{
-		if (monster[i]->blood > 0)
+			if (monster[i]->blood > 0)
 			return false;
 	}
 	return true;

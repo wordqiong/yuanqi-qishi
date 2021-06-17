@@ -21,14 +21,14 @@
 #define room4_y_min  4 * 32
 #define room4_y_max  25 * 32
 #include "MapScene.h"
-#include "Gun.h"
-#include "cocos2d.h"
-#include "Entity.h"
 
-class Hero : public Entity
+#include "cocos2d.h"
+
+
+class Hero : public cocos2d::Sprite
 {
 public:
-
+	cocos2d::Sprite* hero;
 
 	virtual bool init();
 
@@ -62,9 +62,7 @@ public:
 
 	CREATE_FUNC(Hero);
 
-	void addGun(Gun* gun);//绑定正在使用的枪支
-	vector<Gun*> GunOfHero;//主角的枪;每次切换枪都把当前使用的枪放在后面，以便于出容器
-
+	
 protected:
 
 };

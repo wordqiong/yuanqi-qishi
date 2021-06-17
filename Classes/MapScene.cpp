@@ -19,49 +19,7 @@ Scene* MapScene::createScene()
 }
 
 
-//void MapScene::addPotion() {
-//    Potion* potion = Potion::create();
-//    string load2 = std::to_string(potion->type);
-//    potion->final_load = potion->load1 + load2 + potion->load3;
-//    potion->bindSprite(Sprite::create(potion->final_load));
-//
-//    potion->getSprite()->setPosition(Point(this->Hero->getSprite()->getPositionX() + 200, this->Hero->getSprite()->getPositionY() + 100));
-//    this->PotionVector.push_back(potion);
-//    this->map->addChild(potion);
-//}
-//
-//void MapScene::addGun() {
-//    Gun* fireGun = Gun::create();
-//    fireGun->bindSprite(Sprite::create("fireGun.png"));
-//    fireGun->getSprite()->setPosition(Point(100, 0));//暂时先固定位置
-//    fireGun->getSprite()->setAnchorPoint(Point(0.5, 0.45));
-//    fireGun->is_can_be_used = false;//先直接被绑定
-//    this->Hero->GunOfHero.push_back(fireGun);//插到hero枪组里
-//    map->addChild(fireGun);
-//
-//    this->GunsVector.push_back(fireGun);
-//}
 
-void MapScene::flipped(int direction) {
-    if (this->Hero->GunOfHero.size() == 1) {
-        switch (direction) {
-            case 1:
-                this->Hero->GunOfHero[0]->getSprite()->setFlippedY(true);
-                break;
-            case 2:
-                this->Hero->GunOfHero[0]->getSprite()->setFlippedY(false);
-        }
-    }
-    if (this->Hero->GunOfHero.size() == 2) {
-        switch (direction) {
-            case 1:
-                this->Hero->GunOfHero[1]->getSprite()->setFlippedY(true);
-                break;
-            case 2:
-                this->Hero->GunOfHero[1]->getSprite()->setFlippedY(false);
-        }
-    }
-}
 
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -81,8 +39,14 @@ bool MapScene::init()
     //将出生点设置在窗口下
     sharedScene = this;
     map = TMXTiledMap::create("map.tmx");
+
     layer2 = map->getLayer("layer2");
     layer2->setVisible(false);
+    
+    box_create = map->getLayer("box_create");
+    box_create->setVisible(false);
+
+    
     if (map == nullptr)
     {
         log("tile map not found");
@@ -97,6 +61,7 @@ bool MapScene::init()
     for (int i = 0; i <= 4; i++)
         isMonsterCreated[i] = false;
 
+    
     //创建hero，将它放在地图中央
     Hero = Hero::createHero();
 
@@ -114,91 +79,6 @@ bool MapScene::init()
     addChild(BackMusic);
 
 
-    this->addGun();
-
-    //试验用枪
-    Gun* fireGun = Gun::create();
-    fireGun->bindSprite(Sprite::create("fireGun.png"));
-    fireGun->getSprite()->setPosition(Point(this->Hero->getSprite()->getPositionX() - 200, this->Hero->getSprite()->getPositionY() - 100));//暂时先固定位置
-    fireGun->getSprite()->setAnchorPoint(Point(0.5, 0.45));
-    map->addChild(fireGun);
-    this->GunsVector.push_back(fireGun);
-
-    //生成枪支    对了，在操作枪支时还要先锁定需要操作的枪支，这个函数后续再加
-    this->GunsVector[0]->getSprite()->setPosition(Point(this->Hero->getSprite()->getPositionX() + 18, this->Hero->getSprite()->getPositionY() + 17));
-
-    this->addPotion();//生成血瓶
-
-
-    //建一个怪试验一下
-    Monster* monster = Monster::create();
-    monster->bindSprite(Sprite::create("MonsterShooter.png"));
-    monster->getSprite()->setPosition(Point(this->Hero->getSprite()->getPositionX() + 120, this->Hero->getSprite()->getPositionY() + 90));
-    map->addChild(monster);
-    this->MonsterVector.push_back(monster);
-
-    //按住开枪
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    Button* ShootButton = Button::create("ShootButton2.png", "ShootButton.png");
-    float x = origin.x + visibleSize.width - ShootButton->getContentSize().width / 2;
-    float y = origin.y + ShootButton->getContentSize().height / 2;
-    ShootButton->setPosition(Vec2(x, y));
-    ShootButton->addTouchEventListener(CC_CALLBACK_2(MapScene::touchCallBack, this));
-    this->addChild(ShootButton);
-    //   // //posted by mxy
-
-        //信号按钮
-    signalItem = MenuItemImage::create(
-        "signalButton.png",
-        "shootButton.png",
-        CC_CALLBACK_1(MapScene::menuCloseCallback, this));
-    signalItem->setVisible(false);
-
-    if (signalItem == nullptr ||
-        signalItem->getContentSize().width <= 0 ||
-        signalItem->getContentSize().height <= 0)
-    {
-        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-    }
-    else
-    {
-        float x = origin.x + visibleSize.width - signalItem->getContentSize().width / 2;
-        float y = origin.y + signalItem->getContentSize().height / 2;
-        signalItem->setPosition(Vec2(x, y));
-    }
-
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(signalItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
-
-    //换枪按钮
-    changGunItem = MenuItemImage::create(
-        "CloseNormal.png",
-        "CloseSelected.png",
-        CC_CALLBACK_1(MapScene::changeGunCallback, this));
-
-    if (changGunItem == nullptr ||
-        changGunItem->getContentSize().width <= 0 ||
-        changGunItem->getContentSize().height <= 0)
-    {
-        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-    }
-    else
-    {
-        float x = origin.x + visibleSize.width - changGunItem->getContentSize().width / 2;
-        float y = origin.y + changGunItem->getContentSize().height / 2;
-        changGunItem->setPosition(Vec2(x, y + 150));
-    }
-
-    // create menu, it's an autorelease object
-    auto menu2 = Menu::create(changGunItem, NULL);
-    menu2->setPosition(Vec2::ZERO);
-    this->addChild(menu2, 1);
-
-
-
 
 
     map->addChild(Hero);
@@ -208,56 +88,6 @@ bool MapScene::init()
 }
 
 
-//射击按钮的回调
-void MapScene::touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type) {
-    if (this->Hero->GunOfHero.size() == 1) {
-        switch (type)
-        {
-            case Widget::TouchEventType::BEGAN:
-                this->Hero->GunOfHero[0]->is_fire = true;
-                break;
-
-            case Widget::TouchEventType::MOVED:
-
-                break;
-
-            case Widget::TouchEventType::ENDED:
-                this->Hero->GunOfHero[0]->is_fire = false;
-                break;
-
-            case Widget::TouchEventType::CANCELED:
-
-                break;
-
-            default:
-                break;
-        }
-    }
-    if (this->Hero->GunOfHero.size() == 2) {
-        switch (type)
-        {
-            case Widget::TouchEventType::BEGAN:
-                this->Hero->GunOfHero[1]->is_fire = true;
-                break;
-
-            case Widget::TouchEventType::MOVED:
-
-                break;
-
-            case Widget::TouchEventType::ENDED:
-                this->Hero->GunOfHero[1]->is_fire = false;
-                break;
-
-            case Widget::TouchEventType::CANCELED:
-
-                break;
-
-            default:
-                break;
-        }
-    }
-
-}
 
 
 
@@ -281,46 +111,67 @@ void MapScene::CreateUpdate(float dt)
 }
 
 
-//信号按钮的回调,让判断到人在旁边时才显示信号按钮这样就不会多次删除
-void MapScene::menuCloseCallback(Ref* pSender)
-{
-    if (this->is_Bind_Potion) {
-        this->BindedPotion->setVisible(false);
-        this->BindedPotion->is_can_be_used = false;
-        this->is_Bind_Potion = false;
-        this->signalItem->setVisible(false);//药水使用后隐藏信号按钮
-        //加血加蓝之后加函数
-
-    }
-    if (this->is_Bind_Gun) {
-        this->BindedGun->is_can_be_used = false;
-        this->Hero->addGun(this->BindedGun);//枪插入hero的枪组
-        this->is_Bind_Gun = false;
-        this->signalItem->setVisible(false);//捡起枪后隐藏信号按钮
-    }
-}
-
-void MapScene::changeGunCallback(cocos2d::Ref* pSender) {
-    if (this->Hero->GunOfHero.size() == 2) {
-        vector<Gun*> changeVector;
-        changeVector.push_back(this->Hero->GunOfHero[0]);
-        this->Hero->GunOfHero[0] = this->Hero->GunOfHero[1];
-        this->Hero->GunOfHero[1] = changeVector[0];
-
-    }
-
-}
 
 
 
-
-
-//当人物受到攻击时，需要调用此函数
+//当人物受刚进入场景需要调用此函数
 void  MapScene::BoardCreate()
+{
+    Boardupdate();
+    Node::addChild(BloodLoadingBar);
+    BloodLoadingBar->setPosition(Vec2(112, 605));
+
+    Node::addChild(MpLoadingBar);
+    MpLoadingBar->setPosition(Vec2(112, 555));
+
+    Node::addChild(AcLoadingBar);
+    AcLoadingBar->setPosition(Vec2(112, 580));
+}
+
+void  MapScene::Boardupdate()
 {
     BloodCreate();
     MpCreate();
     AcCreate();
+}
+void MapScene::BloodCreate()
+{
+    //////////////////////////////
+
+    BloodLoadingBar = ui::LoadingBar::create("blood.png", 100);
+
+    // set the direction of the loading bars progress
+    BloodLoadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+    // something happened, change the percentage of the loading bar
+    BloodLoadingBar->setPercent(TransPencent(1));
+    BloodLoadingBar->setScale(0.5f);
+  
+}
+void MapScene::MpCreate()
+{
+    //////////////////////////////
+
+    MpLoadingBar = ui::LoadingBar::create("Mp.png", 100);
+
+    // set the direction of the loading bars progress
+    MpLoadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+    // something happened, change the percentage of the loading bar
+    MpLoadingBar->setPercent(TransPencent(2));
+    MpLoadingBar->setScale(0.5f);
+  
+}
+void MapScene::AcCreate()
+{
+    //////////////////////////////
+
+    AcLoadingBar = ui::LoadingBar::create("Ac.png", 100);
+
+    // set the direction of the loading bars progress
+    AcLoadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+    // something happened, change the percentage of the loading bar
+    AcLoadingBar->setPercent(TransPencent(2));
+    AcLoadingBar->setScale(0.5f);
+   
 }
 bool MapScene::isCanReach(float x, float y, int Type_Wall)
 {
@@ -352,7 +203,7 @@ void MapScene::PureMapMove(float offsetX, float offsetY)
     if (Hero->isStand == true || Hero->isDirectionChange == true)
     {
         Hero->HeroResume();
-        Hero->getSprite()->runAction(animate);
+        Hero->hero->runAction(animate);
         Hero->isStand = false;
         Hero->isDirectionChange = false;
     }
@@ -360,8 +211,8 @@ void MapScene::PureMapMove(float offsetX, float offsetY)
 }
 void MapScene::PureHeroMove(float offsetX, float offsetY)
 {
-    auto moveTo = MoveTo::create(1.0 / 1000, Vec2(Hero->getSprite()->getPositionX() + offsetX, Hero->getSprite()->getPositionY() + offsetY));
-    Hero->getSprite()->runAction(moveTo);
+    auto moveTo = MoveTo::create(1.0 / 1000, Vec2(Hero->hero->getPositionX() + offsetX, Hero->hero->getPositionY() + offsetY));
+    Hero->hero->runAction(moveTo);
 }
 void MapScene::AllMove(float offsetX, float offsetY)
 {
@@ -374,8 +225,8 @@ bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow,int ValueW
     int i = 1;
     while (i <= 5)
     {
-        if (!isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow) * (1) * (i * 32) + ('a' == key_arrow) * (-1) * (i * 32),
-            Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), ValueWall))
+        if (!isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1) * (i * 32) + ('a' == key_arrow) * (-1) * (i * 32),
+            Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), ValueWall))
         {
 
            /* log("i=%d", i);*/
@@ -394,17 +245,18 @@ bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow,int ValueW
 bool MapScene::WhetherHeroMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3, int ValueWall)
 {
     if (((JudgeWall(offsetX, offsetY, key_arrow_1, ValueWall)
-        && isCanReach(Hero->getSprite()->getPositionX() + offsetX, Hero->getSprite()->getPositionY() + offsetY, ValueWall))
+        && isCanReach(Hero->hero->getPositionX() + offsetX, Hero->hero->getPositionY() + offsetY, ValueWall))
         || ((JudgeWall(offsetX, offsetY, key_arrow_2, ValueWall)
-            && isCanReach(Hero->getSprite()->getPositionX() + offsetX, Hero->getSprite()->getPositionY() + offsetY, ValueWall))))
-        && isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), ValueWall))
+            && isCanReach(Hero->hero->getPositionX() + offsetX, Hero->hero->getPositionY() + offsetY, ValueWall))))
+        && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), ValueWall))
         return true;
     else
         return false;
 }
 bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow)
 {
-    if (isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16), MAP_BARRIER_TREE))
+    if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16), MAP_BARRIER_TREE)
+        && (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16))))
     {
         return true;
     }
@@ -502,7 +354,7 @@ void MapScene::CloseDoor()
 bool MapScene::StateDoor(int ValueWall)
 {
     //当它踏上这块启动板
-    if (!isCanReach(Hero->getSprite()->getPositionX(), Hero->getSprite()->getPositionY(),ValueWall))
+    if (!isCanReach(Hero->hero->getPositionX(), Hero->hero->getPositionY(),ValueWall))
     {
         JudgeOpenTime ++;
         PositionDoor = true;
@@ -515,7 +367,7 @@ bool MapScene::StateDoor(int ValueWall)
         
         return true;//此刻房间封锁
     }
-    else if(monster->isAllDead())
+    else if(Hero->RoomPosition!=0&&monster->isAllDead())
     {
         OpenDoor();
         PositionDoor = false;
@@ -573,8 +425,8 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
         {
             if (key_arrow_3 != '-')
             {
-                if (isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
-                    && isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
+                if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
+                    && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
                     )
                 {
                     if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
@@ -594,8 +446,8 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
         }
         else
         {
-            if (isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
-                && isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
+            if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
+                && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
                 )
             {
                 if (key_arrow_3 != '-')
@@ -621,7 +473,7 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
         {
             if (key_arrow_3 != '-')
             {
-                if (isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
+                if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
                     )
                 {
                     if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
@@ -641,7 +493,7 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
         }
         else
         {
-            if (isCanReach(Hero->getSprite()->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->getSprite()->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
+            if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
                 )
             {
                 if (key_arrow_3 != '-')
@@ -662,48 +514,7 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
         }
     }
 }
-void MapScene::BloodCreate()
-{
-    //////////////////////////////
 
-    auto loadingBar = ui::LoadingBar::create("blood.png", 100);
-
-    // set the direction of the loading bars progress
-    loadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
-    // something happened, change the percentage of the loading bar
-    loadingBar->setPercent(TransPencent(1));
-    loadingBar->setScale(0.5f);
-    Node::addChild(loadingBar);
-    loadingBar->setPosition(Vec2(112,605));
-}
-void MapScene::MpCreate()
-{
-    //////////////////////////////
-
-    auto loadingBar = ui::LoadingBar::create("Mp.png", 100);
-
-    // set the direction of the loading bars progress
-    loadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
-    // something happened, change the percentage of the loading bar
-    loadingBar->setPercent(TransPencent(2));
-    loadingBar->setScale(0.5f);
-    Node::addChild(loadingBar);
-    loadingBar->setPosition(Vec2(112, 555));
-}
-void MapScene::AcCreate()
-{
-    //////////////////////////////
-
-    auto loadingBar = ui::LoadingBar::create("Ac.png", 100);
-
-    // set the direction of the loading bars progress
-    loadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
-    // something happened, change the percentage of the loading bar
-    loadingBar->setPercent(TransPencent(2));
-    loadingBar->setScale(0.5f);
-    Node::addChild(loadingBar);
-    loadingBar->setPosition(Vec2(112, 580));
-}
 float MapScene::TransPencent(int type)
 {
     //1为血量 2为蓝条 3 为护甲
@@ -719,4 +530,28 @@ float MapScene::TransPencent(int type)
     {
         return (Hero->Ac / 5 * 100);
     }
+}
+bool MapScene::isCanReach(float x, float y, char name)
+{
+    int mapX = (int)((x - 16) / 32 + 1);//地图宽从1开始
+    int mapY = (int)(99 - (y - 16) / 32);//地图长为100
+    if (mapX < 0 || mapX>73 || mapY < 0 || mapY>99)
+    {
+        return false;
+    }
+    int tileGid = box_create->getTileGIDAt(Vec2(mapX, mapY));
+    auto properties = map->getPropertiesForGID(tileGid);
+    auto mid = properties.asValueMap().at("box");
+    if (mid.asString().compare("true") == 0)
+    {
+        //TMXLayer* barrier = map->getLayer("box_create");
+        //barrier->removeTileAt(Vec2(mapX, mapY));
+        log("box is using");
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+
 }

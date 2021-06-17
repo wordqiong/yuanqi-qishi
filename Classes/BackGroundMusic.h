@@ -31,12 +31,18 @@ class BackGroundMusic : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
-
+   cocos2d::ui::LoadingBar* loadingBar;
     virtual bool init();
     CocosDenshion::SimpleAudioEngine* audio;
     cocos2d::ui::CheckBox checkbox;
     // implement the "static create()" method manually
     CREATE_FUNC(BackGroundMusic);
+private:
+    float ChangeValumn = 0;
+ 
+   
+    std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
+    void BackGroundMusic::setValumn(float dt);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

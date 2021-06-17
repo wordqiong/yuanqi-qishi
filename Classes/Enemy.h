@@ -3,7 +3,7 @@
 #ifndef __ENEMY_H__
 #define __ENEMY_H__
 
-#define MonsterNumber 10
+#define MonsterNumber 5
 
 
 #include "cocos2d.h"
@@ -43,7 +43,7 @@ public:
 
     void start(int type, int positionX, int positionY);//设置小怪的种类和起始位置
 
-    void MoveMonster();//小怪移动函数
+    void MoveMonster(int num);//小怪移动函数
 
     CREATE_FUNC(EnemyMonster);
 
