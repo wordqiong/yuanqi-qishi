@@ -100,7 +100,7 @@ public:
     cocos2d::TMXLayer* box_create;
     bool MapScene::isCanReach(float x, float y, char name = ' ');
 
-
+ bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow);
   void MapScene::BloodCreate();
     float MapScene::TransPencent(int type);
     void MapScene::MpCreate();
@@ -116,7 +116,7 @@ protected:
     bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow, int ValueWall);
     bool MapScene::WhetherHeroMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3, int ValueWall);
    
-    bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow);
+   
     int MonsterNum;
     bool PositionDoor = true;//in room ->ture in lobby->false 
 

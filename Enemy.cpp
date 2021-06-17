@@ -49,8 +49,14 @@ void EnemyMonster::OriginalPosition(int RoomNumber)
 		y_min = 5 * 32;
 		y_max = 24 * 32;
 	}
-	PositionX = rand() % (x_max - x_min) - 32 + x_min;
-	PositionY = rand() % (y_max - y_min) - 32 + y_min;
+	do {
+		PositionX = rand() % (x_max - x_min) - 32 + x_min;
+		PositionY = rand() % (y_max - y_min) - 32 + y_min;
+	}
+	while(((MapScene::sharedScene->JudgeBarrier(PositionX, PositionY, 'a'))) 
+		&& ((MapScene::sharedScene->JudgeBarrier(PositionX, PositionY, 'd')))
+		&& ((MapScene::sharedScene->JudgeBarrier(PositionX, PositionY, 'w')))
+		&& ((MapScene::sharedScene->JudgeBarrier(PositionX, PositionY, 's'))));
 }
 
 EnemyMonster* EnemyMonster::createMonster()
@@ -120,7 +126,7 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 	{
 		Monster = Sprite::create("pig.png");
 		blood = 5;
-		speed = 15;
+		speed = 10;
 		Monster->setScale(0.6f);
 	}
 	else if (MonsterType == 2)
@@ -134,7 +140,7 @@ void EnemyMonster::start(int type, int positionX, int positionY)
 	{
 		Monster = Sprite::create("archer.png");
 		blood = 12;
-		speed = 6;
+		speed = 5;
 		Monster->setScale(0.6f);
 	}
 	Monster->setPosition(PositionX, PositionY);
@@ -148,13 +154,22 @@ void EnemyMonster::MoveMonster()
 	auto dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
 		(rand() % (200 * speed) - 100 * speed) / 100.0);//随机偏差向量
 	auto ds = v + dx;//实际位移向量
-	while ((!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_WALL))
-		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_BARRIER_TREE)) 
+	while ((!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY(), MAP_WALL))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY(), MAP_BARRIER_TREE)) 
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY(), MAP_DOOR))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY()))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() , Monster->getPositionY() + ds.y, MAP_WALL))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() , Monster->getPositionY() + ds.y, MAP_BARRIER_TREE))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() , Monster->getPositionY() + ds.y, MAP_DOOR))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() , Monster->getPositionY() + ds.y))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX()+ds.x, Monster->getPositionY() + ds.y, MAP_WALL))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_BARRIER_TREE))
 		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_DOOR))
-		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y)))
+		|| (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y))
+		)
 	{
 		
-		ds = Vec2(-ds.x, -ds.y);
+		ds = Vec2(-(ds.x), -(ds.y));
 		log("15fail");
 	}
 	if (ds.x > 0)
@@ -259,7 +274,7 @@ bool EnemyMonster::isAllDead()
 {
 	for (int i = 0; i <MonsterNumber; i++)
 	{
-		if (monster[i]->blood > 0)
+			if (monster[i]->blood > 0)
 			return false;
 	}
 	return true;

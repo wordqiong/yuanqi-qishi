@@ -367,7 +367,7 @@ bool MapScene::StateDoor(int ValueWall)
         
         return true;//´Ë¿Ì·¿¼ä·âËø
     }
-    else if(/*monster->isAllDead()*/0)
+    else if(monster->isAllDead())
     {
         OpenDoor();
         PositionDoor = false;

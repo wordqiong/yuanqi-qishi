@@ -1,4 +1,4 @@
-#pragma once
+
 #ifndef __BOX_H__
 #define __BOX_H__
 

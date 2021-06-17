@@ -124,6 +124,10 @@ Animate* Box::createAnimate_box()
 void Box::isDead()
 {
 	auto* animate = createAnimate_box();
+
+	
+
+
 	_Box->runAction(animate);
 }
 
@@ -134,6 +138,12 @@ void Box::DeadUpdate(float dt)
 		if (box[i]->blood <= 0&&box[i]->isFade==false)
 		{
 			box[i]->isDead();
+			int mapX = (int)((PositionX[i] - 16) / 32 + 1);//地图宽从1开始
+			int mapY = (int)(99 - (PositionY[i] - 16) / 32);//地图长为100
+			int tileGid = MapScene::sharedScene->box_create->getTileGIDAt(Vec2(mapX, mapY));
+			auto properties = MapScene::sharedScene-> map->getPropertiesForGID(tileGid);
+			auto mid = properties.asValueMap().at("box");
+			mid = false;
 			box[i]->isFade = true;
 		}
 	}

@@ -3,7 +3,7 @@
 #ifndef __ENEMY_H__
 #define __ENEMY_H__
 
-#define MonsterNumber 10
+#define MonsterNumber 5
 
 
 #include "cocos2d.h"
