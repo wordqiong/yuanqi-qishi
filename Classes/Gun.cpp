@@ -1,5 +1,6 @@
 #include"Gun.h"
 #include "cocos2d.h"
+#include"MapScene.h"
 
 USING_NS_CC;
 
@@ -50,11 +51,25 @@ void Gun::revolve(float degree) {
 	/*this->getSprite()->runAction(RotateTo::create(0.5f, degree));*/
 	this->getSprite()->setRotation(degree);
 }
-
+//求最近怪
+EnemyMonster* Gun::Shortest() {
+	EnemyMonster* Monster;
+	Map< int, EnemyMonster*> map;
+	for (int i = 0; i < MonsterNumber; i++) {
+		if (MapScene::sharedScene->monster->monster[i]->blood > 0) {
+			Point Pt = MapScene::sharedScene->monster->monster[i]->getPosition() - this->getSprite()->getPosition();
+			int f = (int)Pt.length();
+			map.insert(f, MapScene::sharedScene->monster->monster[i]);
+		}
+	}
+	Map< int, EnemyMonster*>::iterator iter = map.begin();
+	Monster = iter->second;
+	return Monster;
+}
 //锁定最近敌人算出角度
-float Gun::bindEnemy(Monster* monster1) {
+float Gun::bindEnemy(EnemyMonster* monster1) {
 	//射击方向向量	
-	this->shootVector= monster1->getSprite()->getPosition() - this->getSprite()->getPosition();
+	this->shootVector= monster1->Monster->getPosition() - this->getSprite()->getPosition();
 	float radians = atan2(-shootVector.y, shootVector.x);
 	float degree = CC_RADIANS_TO_DEGREES(radians);
     return degree;

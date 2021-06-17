@@ -163,7 +163,7 @@ void Boss::BossResume()
 
 void Boss::MoveUpdate(float dt)
 {
-	if(!inAttack)
+	if(!inAttack&&blood>0)
 	    MoveBoss();
 }
 
@@ -172,7 +172,7 @@ void Boss::AttackUpdate(float dt)
 	static int k = 1;//记录是否处于攻击状态
 	k++;
 	inAttack = false;
-	if (k % AttackTime[BossType] == 0)//开始攻击
+	if (k % AttackTime[BossType] == 0&&blood>0)//开始攻击
 	{
 		inAttack = true;
 		BossResume();
