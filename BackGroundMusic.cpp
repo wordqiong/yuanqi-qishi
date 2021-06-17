@@ -58,19 +58,52 @@ bool BackGroundMusic::init()
         "CheckBoxNode_Normal.png",
         "CheckBoxNode_Disable.png"
     );
-    checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) {
+
+
+    loadingBar = ui::LoadingBar::create("blood.png", 100);
+    loadingBar->setDirection(ui::LoadingBar::Direction::LEFT);
+
+    loadingBar->setScale(0.3f);
+    this->addChild(loadingBar);
+    loadingBar->setPosition(Vec2(400, 620));
+
+    auto label = Label::createWithTTF("press '8'(up)or'2'(down) to control volume", "fonts/Marker Felt.ttf", 24);
+    if (label == nullptr)
+    {
+        problemLoading("'fonts/Marker Felt.ttf'");
+    }
+    else
+    {
+        // position the label on the center of the screen
+        label->setPosition(Vec2(400, 620));
+
+        // add the label as a child to this layer
+        this->addChild(label, 1);
+    }
+
+  
+
+    checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) {  
+     
         switch (type)
         {
             case ui::Widget::TouchEventType::BEGAN:
                 log("checkbox 2 clicked");
+               
                 break;
             case ui::Widget::TouchEventType::ENDED:
+
                 if (audio->isBackgroundMusicPlaying()) {
                     log("pause 1 clicked");
+                    unschedule(CC_SCHEDULE_SELECTOR(BackGroundMusic::setValumn));
                     audio->stopBackgroundMusic();
                 }
                 else
                 {
+                  
+                  /*  loadingBar->setVisible(true);*/
+                    // set the direction of the loading bars progress
+                    schedule(CC_SCHEDULE_SELECTOR(BackGroundMusic::setValumn));
                   audio->playBackgroundMusic("mymusic.mp3", true);
                   log("play1 clicked");
                 }
@@ -80,9 +113,58 @@ bool BackGroundMusic::init()
                 break;
         }
         });
-    addChild(checkbox);
+    this->addChild(checkbox);
     checkbox->setPosition(Vec2(400, 585));
+
+      
     return true;
+}
+void BackGroundMusic::setValumn(float dt)
+{
+    
+
+
+    if (audio->isBackgroundMusicPlaying())
+    {
+        auto 
+            upArrow = EventKeyboard::KeyCode::KEY_8, downArrow = EventKeyboard::KeyCode::KEY_2;
+        auto listener = EventListenerKeyboard::create();
+        listener->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event* event)
+        {
+            keys[keyCode] = true;
+
+            /* log("%d", keyCode);*/
+        };
+
+        listener->onKeyReleased = [=](EventKeyboard::KeyCode keyCode, Event* event)
+        {
+            keys[keyCode] = false;
+
+        };
+
+        if (keys[upArrow])
+        {
+            if(ChangeValumn>=0)
+            ChangeValumn--;
+
+            log("upupupup");
+        }
+        if (keys[downArrow])
+        {
+            if (ChangeValumn <= 100)
+            {
+                ChangeValumn++;
+            }
+
+
+        }
+        _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+
+    }
+    log("%f",1.0 - ChangeValumn / 100);
+
+    loadingBar->setPercent(audio->getBackgroundMusicVolume() * 100);
+    audio->setBackgroundMusicVolume(1.0 - ChangeValumn / 100);
 }
 
 

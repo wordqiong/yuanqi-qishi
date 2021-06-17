@@ -1,7 +1,8 @@
 #include "HelloWorldScene.h"
 #include "SecondScene.h"
-USING_NS_CC;
 
+USING_NS_CC;
+HelloWorld* HelloWorld::helloworld = nullptr;
 Scene* HelloWorld::createScene()
 {
     return HelloWorld::create();
@@ -19,6 +20,7 @@ bool HelloWorld::init()
 {
     //////////////////////////////
     // 1. super init first
+    helloworld = this;
     if ( !Scene::init() )
     {
         return false;
@@ -77,12 +79,17 @@ bool HelloWorld::init()
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }
+
+     BackMusic = BackGroundMusic::create();
+
+    this->addChild(BackMusic,0);
     return true;
 }
 
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
+    this->removeAllChildren();
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->replaceScene(SecondScene::createScene());
 

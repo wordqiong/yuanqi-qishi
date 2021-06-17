@@ -71,6 +71,7 @@ void Hero::HeroResume()
 
 void Hero::update(float delta)
 {
+    MapScene::sharedScene->Boardupdate();
     Node::update(delta);
     auto leftArrow = EventKeyboard::KeyCode::KEY_A, rightArrow = EventKeyboard::KeyCode::KEY_D,
         upArrow = EventKeyboard::KeyCode::KEY_W, downArrow = EventKeyboard::KeyCode::KEY_S;
@@ -215,6 +216,7 @@ void Hero::HeroRoomUpdate(float dt)
     else
         RoomPosition = 0;
 }
+
 
 
 

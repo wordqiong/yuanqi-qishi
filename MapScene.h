@@ -9,6 +9,18 @@
 #include"Boss.h"
 #include"ui/UIWidget.h"
 
+
+#include "ui/CocosGUI.h"
+#include "AnimationUtil.h"
+#include "BackGroundMusic.h"
+#include "Enemy.h"
+#include"box.h"
+#include"Boss.h"
+#include "ui\UIButton.h"
+#include<cmath>
+#include<string>
+
+
 #define MAP_WALL 203
 #define MAP_LOBBY 12254
 #define MAP_BARRIER_TREE 1456
@@ -26,6 +38,7 @@ class MapScene : public cocos2d::Scene
 {
 public:
 
+    EnemyMonster Monster;
 
     static MapScene* sharedScene;//创建指向该场景的指针
 
@@ -88,8 +101,12 @@ public:
     bool MapScene::isCanReach(float x, float y, char name = ' ');
 
 
-
-   
+  void MapScene::BloodCreate();
+    float MapScene::TransPencent(int type);
+    void MapScene::MpCreate();
+    void MapScene::AcCreate();
+    void  MapScene::BoardCreate();
+     void  MapScene::Boardupdate();
     void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3 = '-');
 protected:
     //自用
@@ -104,7 +121,7 @@ protected:
     bool PositionDoor = true;//in room ->ture in lobby->false 
 
     void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3, int ROOM_NUM);
-
+  
 
     int MapScene::NumJudgeWhichRoom(int ValueRoom);
 
@@ -114,10 +131,10 @@ protected:
     int MapScene::JudgeWhichRoomIn();
 private:
     int Room[4] = {1};//1表示未曾进入 0表示已经进入
-    void MapScene::BloodCreate();
-    float MapScene::TransPencent(int type);
-    void MapScene::MpCreate();
-    void MapScene::AcCreate();
-    void  MapScene::BoardCreate();
+    ui::LoadingBar *BloodLoadingBar ;
+    ui::LoadingBar *MpLoadingBar;
+    ui::LoadingBar *AcLoadingBar;
+
+
 };
 #endif 

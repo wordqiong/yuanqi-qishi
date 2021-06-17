@@ -73,6 +73,8 @@ bool SecondScene::init() {
     this->addChild(menu_2, 1);
 
 
+
+
     sprite->setScale(0.51f* 0.58f);
     if (sprite == nullptr)
     {
@@ -84,7 +86,7 @@ bool SecondScene::init() {
         sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
         // add the sprite as a child to this layer
-        this->addChild(sprite, 0);
+        this->addChild(sprite, 1);
     }
 
 	return true;

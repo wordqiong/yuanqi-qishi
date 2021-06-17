@@ -1,14 +1,21 @@
 #ifndef __SafeRoomMove_H__
 #define __SafeRoomMove_H__
 #include "cocos2d.h"
+#include "MapScene.h"
+#include "HelloWorldScene.h"
 
 using namespace cocos2d;
+class MapScene;
+class HelloWorld;
 class SafeRoomMove : public Scene
 {
 public:
 
+	BackGroundMusic* BackMusic;
+	
 	static SafeRoomMove* sharedScene;//创建指向该场景的指针
-
+		//hero单位
+	Hero* Hero;
 	int direction;//获取人物移动的方向
 
 	bool isStand;//判断人物是否站立不动

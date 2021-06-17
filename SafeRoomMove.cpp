@@ -1,7 +1,8 @@
 #include "SafeRoomMove.h"
 #include "MapScene.h"
+#include "BackGroundMusic.h"
 USING_NS_CC;
-#define MAP_WALL 1
+#define MAP_WALL_SAFEROOM 1
 #define MAP_BARRIER 345
 #define MAP_DELIVERY 59
 Scene* SafeRoomMove::createScene()
@@ -36,6 +37,16 @@ bool SafeRoomMove::init()
     }
     //创建hero，将它放在地图中央
     heroInit();
+
+
+    //创建状态栏
+    Sprite* Board = Sprite::create("board.png");
+    Board->setPosition(100, 580);
+    Board->setScale(0.5f);
+    addChild(Board);
+
+
+  
 
  
     scheduleUpdate();
@@ -257,7 +268,7 @@ bool SafeRoomMove::JudgeWall(float offsetX, float offsetY, char key_arrow)
     while (i <= 8)
     {
         if (!isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow) * (1) * (i * 32) + ('a' == key_arrow) * (-1) * (i * 32),
-            hero->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), MAP_WALL))
+            hero->getPositionY() + offsetY + ('w' == key_arrow) * (1) * (i * 32) + ('s' == key_arrow) * (-1) * (i * 32), MAP_WALL_SAFEROOM))
         {
 
             /* log("i=%d", i);*/
@@ -268,7 +279,7 @@ bool SafeRoomMove::JudgeWall(float offsetX, float offsetY, char key_arrow)
 
     }
 
-    if (i <= 2)
+    if (i <= 1)
         return true;//五格范围内有墙
     else
         return false;
@@ -276,10 +287,10 @@ bool SafeRoomMove::JudgeWall(float offsetX, float offsetY, char key_arrow)
 bool SafeRoomMove::WhetherHeroMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3)
 {
     if (((JudgeWall(offsetX, offsetY, key_arrow_1)
-        && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL, true))
+        && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL_SAFEROOM, true))
         || ((JudgeWall(offsetX, offsetY, key_arrow_2)
-            && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL, true))))
-        && isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL, true))
+            && isCanReach(hero->getPositionX() + offsetX, hero->getPositionY() + offsetY, MAP_WALL_SAFEROOM, true))))
+        && isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL_SAFEROOM, true))
         return true;
     else
         return false;
@@ -300,7 +311,7 @@ void SafeRoomMove::FinalMove(float offsetX, float offsetY, char key_arrow_1, cha
         //按两个键的情况
         if (key_arrow_3 != '-')
         {
-            if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL, true))
+            if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL_SAFEROOM, true))
             {
                 if (JudgeBarrier(offsetX, offsetY, key_arrow_3)&& JudgeBarrier(offsetX, offsetY, key_arrow_1))
                 {
@@ -320,11 +331,11 @@ void SafeRoomMove::FinalMove(float offsetX, float offsetY, char key_arrow_1, cha
     }
     else
     {
-        if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL, true))
+        if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL_SAFEROOM, true))
         {
             if (key_arrow_3 != '-')
             {
-                if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL, true))
+                if (isCanReach(hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL_SAFEROOM, true))
                 {
                     if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
                     {
