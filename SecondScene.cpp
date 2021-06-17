@@ -22,13 +22,14 @@ bool SecondScene::init() {
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto sprite = Sprite::create("2222.png");
+
     //创建返回初始界面的按钮
     auto InitialBack = MenuItemImage::create(
         "initialBack.png",
         "initialBack.png",
         CC_CALLBACK_1(SecondScene::menuInitialBackCallback, this));
 
-    InitialBack->setScale(0.55f);
+    InitialBack->setScale(0.55f* 0.58f);
 
     if (InitialBack == nullptr ||
         InitialBack->getContentSize().width <= 0 ||
@@ -38,8 +39,8 @@ bool SecondScene::init() {
     }
     else
     {
-        float x = origin.x + InitialBack->getContentSize().width / 3-10;
-        float y = origin.y + InitialBack->getContentSize().height / 4+10 ;
+        float x = origin.x + InitialBack->getContentSize().width / 3-40;
+        float y = origin.y + InitialBack->getContentSize().height / 4+160 ;
         InitialBack->setPosition(Vec2(x, y));
     }
 
@@ -53,7 +54,7 @@ bool SecondScene::init() {
         "start.png",
         CC_CALLBACK_1(SecondScene::menuStartGameCallback, this));
 
-    StartMove->setScale(0.51f);
+    StartMove->setScale(0.51f* 0.58f);
 
     if (StartMove == nullptr ||
         StartMove->getContentSize().width <= 0 ||
@@ -63,8 +64,8 @@ bool SecondScene::init() {
     }
     else
     {
-        float x1 = origin.x + StartMove->getContentSize().width*4  + 82;
-        float y1 = origin.y + StartMove->getContentSize().height / 4 + 4;
+        float x1 = origin.x + StartMove->getContentSize().width*2 + 110;
+        float y1 = origin.y + StartMove->getContentSize().height / 4 + 145;
         StartMove->setPosition(Vec2(x1, y1));
     }
     auto menu_2 = Menu::create(StartMove, NULL);
@@ -72,7 +73,9 @@ bool SecondScene::init() {
     this->addChild(menu_2, 1);
 
 
-    sprite->setScale(0.51f);
+
+
+    sprite->setScale(0.51f* 0.58f);
     if (sprite == nullptr)
     {
         problemLoading("'2222.png'");
@@ -83,7 +86,7 @@ bool SecondScene::init() {
         sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
         // add the sprite as a child to this layer
-        this->addChild(sprite, 0);
+        this->addChild(sprite, 1);
     }
 
 	return true;
