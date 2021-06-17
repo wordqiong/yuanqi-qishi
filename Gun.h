@@ -7,6 +7,7 @@
 #include <string>
 #include"Monster.h"
 #include <cmath>
+
 using namespace std;
 
 class Gun :public Entity {
@@ -22,7 +23,7 @@ public:
 	void revolve(float degree);
 	float bindEnemy(Monster* monster1);//锁定最近敌人，返回枪需要旋转的角度
 	/*void Bullet_direction();*/
-	Point shootVector;//枪离怪的方向向量
+	Point shootVector = Point(1,0);//枪离怪的方向向量,给个初始值
 	bool is_be_binded = false;//是否已经被hero绑定了
 	/*string GunImageLoad = "fireGun.png";*/
 	bool is_can_be_used = true;

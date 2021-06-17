@@ -7,6 +7,7 @@
 #include"ui/UIWidget.h"
 #include "Potion.h"
 #include"Hero.h"
+#include"Box2D\Box2D.h"
 
 
 
@@ -60,6 +61,8 @@ public:
     bool is_Bind_Gun = false;
     MenuItemImage* signalItem;//信号按钮
     MenuItemImage* changGunItem;//换枪按钮
+    int num_of_alive_monster=0;//存活怪物数目,每次插入怪物时都要更新一下，把上一房间的怪物容器清空，再重新插入怪物，并设置is_monster_empty为false
+    bool is_monster_empty = true;
 
     std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
     CREATE_FUNC(MapScene);

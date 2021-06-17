@@ -31,3 +31,14 @@ void Bullet::MovebyLine() {
 void Bullet::Fade() {
 
 }
+
+bool Bullet::is_hit_Monster(Monster* monster) {
+	Rect entityRect = monster->getSprite()->getBoundingBox();
+	Point BulletPos = this->getSprite()->getPosition();
+	return entityRect.containsPoint(BulletPos);
+}
+//bool Bullet::is_hit_Hero(Hero* hero) {
+//	Rect entityRect = hero->getSprite()->getBoundingBox();
+//	Point BulletPos = this->getSprite()->getPosition();
+//	return entityRect.containsPoint(BulletPos);
+//}

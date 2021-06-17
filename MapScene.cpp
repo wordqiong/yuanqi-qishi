@@ -97,7 +97,7 @@ bool MapScene::init()
 
     //试验用枪
     Gun* fireGun = Gun::create();
-    fireGun->bindSprite(Sprite::create("fireGun.png"));
+    fireGun->bindSprite(Sprite::create("manyBullet.png"));
     fireGun->getSprite()->setPosition(Point(this->hero->getSprite()->getPositionX() -200, this->hero->getSprite()->getPositionY() -100));//暂时先固定位置
     fireGun->getSprite()->setAnchorPoint(Point(0.5, 0.45));
     map->addChild(fireGun);
@@ -109,12 +109,14 @@ bool MapScene::init()
     this->addPotion();//生成血瓶
     
 
-    //建一个怪试验一下
+    //建一个怪试验一下，每次插入怪物时都要更新一下，把上一房间的怪物容器清空，再重新插入怪物，并设置is_monster_empty为false
     Monster* monster = Monster::create();
     monster->bindSprite(Sprite::create("MonsterShooter.png"));
     monster->getSprite()->setPosition(Point(this->hero->getSprite()->getPositionX() + 120, this->hero->getSprite()->getPositionY() + 90));
     map->addChild(monster);
     this->MonsterVector.push_back(monster);
+    this->is_monster_empty = false;
+    this->num_of_alive_monster = this->MonsterVector.size();
 
     //按住开枪
     Button* ShootButton = Button::create("ShootButton2.png", "ShootButton.png");
@@ -426,17 +428,35 @@ void MapScene::update(float delta)
 
             }
         }
+        if (!this->hero->GunOfHero[0]->BulletsVector.empty()) {
+            for (auto Bullet : this->hero->GunOfHero[0]->BulletsVector) {
+                if (!Bullet->isNeedFade) {
+                    Bullet->MovebyLine();
+                    if (!(MapScene::isCanReach(Bullet->getSprite()->getPositionX() +20 * (Bullet->numx / Bullet->S), Bullet->getSprite()->getPositionY()+ 20 * (Bullet->numy / Bullet->S), MAP_WALL))) {
+                        /*this->GunsVector.at(0)->removeChild(Bullet,true);*///+2 * (Bullet->numx / Bullet->S)
+                        Bullet->getSprite()->setVisible(false);
+                        Bullet->isNeedFade = true;
+
+                    }
+                }
+
+            }
+        }
     }
     
         //确定开枪方向（旋转）
     for (auto monster : this->MonsterVector) {
-        if (this->hero->GunOfHero.size() == 1) {
-            this->hero->GunOfHero[0]->revolve(this->hero->GunOfHero[0]->bindEnemy(monster));
+        if (monster->isAlive) {
+            if (this->hero->GunOfHero.size() == 1) {
+                this->hero->GunOfHero[0]->revolve(this->hero->GunOfHero[0]->bindEnemy(monster));
+            }
+            else if (this->hero->GunOfHero.size() == 2) {
+                this->hero->GunOfHero[1]->revolve(this->hero->GunOfHero[1]->bindEnemy(monster));
+            }
         }
-        else if (this->hero->GunOfHero.size() == 2) {
-            this->hero->GunOfHero[1]->revolve(this->hero->GunOfHero[1]->bindEnemy(monster));
-        }                  
-                }
+    }
+       
+                
 
     //判断什么时候（捡枪）和血瓶
     if (!this->PotionVector.empty()) {
@@ -471,7 +491,7 @@ void MapScene::update(float delta)
             int s_s = x * x + y * y;
 
             int s = (int)sqrt((float)s_s);
-            log("%d", s);
+            /*log("%d", s)*/;
             if (s <= 40) {
                 this->BindedGun = gun;
                 this->is_Bind_Gun = true;
@@ -487,10 +507,83 @@ void MapScene::update(float delta)
         }
     }
 
+    //子弹与怪物碰撞
+
+    for (auto monster : this->MonsterVector) {
+        if (monster->isAlive) {
+            if (this->hero->GunOfHero.size() == 1){
+                if (!this->hero->GunOfHero[0]->BulletsVector.empty()) {
+                    for (auto Bullet : this->hero->GunOfHero[0]->BulletsVector) {
+                        if (!Bullet->isNeedFade) {
+                            if (Bullet->is_hit_Monster(monster)) {
+                                Bullet->isNeedFade = true;
+                                Bullet->getSprite()->setVisible(false);
+                                monster->blood -= 3;
+                                log("%d", monster->blood);
+                            }
+                        }
+                    }
+                }
+            }
+            if (this->hero->GunOfHero.size() == 2) {
+                if (!this->hero->GunOfHero[1]->BulletsVector.empty()) {
+                    for (auto Bullet : this->hero->GunOfHero[1]->BulletsVector) {
+                        if (!Bullet->isNeedFade) {
+                            if (Bullet->is_hit_Monster(monster)) {
+                                Bullet->isNeedFade = true;
+                                Bullet->getSprite()->setVisible(false);
+                                monster->blood -= 3;
+                                log("%d", monster->blood);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+            
+        
+
+    //怪物死亡
+    for (auto monster : this->MonsterVector) {
+        if(monster->isAlive){
+            if (monster->blood <= 0) {
+                monster->isAlive = false;
+                monster->getSprite()->setVisible(false);//精灵不可见
+                this->num_of_alive_monster -= 1;//活的怪物数量减一
+               //此处 可以加个死亡动画
+                //在原位置播放 （一次） 动画
+            }
+        }
+    }
+        
+
+    //怪物死光后，枪解除绑定的怪物，设置它的方向向量为初始值
+   
+        if (this->num_of_alive_monster == 0) {
+            if (this->direction == 1) {
+                for (auto gun : this->hero->GunOfHero) {
+
+                    gun->getSprite()->setRotation(180);
+                    gun->shootVector = Point(-10, 0);
+                }
+            }
+            if (this->direction == 2) {
+                    for (auto gun : this->hero->GunOfHero) {
+                    gun->getSprite()->setRotation(0);
+                    gun->shootVector = Point(10, 0);
+                }
+            }
+            this->is_monster_empty = true;
+        }
+    
+    
+
 
     //枪随人物反转
     this->flipped(this->direction);
 
+    //只显示一把枪
     if (this->hero->GunOfHero.size() == 2) {
         this->hero->GunOfHero[0]->getSprite()->setVisible(false);
         this->hero->GunOfHero[1]->getSprite()->setVisible(true);

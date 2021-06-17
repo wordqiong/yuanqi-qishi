@@ -19,6 +19,7 @@ void Gun::createBullets(Point X_Y_of_Gun,Point direction_vector) {
 	Bullet* bullet = Bullet::create(); 
 	
 	bullet->bindSprite(Sprite::create("fireBullet.png"));
+	bullet->getSprite()->setAnchorPoint(Point(1.0, 0.5));
 	int y = (int)direction_vector.y; int x = (int)direction_vector.x; int L = x * x + y * y;
 	int s = (int)sqrt((double)(L));
 	
