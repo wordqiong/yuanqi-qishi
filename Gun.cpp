@@ -1,5 +1,9 @@
 #include"Gun.h"
 #include "cocos2d.h"
+#include"MapScene.h"
+#include <map>
+#include<iostream>
+using namespace std;
 
 USING_NS_CC;
 
@@ -11,6 +15,7 @@ bool Gun::init() {
 	unsigned seed = time(0);
 	srand(seed);
 	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate),0.20);//不知道咋回事
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::bindMonsterupdate), 2.0);//02秒绑定一次最近的怪物，防止枪抖动
 	return true;
 }
 
@@ -19,7 +24,6 @@ void Gun::createBullets(Point X_Y_of_Gun,Point direction_vector) {
 	Bullet* bullet = Bullet::create(); 
 	
 	bullet->bindSprite(Sprite::create("fireBullet.png"));
-	bullet->getSprite()->setAnchorPoint(Point(1.0, 0.5));
 	int y = (int)direction_vector.y; int x = (int)direction_vector.x; int L = x * x + y * y;
 	int s = (int)sqrt((double)(L));
 	
@@ -48,14 +52,28 @@ void Gun::Fire() {
 
 //传角度旋转
 void Gun::revolve(float degree) {
-	/*this->getSprite()->runAction(RotateTo::create(0.5f, degree));*/
+	/*this->getSprite()->runAction(RotateTo::create(0.1f, degree));*///刷新过快，来不及做动作
 	this->getSprite()->setRotation(degree);
 }
-
+//求最近怪
+EnemyMonster* Gun::Shortest() {
+	EnemyMonster* Monster;
+	Map< int, EnemyMonster*> map;
+	for (int i = 0; i < MonsterNumber; i++) {
+		if (MapScene::sharedScene->monster->monster[i]->blood > 0) {
+			Point Pt = MapScene::sharedScene->monster->monster[i]->Monster->getPosition() - this->getSprite()->getPosition();
+			int f = (int)Pt.length();
+			map.insert(f, MapScene::sharedScene->monster->monster[i]);
+		}
+	}
+	Map< int, EnemyMonster*>::iterator iter = map.begin();
+	Monster = iter->second;
+	return Monster;
+}
 //锁定最近敌人算出角度
-float Gun::bindEnemy(Monster* monster1) {
+float Gun::bindEnemy(EnemyMonster* monster1) {
 	//射击方向向量	
-	this->shootVector= monster1->getSprite()->getPosition() - this->getSprite()->getPosition();
+	this->shootVector= monster1->Monster->getPosition() - this->getSprite()->getPosition();
 	float radians = atan2(-shootVector.y, shootVector.x);
 	float degree = CC_RADIANS_TO_DEGREES(radians);
     return degree;
@@ -64,5 +82,11 @@ float Gun::bindEnemy(Monster* monster1) {
 void Gun::myupdate(float dt) {
 	if (this->is_fire) {
 		this->Fire();
+	}
+}
+//几秒锁定一次怪物
+void Gun::bindMonsterupdate(float dt) {
+	if (MapScene::sharedScene->Hero->RoomPosition > 0 && (!MapScene::sharedScene->monster->isAllDead())) {
+		MapScene::sharedScene->Hero->bindedMonster = this->Shortest();
 	}
 }
