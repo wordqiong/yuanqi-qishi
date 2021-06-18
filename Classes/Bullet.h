@@ -6,7 +6,7 @@
 
 
 
-
+class EnemyMonster;
 class Bullet : public Entity {
 public:
 

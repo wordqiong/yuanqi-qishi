@@ -1,3 +1,5 @@
+#ifndef _Monster_H_
+#define _Monster_H_
 #include"Entity.h"
 
 class Monster : public Entity {
@@ -13,3 +15,4 @@ public:
 private:
 	bool m_isAlive;
 };
+#endif

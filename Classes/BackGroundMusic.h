@@ -22,8 +22,8 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __BackGroundMusic_H__
+#define __BackGroundMusic_H__
 #include "ui/CocosGUI.h"
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"

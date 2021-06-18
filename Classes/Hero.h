@@ -27,7 +27,7 @@
 class Hero : public cocos2d::Sprite
 {
 public:
-
+	EnemyMonster* bindedMonster;
 	cocos2d::Sprite* hero ;
 
 	virtual bool init();

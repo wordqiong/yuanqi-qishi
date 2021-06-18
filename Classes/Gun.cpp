@@ -12,6 +12,7 @@ bool Gun::init() {
 	unsigned seed = time(0);
 	srand(seed);
 	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate),0.20);//不知道咋回事
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::bindMonsterupdate), 2.0);//02秒绑定一次最近的怪物，防止枪抖动
 	return true;
 }
 
@@ -78,5 +79,12 @@ float Gun::bindEnemy(EnemyMonster* monster1) {
 void Gun::myupdate(float dt) {
 	if (this->is_fire) {
 		this->Fire();
+	}
+}
+
+//几秒锁定一次怪物
+void Gun::bindMonsterupdate(float dt) {
+	if (MapScene::sharedScene->Hero->RoomPosition > 0 && (!MapScene::sharedScene->monster->isAllDead())) {
+		MapScene::sharedScene->Hero->bindedMonster = this->Shortest();
 	}
 }

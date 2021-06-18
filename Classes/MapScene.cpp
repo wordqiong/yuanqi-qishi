@@ -146,6 +146,8 @@ void MapScene::addchangGunItem()
 
 bool MapScene::init()
 {
+
+
     if (!Scene::init())
     {
         return false;
@@ -203,6 +205,9 @@ bool MapScene::init()
     addChild(BackMusic);
 
     
+
+
+
     return true;
 }
 
@@ -289,7 +294,16 @@ bool MapScene::isCanReach(float x, float y, char name)
 
 void MapScene::GunUpdate(float dt)
 {
-    
+    ///* 加载图片帧到缓存池 */
+    //SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
+    //frameCache->addSpriteFramesWithFile("bullet.plist", "bullet.png");
+
+    ///* 用辅助工具创建动画 */
+    //animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 1.0f, 1);
+
+    //
+
+    /* 动画也是动作，精灵直接执行动画动作即可 */
     //枪械跟随   
 
     for (auto gun : this->Hero->GunOfHero) {
@@ -346,14 +360,41 @@ void MapScene::GunUpdate(float dt)
     }
 
     //确定开枪方向（旋转）
-    if (Hero->RoomPosition>0)
+    if (Hero->RoomPosition > 0)
     {
-               if (this->Hero->GunOfHero.size() == 1) {
-                   
-                    this->Hero->GunOfHero[0]->revolve(this->Hero->GunOfHero[0]->bindEnemy(this->Hero->GunOfHero[0]->Shortest()));
+        if (!this->monster->isAllDead()) {
+            if (this->Hero->GunOfHero.size() == 1 && this->Hero->bindedMonster != NULL) {
+
+                this->Hero->GunOfHero[0]->revolve(this->Hero->GunOfHero[0]->bindEnemy(this->Hero->bindedMonster));
+                if (this->Hero->bindedMonster->Monster->getPositionX() - this->Hero->GunOfHero[0]->getSprite()->getPositionX() >= 0) {
+                    if (this->Hero->direction == 1) {
+                        this->Hero->isDirectionChange = true;
+                    }
+                    this->Hero->direction = 2;
                 }
-               else if (this->Hero->GunOfHero.size() == 2) {
-                    this->Hero->GunOfHero[1]->revolve(this->Hero->GunOfHero[1]->bindEnemy(this->Hero->GunOfHero[0]->Shortest()));
+                if (this->Hero->bindedMonster->Monster->getPositionX() - this->Hero->GunOfHero[0]->getSprite()->getPositionX() < 0) {
+                    if (this->Hero->direction == 2) {
+                        this->Hero->isDirectionChange = true;
+                    }
+                    this->Hero->direction = 1;
+                }
+            }
+            else if (this->Hero->GunOfHero.size() == 2 && this->Hero->bindedMonster != NULL) {
+                this->Hero->GunOfHero[1]->revolve(this->Hero->GunOfHero[1]->bindEnemy(this->Hero->bindedMonster));
+                if (this->Hero->bindedMonster->Monster->getPositionX() - this->Hero->GunOfHero[1]->getSprite()->getPositionX() >= 0) {
+                    if (this->Hero->direction == 1) {
+                        this->Hero->isDirectionChange = true;
+                    }
+                    this->Hero->direction = 2;
+                }
+                if (this->Hero->bindedMonster->Monster->getPositionX() - this->Hero->GunOfHero[1]->getSprite()->getPositionX() < 0) {
+                    if (this->Hero->direction == 2) {
+                        this->Hero->isDirectionChange = true;
+                    }
+                    this->Hero->direction = 1;
+                }
+
+            }
         }
     }
 
@@ -420,7 +461,10 @@ void MapScene::GunUpdate(float dt)
                             if (!Bullet->isNeedFade) {
                                 if (Bullet->is_hit_Monster(monster->monster[i])) {
                                     Bullet->isNeedFade = true;
-                                    Bullet->getSprite()->setVisible(false);
+                                   
+                                  
+                                  /*  Bullet->runAction(Animate::create(animation_bullet));*/
+                         
                                     monster->monster[i]->blood -= 3;
 
                                 }
@@ -550,12 +594,7 @@ void MapScene::changeGunCallback(cocos2d::Ref* pSender) {
 
 
 //当人物受到攻击时，需要调用此函数
-//void  MapScene::BoardCreate()
-//{
-//    BloodCreate();
-//    MpCreate();
-//    AcCreate();
-//}
+
 bool MapScene::isCanReach(float x, float y, int Type_Wall)
 {
     bool result;
@@ -638,7 +677,8 @@ bool MapScene::WhetherHeroMove(float offsetX, float offsetY, char key_arrow_1, c
 }
 bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow)
 {
-    if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16), MAP_BARRIER_TREE))
+    if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16), MAP_BARRIER_TREE)
+        && (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow) * (1 * 16) + ('a' == key_arrow) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow) * (1 * 16) + ('s' == key_arrow) * (-1 * 16))))
     {
         return true;
     }

@@ -9,6 +9,8 @@
 #define MAP_ROOM_3 11853
 #define MAP_ROOM_4 11854
 #define MAP_DOOR 1217
+
+
 #include"Hero.h"
 #include "cocos2d.h"
 #include "Bullet.h"
@@ -18,12 +20,17 @@
 #include "ui/CocosGUI.h"
 #include "AnimationUtil.h"
 #include "BackGroundMusic.h"
-#include "Enemy.h"
 #include"box.h"
 #include"Boss.h"
+
+
+
 #include "ui\UIButton.h"
 #include<cmath>
 #include<string>
+
+
+
 class Hero;
 class Boss;
 class Box;
@@ -31,6 +38,9 @@ class EnemyMonster;
 class MapScene : public cocos2d::Scene
 {
 public:
+
+
+    Animation* animation_bullet;
 
 
     static MapScene* sharedScene;//创建指向该场景的指针

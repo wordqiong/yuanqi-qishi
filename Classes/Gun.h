@@ -30,6 +30,7 @@ public:
 	bool is_fire;//
 	Vector<Bullet*> BulletsVector;//用于储存子弹
 	string imgload_of_Gun;//枪的图片路径
+	void bindMonsterupdate(float dt);
 	//string imagload_of_Bullet;//子弹的图片路径
 };
 
