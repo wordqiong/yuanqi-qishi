@@ -620,8 +620,16 @@ bool MapScene::isCanReach(float x, float y, int Type_Wall)
 
 void MapScene::PureMapMove(float offsetX, float offsetY)
 {
-    auto* animate = Hero->createAnimate(Hero->direction, 3);
+   
     auto moveTo = MoveTo::create(1.0 / 1000, Vec2(map->getPositionX() - offsetX, map->getPositionY() - offsetY));
+    
+    map->runAction(moveTo);
+}
+void MapScene::PureHeroMove(float offsetX, float offsetY)
+{ 
+   
+    auto moveTo = MoveTo::create(1.0 / 1000, Vec2(Hero->hero->getPositionX() + offsetX, Hero->hero->getPositionY() + offsetY)); 
+    auto* animate = Hero->createAnimate(Hero->direction, 3);
     if (Hero->isStand == true || Hero->isDirectionChange == true)
     {
         Hero->HeroResume();
@@ -629,11 +637,6 @@ void MapScene::PureMapMove(float offsetX, float offsetY)
         Hero->isStand = false;
         Hero->isDirectionChange = false;
     }
-    map->runAction(moveTo);
-}
-void MapScene::PureHeroMove(float offsetX, float offsetY)
-{
-    auto moveTo = MoveTo::create(1.0 / 1000, Vec2(Hero->hero->getPositionX() + offsetX, Hero->hero->getPositionY() + offsetY));
     Hero->hero->runAction(moveTo);
 }
 void MapScene::AllMove(float offsetX, float offsetY)
@@ -659,7 +662,7 @@ bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow, int Value
 
     }
 
-    if (i <= 2)
+    if (i <= 1)
         return true;//2格范围内有墙
     else
         return false;
@@ -670,7 +673,8 @@ bool MapScene::WhetherHeroMove(float offsetX, float offsetY, char key_arrow_1, c
         && isCanReach(Hero->hero->getPositionX() + offsetX, Hero->hero->getPositionY() + offsetY, ValueWall))
         || ((JudgeWall(offsetX, offsetY, key_arrow_2, ValueWall)
             && isCanReach(Hero->hero->getPositionX() + offsetX, Hero->hero->getPositionY() + offsetY, ValueWall))))
-        && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), ValueWall))
+        && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), ValueWall)
+      )
         return true;
     else
         return false;
@@ -722,7 +726,7 @@ void MapScene::OpenDoor()
     frameCache->addSpriteFramesWithFile("opendoor.plist", "opendoor.png");
 
     /* 用辅助工具创建动画 */
-    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("run_", 6, 10.0f, 1);
+    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("run_", 6, 1.0f, 1);
 
     /* 动画也是动作，精灵直接执行动画动作即可 */
     for (int i = 0; i <= 6; i++)
@@ -789,7 +793,7 @@ bool MapScene::StateDoor(int ValueWall)
 
         return true;//此刻房间封锁
     }
-    else if (Hero->RoomPosition!=0&&monster->isAllDead())
+    else if (Hero->RoomPosition!=0&&monster->isAllDead()&& PositionDoor == true)
     {
         OpenDoor();
         PositionDoor = false;
@@ -849,7 +853,7 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
             {
                 if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
                     && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
-                    )
+                   )
                 {
                     if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
                     {
@@ -870,6 +874,7 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
         {
             if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
                 && isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_DOOR)
+              
                 )
             {
                 if (key_arrow_3 != '-')
@@ -896,6 +901,8 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
             if (key_arrow_3 != '-')
             {
                 if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_3) * (1 * 16) + ('a' == key_arrow_3) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_3) * (1 * 16) + ('s' == key_arrow_3) * (-1 * 16), MAP_WALL)
+                   
+
                     )
                 {
                     if (JudgeBarrier(offsetX, offsetY, key_arrow_3) && JudgeBarrier(offsetX, offsetY, key_arrow_1))
@@ -916,6 +923,7 @@ void MapScene::RoomIn(float offsetX, float offsetY, char key_arrow_1, char key_a
         else
         {
             if (isCanReach(Hero->hero->getPositionX() + offsetX + ('d' == key_arrow_1) * (1 * 16) + ('a' == key_arrow_1) * (-1 * 16), Hero->hero->getPositionY() + offsetY + ('w' == key_arrow_1) * (1 * 16) + ('s' == key_arrow_1) * (-1 * 16), MAP_WALL)
+                
                 )
             {
                 if (key_arrow_3 != '-')
@@ -943,15 +951,15 @@ float MapScene::TransPencent(int type)
     //1为血量 2为蓝条 3 为护甲
     if (type == 1)
     {
-        return (Hero->blood / 7 * 100);
+        return (Hero->blood / HeroBlood * 100);
     }
     if (type == 2)
     {
-        return (Hero->Mp / 180 * 100);
+        return (Hero->Mp / HeroAc * 100);
     }
     if (type == 3)
     {
-        return (Hero->Ac / 5 * 100);
+        return (Hero->Ac / HeroAc * 100);
     }
 }
 

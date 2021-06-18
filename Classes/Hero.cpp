@@ -48,6 +48,8 @@ void Hero::HeroInit()
     hero->setScale(0.6f);
     hero->setPosition(32 * 10.0f, 32 * 92.0f);//创建hero，将它放在地图中央
     blood = HeroBlood;
+    Ac = HeroAc;
+    Mp = HeroMp;
  
     
 }
@@ -96,11 +98,14 @@ void Hero::update(float delta)
     float offsetX = 0, offsetY = 0;
     if (keys[leftArrow])
     {
-        if (direction == 2)
+        if (this->RoomPosition==0||MapScene::sharedScene->monster->isAllDead())
         {
-            isDirectionChange = true;
+            if (direction == 2)
+            {
+                isDirectionChange = true;
+            }
+            direction = 1;//代表向左
         }
-        direction = 1;//代表向左
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = -1.41;
@@ -122,11 +127,14 @@ void Hero::update(float delta)
     }
     if (keys[rightArrow])
     {
-        if (direction == 1)
-        {
-            isDirectionChange = true;
+        if (this->RoomPosition == 0 || MapScene::sharedScene->monster->isAllDead()) {
+            if (direction == 1)
+            {
+                isDirectionChange = true;
+            }
+            direction = 2;//代表向右
         }
-        direction = 2;//代表向右
+        
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = 1.41;
@@ -196,6 +204,7 @@ void Hero::update(float delta)
         isStand = true;
     }
     offsetX = offsetY = 0;
+
 
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 

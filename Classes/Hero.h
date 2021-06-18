@@ -3,9 +3,11 @@
 #define __HERO_H__
 
 #define HeroBlood 100
+#define HeroAc 5
+#define HeroMp 200
 #define room1_x_min  35 * 32
 #define room1_x_max  68 * 32
-#define room1_y_min  83 * 32
+#define room1_y_min  79 * 32
 #define room1_y_max  99 * 32
 #define room2_x_min  4 * 32
 #define room2_x_max  20 * 32

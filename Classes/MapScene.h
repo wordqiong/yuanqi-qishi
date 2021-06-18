@@ -43,7 +43,7 @@ public:
     Animation* animation_bullet;
 
 
-    static MapScene* sharedScene;//创建指向该场景的指针
+    static MapScene* sharedScene;//创建指向该场景的指针d
 
     static cocos2d::Scene* createScene();
 
@@ -161,7 +161,7 @@ protected:
     int JudgeOpenTime = 0;
     int MapScene::JudgeWhichRoomIn();
 private:
-    int Room[4] = { 1 };//1表示未曾进入 0表示已经进入
+    int Room[4] = { 1 ,1,1,1};//1表示未曾进入 0表示已经进入
 
     ui::LoadingBar* BloodLoadingBar;
     ui::LoadingBar* MpLoadingBar;
