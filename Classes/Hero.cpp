@@ -2,13 +2,14 @@
 USING_NS_CC;
 bool Hero::init()
 {
-	if (!Sprite::init())
-	{
-		return false;
-	}
+    if (!Sprite::init())
+    {
+        return false;
+    }
     schedule(CC_SCHEDULE_SELECTOR(Hero::update));
     schedule(CC_SCHEDULE_SELECTOR(Hero::HeroRoomUpdate));
-	return true;
+    schedule(CC_SCHEDULE_SELECTOR(Hero::AcUpdate),3.0f);
+    return true;
 
 }
 
@@ -50,8 +51,8 @@ void Hero::HeroInit()
     blood = HeroBlood;
     Ac = HeroAc;
     Mp = HeroMp;
- 
-    
+
+
 }
 
 Animate* Hero::createAnimate(int direction, int num)
@@ -98,7 +99,7 @@ void Hero::update(float delta)
     float offsetX = 0, offsetY = 0;
     if (keys[leftArrow])
     {
-        if (this->RoomPosition==0||MapScene::sharedScene->monster->isAllDead())
+        if (this->RoomPosition == 0 || MapScene::sharedScene->monster->isAllDead())
         {
             if (direction == 2)
             {
@@ -134,7 +135,7 @@ void Hero::update(float delta)
             }
             direction = 2;//´ú±íÏòÓÒ
         }
-        
+
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = 1.41;
@@ -226,4 +227,11 @@ void Hero::HeroRoomUpdate(float dt)
         RoomPosition = 4;
     else
         RoomPosition = 0;
+}
+
+void Hero::AcUpdate(float dt)
+{
+    Ac++;
+    if (Ac > 5)
+        Ac = 5;
 }

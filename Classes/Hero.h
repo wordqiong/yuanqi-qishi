@@ -30,7 +30,7 @@ class Hero : public cocos2d::Sprite
 {
 public:
 	EnemyMonster* bindedMonster;
-	cocos2d::Sprite* hero ;
+	cocos2d::Sprite* hero;
 
 	virtual bool init();
 
@@ -42,11 +42,15 @@ public:
 
 	void HeroRoomUpdate(float dt);
 
+	void AcUpdate(float dt);
+
 	int blood;//人物的血量
 
 	int  Mp;//人物蓝量
 
 	int Ac;//人物护甲
+
+
 
 
 	int direction;//获取人物移动的方向
