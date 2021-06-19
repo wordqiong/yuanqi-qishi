@@ -53,6 +53,8 @@ public:
 
     void GunUpdate(float dt);
 
+
+
     void touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type);//°´Å¥¼àÌý
     
     void menuCloseCallback(cocos2d::Ref* pSender);//ÐÅºÅ°´Å¥¼àÌý
@@ -166,5 +168,18 @@ private:
     ui::LoadingBar* BloodLoadingBar;
     ui::LoadingBar* MpLoadingBar;
     ui::LoadingBar* AcLoadingBar;
+
+    //open
+    Sprite* runSp[7];
+    //close
+    Sprite* runSp_2[7];
+
+
+    Label* BloodLabel;
+    Label* AcLabel;
+    Label* MPLabel;
+    //¿ÛÑªÊý×Ö
+    Label* BloodDelete;
+
 };
 #endif 

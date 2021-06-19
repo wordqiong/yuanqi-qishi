@@ -12,7 +12,7 @@
 
 USING_NS_CC;
 using namespace ui;
-
+//改动处，boardupdate处有更改，gunupdate中增加了动画 openclose中有改动 头文件private有增加
 MapScene* MapScene::sharedScene = nullptr;
 Scene* MapScene::createScene()
 {
@@ -461,10 +461,39 @@ void MapScene::GunUpdate(float dt)
                             if (!Bullet->isNeedFade) {
                                 if (Bullet->is_hit_Monster(monster->monster[i])) {
                                     Bullet->isNeedFade = true;
-                                   
+                                    Bullet->getSprite()->setVisible(false);
+                                    //扣血数字
+                                    Sprite* Blood;
                                   
-                                  /*  Bullet->runAction(Animate::create(animation_bullet));*/
-                         
+                                    Blood = Sprite::create("bloodDelete2.png");
+                                    Blood->setScale(1.5f);
+                                    map->addChild(Blood);
+                                    Blood->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY()+40));
+                                    SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
+                                    frameCache->addSpriteFramesWithFile("bloodDelete.plist", "bloodDelete.png");
+
+                                    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("bloodDelete", 2, 1.0f, 1);
+
+                                    Blood->runAction(Animate::create(animation));
+                                   
+
+                                    Sprite* BulletBone;
+                                    BulletBone = Sprite::create("bullet6.png");
+                                    map->addChild(BulletBone);
+                                    BulletBone->setScale(0.5f);
+                                    BulletBone->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY()));
+                                    /* 加载图片帧到缓存池 */
+                                    SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+                                    frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
+
+                                    /* 用辅助工具创建动画 */
+                                    animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+
+
+                                    BulletBone->runAction(Animate::create(animation_bullet));
+
+
+                                   
                                     monster->monster[i]->blood -= 3;
 
                                 }
@@ -541,6 +570,9 @@ void MapScene::GunUpdate(float dt)
     }
 
 }
+
+
+
 //whether create
 void MapScene::CreateUpdate(float dt)
 {
@@ -695,17 +727,22 @@ void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char ke
     RoomIn(offsetX, offsetY, key_arrow_1, key_arrow_2, key_arrow_3, JudgeWhichRoomIn());
 
 }
+//有改动 open与close 还有头文件里加来了两个成员
 void MapScene::OpenDoor()
 {
-    Sprite* runSp[7];
+   
+
     for (int i = 0; i <= 6; i++)
     {
-
-        runSp[i] = Sprite::create("run_6.png");
+ 
+      
+        runSp[i] = Sprite::create("run_6(2).png");
         runSp[i]->setScale(0.8f);
         map->addChild(runSp[i]);
+       
     }
-
+    
+    
     runSp[0]->setPosition(32 * 37.0f + 10, 32 * 92.0f);
     runSp[3]->setPosition(32 * 38.0f + 20, 32 * 52.0f - 10);
     runSp[4]->setPosition(32 * 19.0f + 20, 32 * 52.0f - 10);
@@ -721,12 +758,15 @@ void MapScene::OpenDoor()
 
     runSp[6]->setPosition(32 * 52.0f + 10, 32 * 25.0f - 10);
     runSp[6]->setRotation(-90.0f);
+
+    
+
     /* 加载图片帧到缓存池 */
     SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
     frameCache->addSpriteFramesWithFile("opendoor.plist", "opendoor.png");
 
     /* 用辅助工具创建动画 */
-    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("run_", 6, 1.0f, 1);
+    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("run_", 6, 0.2f, 1);
 
     /* 动画也是动作，精灵直接执行动画动作即可 */
     for (int i = 0; i <= 6; i++)
@@ -735,16 +775,27 @@ void MapScene::OpenDoor()
         runSp[i]->runAction(Animate::create(animation));
     }
 
+
+
+    for (int i = 0; i <= 6; i++)
+    {
+
+        
+        runSp_2[i]->setVisible(false);
+       
+    }
+
 }
 void MapScene::CloseDoor()
 {
-    Sprite* runSp_2[7];
+   
     for (int i = 0; i <= 6; i++)
     {
 
         runSp_2[i] = Sprite::create("run6.png");
         runSp_2[i]->setScale(0.8f);
         map->addChild(runSp_2[i]);
+        runSp_2[i]->setVisible(true);
     }
 
     runSp_2[0]->setPosition(32 * 37.0f + 10, 32 * 92.0f);
@@ -767,7 +818,7 @@ void MapScene::CloseDoor()
     frameCache->addSpriteFramesWithFile("closedoor.plist", "closedoor.png");
 
     /* 用辅助工具创建动画 */
-    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("run", 6, 1.0f, 1);
+    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("run", 6, 0.2f, 1);
 
     /* 动画也是动作，精灵直接执行动画动作即可 */
     for (int i = 0; i <= 6; i++)
@@ -955,7 +1006,7 @@ float MapScene::TransPencent(int type)
     }
     if (type == 2)
     {
-        return (Hero->Mp / HeroAc * 100);
+        return (Hero->Mp / HeroMp * 100);
     }
     if (type == 3)
     {
@@ -965,7 +1016,7 @@ float MapScene::TransPencent(int type)
 
 
 
-
+//Board 有更改 头文件 要添加
 //当人物受刚进入场景需要调用此函数
 void  MapScene::BoardCreate()
 {
@@ -978,6 +1029,17 @@ void  MapScene::BoardCreate()
 
     Node::addChild(AcLoadingBar);
     AcLoadingBar->setPosition(Vec2(112, 580));
+
+    /*状态数字信息*/
+  
+
+    BloodLabel->setPosition(Vec2(112, 605));
+    AcLabel->setPosition(Vec2(112, 580));
+    MPLabel->setPosition(Vec2(112, 555));
+
+    this->addChild(BloodLabel);
+    this->addChild(AcLabel);
+    this->addChild(MPLabel);
 }
 
 void  MapScene::Boardupdate()
@@ -998,6 +1060,13 @@ void MapScene::BloodCreate()
     BloodLoadingBar->setPercent(TransPencent(1));
     BloodLoadingBar->setScale(0.5f);
 
+
+    /*状态数字信息*/
+    string BloodNum = to_string(Hero->blood) + "/ " + to_string(HeroBlood);
+   
+    BloodLabel = Label::createWithTTF(BloodNum, "fonts/Marker Felt.ttf", 15);
+ 
+
 }
 void MapScene::MpCreate()
 {
@@ -1011,6 +1080,10 @@ void MapScene::MpCreate()
     MpLoadingBar->setPercent(TransPencent(2));
     MpLoadingBar->setScale(0.5f);
 
+    /*状态数字信息*/
+    string MPNum = to_string(Hero->Mp) + "/ " + to_string(HeroMp);
+    
+    MPLabel = Label::createWithTTF(MPNum, "fonts/Marker Felt.ttf", 15);
 }
 void MapScene::AcCreate()
 {
@@ -1023,5 +1096,9 @@ void MapScene::AcCreate()
     // something happened, change the percentage of the loading bar
     AcLoadingBar->setPercent(TransPencent(2));
     AcLoadingBar->setScale(0.5f);
+
+    /*状态数字信息*/
+    string AcNum = to_string(Hero->Ac) + "/ " + to_string(HeroAc);
+    AcLabel = Label::createWithTTF(AcNum, "fonts/Marker Felt.ttf", 15);
 
 }
