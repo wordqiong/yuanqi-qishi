@@ -449,6 +449,8 @@ void MapScene::GunUpdate(float dt)
                                     Bullet->isNeedFade = true;
                                     Bullet->getSprite()->setVisible(false);
                                     monster->monster[i]->blood -= 3;
+                                    monster->monster[i]->Monster->setPositionX(monster->monster[i]->Monster->getPositionX() + 15 * Bullet->numx / Bullet->S);
+                                    monster->monster[i]->Monster->setPositionY(monster->monster[i]->Monster->getPositionY() + 15 * Bullet->numy / Bullet->S);
 
                                 }
                             }
@@ -463,7 +465,8 @@ void MapScene::GunUpdate(float dt)
                                     Bullet->isNeedFade = true;
                                     Bullet->getSprite()->setVisible(false);
                                     monster->monster[i]->blood -= 3;
-
+                                    monster->monster[i]->Monster->setPositionX(monster->monster[i]->Monster->getPositionX() + 15 * Bullet->numx / Bullet->S);
+                                    monster->monster[i]->Monster->setPositionY(monster->monster[i]->Monster->getPositionY() + 15 * Bullet->numy / Bullet->S);
                                 }
                             }
                         }

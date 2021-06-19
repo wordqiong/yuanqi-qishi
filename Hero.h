@@ -1,19 +1,74 @@
-#ifndef _HERO_H__
-#define _HERO_H__
+#ifndef __HERO_H__
+#define __HERO_H__
 
-#include "Entity.h"
-#include "Gun.h"
+#define HeroBlood 7
+#define room1_x_min  35 * 32
+#define room1_x_max  68 * 32
+#define room1_y_min  79 * 32
+#define room1_y_max  99 * 32
+#define room2_x_min  4 * 32
+#define room2_x_max  20 * 32
+#define room2_y_min  43 * 32
+#define room2_y_max  59 * 32
+#define room3_x_min  38 * 32
+#define room3_x_max  69* 32
+#define room3_y_min  39 * 32
+#define room3_y_max  62 * 32
+#define room4_x_min   37 * 32
+#define room4_x_max  70 * 32
+#define room4_y_min  4 * 32
+#define room4_y_max  25 * 32
 
-class Hero :public Entity {
+#include "MapScene.h"
+#include "cocos2d.h"
+#include"Gun.h"
+
+class Gun;
+
+class Hero : public cocos2d::Sprite
+{
 public:
+
+	cocos2d::Sprite* hero ;
+
 	virtual bool init();
+
+	static Hero* createHero();
+
+	void HeroInit();
+
+	int RoomPosition;//人物处在哪个房间
+
+	void HeroRoomUpdate(float dt);
+
+	int blood;//人物的血量
+
+	int  Mp;//人物蓝量
+
+	int Ac;//人物护甲
+
+
+	int direction;//获取人物移动的方向
+
+	bool isStand;//判断人物是否站立不动
+
+	bool isDirectionChange;//判断人物移动方向是否变化
+
+	EnemyMonster* bindedMonster = NULL;//被绑定的怪
+
+	void update(float delta) override;
+
+	std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
+
+	void HeroResume();
+
+	cocos2d::Animate* createAnimate(int direction, int num);
+
 	void addGun(Gun* gun);//绑定正在使用的枪支
 	vector<Gun*> GunOfHero;//主角的枪;每次切换枪都把当前使用的枪放在后面，以便于出容器
-	int blood = 6;
-	int shields = 6;
 	bool is_twoGun = false;
+
 	CREATE_FUNC(Hero);
 };
-#endif // !_HERO_H__
 
-
+#endif

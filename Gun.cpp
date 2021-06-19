@@ -15,7 +15,7 @@ bool Gun::init() {
 	unsigned seed = time(0);
 	srand(seed);
 	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate),0.20);//不知道咋回事
-	this->schedule(CC_SCHEDULE_SELECTOR(Gun::bindMonsterupdate), 2.0);//02秒绑定一次最近的怪物，防止枪抖动
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::bindMonsterupdate), 0.5);//02秒绑定一次最近的怪物，防止枪抖动
 	return true;
 }
 

@@ -1,7 +1,4 @@
-#ifndef _MONSTER_H__
-#define _MONSTER_H__
 #include"Entity.h"
-
 
 class Monster : public Entity {
 public:
@@ -10,11 +7,9 @@ public:
 	virtual bool init();
 public:
 	void show();
-	int blood = 15;
 	/*void hide();
 	void rest();
 	void isAlive();*/
-
-	bool isAlive= true;
+private:
+	bool m_isAlive;
 };
-#endif
