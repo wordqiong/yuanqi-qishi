@@ -11,8 +11,9 @@ bool Gun::init() {
 	is_fire = false;//没开火
 	unsigned seed = time(0);
 	srand(seed);
-	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate),0.20);//不知道咋回事
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate),0.20);
 	this->schedule(CC_SCHEDULE_SELECTOR(Gun::bindMonsterupdate), 2.0);//02秒绑定一次最近的怪物，防止枪抖动
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::ColdWeaponUpdate), 0.60);//挥剑
 	return true;
 }
 
@@ -77,8 +78,101 @@ float Gun::bindEnemy(EnemyMonster* monster1) {
 }
 
 void Gun::myupdate(float dt) {
+	if (this->is_fire) {	
+		if (!this->is_coldWeapon) {
+				this->Fire();	
+		}
+	}
+}
+
+void Gun::ColdWeaponUpdate(float dt) {
 	if (this->is_fire) {
-		this->Fire();
+		if (this->is_coldWeapon) {
+			//跑动画
+
+			//skl
+			//skl
+			//skl
+
+
+
+			//挡子弹
+			for (auto bullet : MapScene::sharedScene->MonsterBulletsVector) {
+				if (!bullet->isNeedFade) {
+					Point vector = bullet->getSprite()->getPosition() - this->getSprite()->getPosition();
+					float length = vector.length();
+					if (length <= this->coldWeaponLength) {
+						if (MapScene::sharedScene->Hero->direction == 1 && vector.x <= 0) {
+							bullet->isNeedFade = true;
+							bullet->getSprite()->setVisible(false);
+							Sprite* BulletBone;
+							BulletBone = Sprite::create("bullet6.png");
+							MapScene::sharedScene->map->addChild(BulletBone);
+							BulletBone->setScale(0.5f);
+							BulletBone->setPosition(Vec2(bullet->getSprite()->getPositionX(), bullet->getSprite()->getPositionY()));
+							/* 加载图片帧到缓存池 */
+							SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+							frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
+							/* 用辅助工具创建动画 */
+							animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+							BulletBone->runAction(Animate::create(animation_bullet));
+						}
+						if (MapScene::sharedScene->Hero->direction == 2 && vector.x >= 0) {
+							bullet->isNeedFade = true;
+							bullet->getSprite()->setVisible(false);
+							Sprite* BulletBone;
+							BulletBone = Sprite::create("bullet6.png");
+							MapScene::sharedScene->map->addChild(BulletBone);
+							BulletBone->setScale(0.5f);
+							BulletBone->setPosition(Vec2(bullet->getSprite()->getPositionX(), bullet->getSprite()->getPositionY()));
+							/* 加载图片帧到缓存池 */
+							SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+							frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
+							/* 用辅助工具创建动画 */
+							animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+							BulletBone->runAction(Animate::create(animation_bullet));
+						}
+					}
+				}
+			}
+			//打怪物
+			if (MapScene::sharedScene->Hero->RoomPosition > 0 && !MapScene::sharedScene->monster->isAllDead()) {
+				for (int i = 0; i < MonsterNumber; i++) {
+					if (MapScene::sharedScene->monster->monster[i]->blood > 0) {
+						Point vector = MapScene::sharedScene->monster->monster[i]->Monster->getPosition() - this->getSprite()->getPosition();
+						float length = vector.length();
+						if (length <= this->coldWeaponLength) {
+							if (MapScene::sharedScene->Hero->direction == 1 && vector.x <= 0) {
+								MapScene::sharedScene->monster->monster[i]->blood -= 3;
+								Sprite* Blood;
+								Blood = Sprite::create("bloodDelete2.png");
+								Blood->setScale(1.5f);
+								MapScene::sharedScene->map->addChild(Blood);
+								Blood->setPosition(Vec2(MapScene::sharedScene->monster->monster[i]->Monster->getPositionX(), MapScene::sharedScene->monster->monster[i]->Monster->getPositionY() + 40));
+								SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
+								frameCache->addSpriteFramesWithFile("bloodDelete.plist", "bloodDelete.png");
+								Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("bloodDelete", 2, 1.0f, 1);
+								Blood->runAction(Animate::create(animation));
+
+							}
+							if (MapScene::sharedScene->Hero->direction == 2 && vector.x >= 0) {
+								MapScene::sharedScene->monster->monster[i]->blood -= 3;
+								Sprite* Blood;
+								Blood = Sprite::create("bloodDelete2.png");
+								Blood->setScale(1.5f);
+								MapScene::sharedScene->map->addChild(Blood);
+								Blood->setPosition(Vec2(MapScene::sharedScene->monster->monster[i]->Monster->getPositionX(), MapScene::sharedScene->monster->monster[i]->Monster->getPositionY() + 40));
+								SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
+								frameCache->addSpriteFramesWithFile("bloodDelete.plist", "bloodDelete.png");
+								Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("bloodDelete", 2, 1.0f, 1);
+								Blood->runAction(Animate::create(animation));
+
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

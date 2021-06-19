@@ -16,6 +16,7 @@ public:
 	void MovebyLine();//子弹沿线移动
 	void Fade();//碰壁打人消失
 	float numx; float numy; int S;//通过方向向量确定轨迹
+	int attack = 0;
 	int Bullet_accuracy = 7;//子弹准度
 	bool is_hit_Monster(EnemyMonster* monster);
 	/*bool is_hit_Hero(Hero* hero);*/

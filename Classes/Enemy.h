@@ -3,10 +3,12 @@
 #ifndef __ENEMY_H__
 #define __ENEMY_H__
 
-#define MonsterNumber 1
+#define MonsterNumber 5
 
 #include "Bullet.h"
 #include "cocos2d.h"
+
+class Bullet;
 class EnemyMonster : public cocos2d::Layer
 {
 public:
@@ -74,6 +76,16 @@ public:
     bool inAttack[4];//三种小怪的攻击状态
 
     int AttackTime[4];//三种小怪的攻击间隔
+
+    void createMonsterBullets(Point X_Y_of_Monster, Point direction_vector);//创建怪物子弹
+
+    void MonsterFire();//开火
+
+    void EnemyBulletsMoveByLineUpdate(float dt);//子弹移动
+
+    void HitHeroUpdate(float dt);
+
+    bool is_hit_Hero(Bullet* bullet);
 
 
 };

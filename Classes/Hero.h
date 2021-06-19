@@ -2,7 +2,7 @@
 #ifndef __HERO_H__
 #define __HERO_H__
 
-#define HeroBlood 100
+#define HeroBlood 7
 #define HeroAc 5
 #define HeroMp 200
 #define room1_x_min  35 * 32

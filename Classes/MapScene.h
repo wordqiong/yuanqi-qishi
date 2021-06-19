@@ -68,6 +68,7 @@ public:
     void addGun();
 
     vector<Gun*> GunsVector;//枪械容器
+    Vector<Bullet*> MonsterBulletsVector;
     /*vector<Monster*> MonsterVector;*/
     vector<Potion*> PotionVector;
     Potion* BindedPotion;//消息按钮绑定的物品

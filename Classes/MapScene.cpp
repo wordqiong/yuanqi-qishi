@@ -180,12 +180,14 @@ bool MapScene::init()
     //创建hero，将它放在地图中央
     Hero = Hero::createHero();
     addChild(Hero);
-    Gun* fireGun = Gun::create();
-    fireGun->bindSprite(Sprite::create("fireGun.png"));
-    fireGun->getSprite()->setPosition(Point(MapScene::sharedScene->Hero->hero->getPositionX() - 200, MapScene::sharedScene->Hero->hero->getPositionY() - 100));//暂时先固定位置
-    fireGun->getSprite()->setAnchorPoint(Point(0.5, 0.45));
-    MapScene::sharedScene->map->addChild(fireGun);
-    MapScene::sharedScene->GunsVector.push_back(fireGun);
+    Gun* Sword = Gun::create();
+    Sword->bindSprite(Sprite::create("sword.png"));
+    Sword->getSprite()->setPosition(Point(MapScene::sharedScene->Hero->hero->getPositionX() - 200, MapScene::sharedScene->Hero->hero->getPositionY() - 100));//暂时先固定位置
+    Sword->getSprite()->setAnchorPoint(Point(0.4, 0.45));
+    Sword->is_coldWeapon = true;
+    Sword->coldWeaponLength = 80;
+    MapScene::sharedScene->map->addChild(Sword);
+    MapScene::sharedScene->GunsVector.push_back(Sword);
     
     this->addGun();
     this->addPotion();//生成血瓶
@@ -495,6 +497,8 @@ void MapScene::GunUpdate(float dt)
 
                                    
                                     monster->monster[i]->blood -= 3;
+                                    monster->monster[i]->Monster->setPositionX(monster->monster[i]->Monster->getPositionX() + 15 * Bullet->numx / Bullet->S);
+                                    monster->monster[i]->Monster->setPositionY(monster->monster[i]->Monster->getPositionY() + 15 * Bullet->numy / Bullet->S);
 
                                 }
                             }
@@ -508,8 +512,38 @@ void MapScene::GunUpdate(float dt)
                                 if (Bullet->is_hit_Monster(monster->monster[i])) {
                                     Bullet->isNeedFade = true;
                                     Bullet->getSprite()->setVisible(false);
-                                    monster->monster[i]->blood -= 3;
+                                    //扣血数字
+                                    Sprite* Blood;
 
+                                    Blood = Sprite::create("bloodDelete2.png");
+                                    Blood->setScale(1.5f);
+                                    map->addChild(Blood);
+                                    Blood->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY() + 40));
+                                    SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
+                                    frameCache->addSpriteFramesWithFile("bloodDelete.plist", "bloodDelete.png");
+
+                                    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("bloodDelete", 2, 1.0f, 1);
+
+                                    Blood->runAction(Animate::create(animation));
+
+
+                                    Sprite* BulletBone;
+                                    BulletBone = Sprite::create("bullet6.png");
+                                    map->addChild(BulletBone);
+                                    BulletBone->setScale(0.5f);
+                                    BulletBone->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY()));
+                                    /* 加载图片帧到缓存池 */
+                                    SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+                                    frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
+
+                                    /* 用辅助工具创建动画 */
+                                    animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+
+
+                                    BulletBone->runAction(Animate::create(animation_bullet));
+                                    monster->monster[i]->blood -= 3;
+                                    monster->monster[i]->Monster->setPositionX(monster->monster[i]->Monster->getPositionX() + 15 * Bullet->numx / Bullet->S);
+                                    monster->monster[i]->Monster->setPositionY(monster->monster[i]->Monster->getPositionY() + 15 * Bullet->numy / Bullet->S);
                                 }
                             }
                         }
@@ -1020,6 +1054,10 @@ float MapScene::TransPencent(int type)
 //当人物受刚进入场景需要调用此函数
 void  MapScene::BoardCreate()
 {
+    BloodLoadingBar = ui::LoadingBar::create("blood.png", 100);
+
+    // set the direction of the loading bars progress
+    BloodLoadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
     Boardupdate();
     Node::addChild(BloodLoadingBar);
     BloodLoadingBar->setPosition(Vec2(112, 605));
@@ -1052,10 +1090,7 @@ void MapScene::BloodCreate()
 {
     //////////////////////////////
 
-    BloodLoadingBar = ui::LoadingBar::create("blood.png", 100);
-
-    // set the direction of the loading bars progress
-    BloodLoadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+   
     // something happened, change the percentage of the loading bar
     BloodLoadingBar->setPercent(TransPencent(1));
     BloodLoadingBar->setScale(0.5f);
