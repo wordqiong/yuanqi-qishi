@@ -42,13 +42,13 @@ Hero* Hero::createHero()
 void Hero::HeroInit()
 {
     hero = Sprite::create("hero.png");
-    direction = 2;//³õÊ¼³¯ÏòÉèÖÃÎªÏòÓÒ
-    isStand = true;//³õÊ¼×´Ì¬ÎªÕ¾Á¢
+    direction = 2;//åˆå§‹æœå‘è®¾ç½®ä¸ºå‘å³
+    isStand = true;//åˆå§‹çŠ¶æ€ä¸ºç«™ç«‹
     isDirectionChange = false;
     MapScene::sharedScene->map->addChild(hero);
     hero->setAnchorPoint(Vec2::ZERO);
     hero->setScale(0.6f);
-    hero->setPosition(32 * 10.0f, 32 * 92.0f);//´´½¨hero£¬½«Ëü·ÅÔÚµØÍ¼ÖĞÑë
+    hero->setPosition(32 * 10.0f, 32 * 92.0f);//åˆ›å»ºheroï¼Œå°†å®ƒæ”¾åœ¨åœ°å›¾ä¸­å¤®
     blood = HeroBlood;
     Ac = HeroAc;
     Mp = HeroMp;
@@ -113,7 +113,7 @@ void Hero::update(float delta)
             {
                 isDirectionChange = true;
             }
-            direction = 1;//´ú±íÏò×ó
+            direction = 1;//ä»£è¡¨å‘å·¦
         }
         if (keys[upArrow] || keys[downArrow])
         {
@@ -141,7 +141,7 @@ void Hero::update(float delta)
             {
                 isDirectionChange = true;
             }
-            direction = 2;//´ú±íÏòÓÒ
+            direction = 2;//ä»£è¡¨å‘å³
         }
 
         if (keys[upArrow] || keys[downArrow])
@@ -262,9 +262,19 @@ void Hero::DeadUpdate(float dt)
     if (blood <= 0)
     {
         hero->runAction(HeroDead());
+        auto delayTime = DelayTime::create(3.0f);
+        auto func = CallFunc::create(CC_CALLBACK_0(Hero::ChangeScene, this));
+        auto seq = Sequence::create(delayTime, func, nullptr);
+        this->runAction(seq);
+        
     }
-
 }
+    
+void Hero::ChangeScene()
+{
+    Director::getInstance()->replaceScene(SafeRoomMove::createScene());
+}
+
 
 Animate* Hero::HeroDead()
 {
