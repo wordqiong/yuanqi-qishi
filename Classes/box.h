@@ -33,6 +33,8 @@ public:
 	void isDead();
 
 	void DeadUpdate(float dt);
+	bool BoxJudgeFind(float x, float y);
+	int Box::FindBox(float x, float y);
 
 	void Fade();
 };

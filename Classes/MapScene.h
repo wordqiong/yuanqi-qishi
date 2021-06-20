@@ -85,7 +85,9 @@ public:
 
     EnemyMonster* monster;
 
-    Box* box[5]; 
+    Box* _box[5];
+
+    bool box_judge[5] = { 0,0,0,0,0 };
 
     Boss* boss;//创建实例
     //移动所需的语句
@@ -135,6 +137,10 @@ public:
     float MapScene::TransPencent(int type);
     void MapScene::MpCreate();
     void MapScene::AcCreate();
+
+
+
+
     void  MapScene::BoardCreate();
     void  MapScene::Boardupdate();
     //箱子所在图层

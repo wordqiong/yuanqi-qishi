@@ -56,7 +56,7 @@ void EnemyMonster::OriginalPosition(int RoomNumber)
 		PositionX = rand() % (x_max - x_min) - 32 + x_min;
 		PositionY = rand() % (y_max - y_min) - 32 + y_min;
 	} while ((!MapScene::sharedScene->isCanReach(PositionX, PositionY, MAP_BARRIER_TREE)
-		|| ((!MapScene::sharedScene->isCanReach(PositionX, PositionY)))))
+		/*|| ((!MapScene::sharedScene->isCanReach(PositionX, PositionY)))*/))
 		;
 }
 
