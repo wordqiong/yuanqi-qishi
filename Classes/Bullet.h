@@ -20,6 +20,8 @@ public:
 	int Bullet_accuracy = 7;//子弹准度
 	bool is_hit_Monster(EnemyMonster* monster);
 	/*bool is_hit_Hero(Hero* hero);*/
+	void CreateAnimation();
+	/*bool is_hit_Hero(Hero* hero);*/
 
 	bool isNeedFade = false;//判断是否需要消失
 };

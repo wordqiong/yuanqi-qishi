@@ -8,6 +8,8 @@
 #include <cmath>
 using namespace std;
 
+class EnemyMonster;
+class Bullet;
 class Gun :public Entity {
 public:
 
@@ -37,6 +39,7 @@ public:
 	void ColdWeaponUpdate(float dt);
 	//string imagload_of_Bullet;//子弹的图片路径
 	Animate* SwordAttack();//剑的挥砍动画
+	Animate* AxeAttack();//斧子的挥砍动画
 };
 
 #endif // !_GUN_H__

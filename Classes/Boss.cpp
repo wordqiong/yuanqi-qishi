@@ -1,3 +1,4 @@
+
 #include"Boss.h"
 USING_NS_CC;
 #define attack_time_of_Boss1 3
@@ -27,22 +28,22 @@ void Boss::BossInit(int BossType)
 		isStand = true;
 		isDirectionChange = false;
 		blood = BossBlood1;
-		boss = Sprite::create("boss1.png");
-		boss->setScale(0.6f);
+		Monster = Sprite::create("boss1.png");
+		Monster->setScale(0.6f);
 		speed = BossSpeed;
 	}
 	else if (BossType == 2)
 	{
 		blood = BossBlood2;
-		boss = Sprite::create("boss2.png");
-		boss->setScale(0.6f);
+		Monster = Sprite::create("boss2.png");
+		Monster->setScale(0.6f);
 	}
 	direction = 1;
 	inAttack = false;
 	isFade = false;
-	boss->setPosition(PositionX, PositionY);
-	boss->setVisible(true);
-	MapScene::sharedScene->map->addChild(boss);
+	Monster->setPosition(PositionX, PositionY);
+	Monster->setVisible(true);
+	MapScene::sharedScene->map->addChild(Monster);
 	AttackTime[1] = attack_time_of_Boss1;
 	AttackTime[2] = attack_time_of_Boss2;
 }
@@ -102,18 +103,18 @@ Animate* Boss::createAnimate_move(int direction, int num)
 void Boss::isDead()
 {
 	auto* animate = FadeOut::create(3.0f);
-	boss->runAction(animate);
-	CC_SAFE_DELETE(boss);
+	Monster->runAction(animate);
+	CC_SAFE_DELETE(Monster);
 }
 
 void Boss::MoveBoss()
 {
-	auto dr = MapScene::sharedScene->Hero->hero->getPosition() - boss->getPosition();//位移向量
+	auto dr = MapScene::sharedScene->Hero->hero->getPosition() - Monster->getPosition();//位移向量
 	auto v = dr / dr.length() * speed;//速度向量
 	auto dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
 		(rand() % (200 * speed) - 100 * speed) / 100.0);//随机偏差向量
 	auto ds = v + dx;//实际位移向量
-	while (!MapScene::sharedScene->isCanReach(boss->getPositionX() + ds.x, boss->getPositionY() + ds.y, MAP_WALL))
+	while (!MapScene::sharedScene->isCanReach(Monster->getPositionX() + ds.x, Monster->getPositionY() + ds.y, MAP_WALL))
 	{
 		dx = Vec2((rand() % (200 * speed) - 100 * speed) / 100.0,
 			(rand() % (200 * speed) - 100 * speed) / 100.0);
@@ -145,10 +146,10 @@ void Boss::MoveBoss()
 	{
 		BossResume();
 		isStand = false;
-		boss->runAction(animate);
+		Monster->runAction(animate);
 	}
 	auto moveBy = MoveBy::create(0.5, ds);
-	boss->runAction(moveBy);
+	Monster->runAction(moveBy);
 
 
 
@@ -157,8 +158,8 @@ void Boss::MoveBoss()
 void Boss::BossResume()
 {
 
-	boss->stopAllActions();
-	boss->runAction(createAnimate_attack(BossType, direction, 1));
+	Monster->stopAllActions();
+	Monster->runAction(createAnimate_attack(BossType, direction, 1));
 }
 
 void Boss::MoveUpdate(float dt)
@@ -179,7 +180,7 @@ void Boss::AttackUpdate(float dt)
 		auto* animate1 = createAnimate_attack(BossType, direction, 7);
 		auto* animate2 = createAnimate_attack(BossType, direction, 1);
 		log("%d", BossType);
-		boss->runAction(Sequence::create(animate1, animate2, NULL));
+		Monster->runAction(Sequence::create(animate1, animate2, NULL));
 		if (BossType == 1)
 		{
 			schedule(CC_SCHEDULE_SELECTOR(Boss::Level2_1AttackUpdate), 0.5f);
@@ -196,13 +197,13 @@ void Boss::AttackUpdate(float dt)
 
 void Boss::Level2_1AttackUpdate(float dt) {
 	if (this->inAttack) {
-		this->BossCreateBullets1(this->boss->getPosition(), MapScene::sharedScene->Hero->hero->getPosition() - this->boss->getPosition());
+		this->BossCreateBullets1(this->Monster->getPosition(), MapScene::sharedScene->Hero->hero->getPosition() - this->Monster->getPosition());
 	}
 }
 
 void Boss::Level2_2AttackUpdate(float dt) {
 	if (this->inAttack) {
-		this->BossCreateBullets2(this->boss->getPosition());
+		this->BossCreateBullets2(this->Monster->getPosition());
 	}
 }
 
@@ -223,6 +224,7 @@ void Boss::BossCreateBullets1(Point X_Y_of_Boss, Point direction_vector) {
 		Bullet* bullet = Bullet::create();
 		bullet->bindSprite(Sprite::create("bossBullet.png"));
 		bullet->getSprite()->setAnchorPoint(Point(1.0, 0.5));
+		bullet->attack = 3;
 		int y = (int)direction_vector.y; int x = (int)direction_vector.x; int L = x * x + y * y;
 		int s = (int)sqrt((double)(L));
 		bullet->numx = x;
@@ -254,6 +256,7 @@ void Boss::BossCreateBullets2(Point X_Y_of_Boss) {
 		Bullet* bullet = Bullet::create();
 		bullet->bindSprite(Sprite::create("canisterBullet.png"));
 		bullet->getSprite()->setAnchorPoint(Point(1.0, 0.5));
+		bullet->attack = 3;
 		float x = 10 * cos(i * 3.1415 / 4);
 		float y = 10 * sin(i * 3.1415 / 4);
 		bullet->numx = x;

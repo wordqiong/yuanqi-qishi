@@ -3,16 +3,15 @@
 
 #include"Hero.h"
 USING_NS_CC;
-#define Range_of_attack_pig 32*1
-#define Range_of_attack_shooter 32*5
-#define Range_of_attack_archer 32*6
+#define Range_of_attack_pig 32
+#define Range_of_attack_shooter 32*9
+#define Range_of_attack_archer 32*7
 #define attack_of_pig 2
-#define attack_of_shooter 2
-#define attack_of_archer 3
-#define attack_time_of_pig 3
-#define attack_time_of_shooter 4
-#define attack_time_of_archer 5
-
+#define attack_of_shooter 3
+#define attack_of_archer 4
+#define attack_time_of_pig 13
+#define attack_time_of_shooter 15
+#define attack_time_of_archer 10
 Scene* EnemyMonster::createScene()
 {
 	auto scene = Scene::create();
@@ -56,7 +55,7 @@ void EnemyMonster::OriginalPosition(int RoomNumber)
 		PositionX = rand() % (x_max - x_min) - 32 + x_min;
 		PositionY = rand() % (y_max - y_min) - 32 + y_min;
 	} while ((!MapScene::sharedScene->isCanReach(PositionX, PositionY, MAP_BARRIER_TREE)
-		|| ((!MapScene::sharedScene->isCanReach(PositionX, PositionY)))))
+		|| ((!MapScene::sharedScene->isCanReachBoxJudge(PositionX, PositionY)))))
 		;
 }
 
@@ -84,8 +83,8 @@ bool EnemyMonster::init()
 	}
 
 	srand((unsigned)time(NULL));
-	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::MoveUpdate), 0.3f);
-	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::AttackUpdate), 1.0f);
+	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::MoveUpdate), 0.1f);
+	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::AttackUpdate), 0.4f);
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::DeadUpdate), 0.1f);
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::EnemyBulletsMoveByLineUpdate));
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::HitHeroUpdate));
@@ -204,6 +203,7 @@ void EnemyMonster::MoveMonster(int num)
 	{
 		MonsterResume();
 		isStand = false;
+		isDirectionChange = false;
 		Monster->runAction(animate);
 	}
 	auto moveBy = MoveBy::create(0.3f, ds[num]);
@@ -316,12 +316,13 @@ void EnemyMonster::AttackUpdate(float dt)
 				auto ds = MapScene::sharedScene->Hero->hero->getPosition() - monster[i]->Monster->getPosition();
 				auto s = ds.length();
 				monster[i]->MonsterResume();
+				monster[i]->isStand = true;
 				if (monster[i]->MonsterType == 1)
 				{
 					if (Range_of_attack_pig >= s)
 					{
 						//这里是不是可以跑动画或动作
-						MapScene::sharedScene->Hero->deleteblood(attack_of_pig);
+						MapScene::sharedScene->Hero->blood = MapScene::sharedScene->Hero->blood - attack_of_pig;
 
 					}
 				}
@@ -401,7 +402,7 @@ void EnemyMonster::EnemyBulletsMoveByLineUpdate(float dt) {
 				bullet->S = (int)sqrt((float)(bullet->numx * bullet->numx) + (float)(bullet->numy * bullet->numy));
 				bullet->getSprite()->setPositionX(bullet->getSprite()->getPositionX() + 5 * bullet->numx / bullet->S);
 				bullet->getSprite()->setPositionY(bullet->getSprite()->getPositionY() + 5 * bullet->numy / bullet->S);
-				if (!(MapScene::sharedScene->isCanReach(bullet->getSprite()->getPositionX() - 5, bullet->getSprite()->getPositionY() - 5, MAP_WALL))) {
+				if (!(MapScene::sharedScene->isCanReach(bullet->getSprite()->getPositionX() - 5, bullet->getSprite()->getPositionY() - 5, MAP_WALL)) || (!MapScene::sharedScene->isCanReach(bullet->getSprite()->getPositionX(), bullet->getSprite()->getPositionY(), MAP_BARRIER_TREE))) {
 					bullet->getSprite()->setVisible(false);
 					bullet->isNeedFade = true;
 				}
@@ -422,12 +423,13 @@ void EnemyMonster::HitHeroUpdate(float dt) {
 			if (!Bullet->isNeedFade) {
 				if (this->is_hit_Hero(Bullet)) {
 					MapScene::sharedScene->Hero->deleteblood(Bullet->attack);
-					MapScene::sharedScene->BoardCreate();
+					MapScene::sharedScene->Boardupdate();
 					log("%d", MapScene::sharedScene->Hero->blood);
 					MapScene::sharedScene->Hero->hero->setPositionX(MapScene::sharedScene->Hero->hero->getPositionX() + 8 * Bullet->numx / Bullet->S);
 					MapScene::sharedScene->Hero->hero->setPositionY(MapScene::sharedScene->Hero->hero->getPositionY() + 8 * Bullet->numy / Bullet->S);
 					Bullet->getSprite()->setVisible(false);
 					Bullet->isNeedFade = true;
+					Bullet->CreateAnimation();
 				}
 			}
 		}

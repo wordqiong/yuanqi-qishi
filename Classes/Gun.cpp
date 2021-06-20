@@ -13,7 +13,7 @@ bool Gun::init() {
 	srand(seed);
 	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate), 0.20);
 	this->schedule(CC_SCHEDULE_SELECTOR(Gun::bindMonsterupdate), 2.0);//02秒绑定一次最近的怪物，防止枪抖动
-	this->schedule(CC_SCHEDULE_SELECTOR(Gun::ColdWeaponUpdate), 1.0);//挥剑
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::ColdWeaponUpdate), 0.60);//挥剑
 	return true;
 }
 
@@ -64,6 +64,11 @@ EnemyMonster* Gun::Shortest() {
 			map.insert(f, MapScene::sharedScene->monster->monster[i]);
 		}
 	}
+	if (MapScene::sharedScene->Hero->RoomPosition == 4) {
+		Point Pt = MapScene::sharedScene->boss->Monster->getPosition() - this->getSprite()->getPosition();
+		int f = (int)Pt.length();
+		map.insert(f, MapScene::sharedScene->boss);
+	}
 	Map< int, EnemyMonster*>::iterator iter = map.begin();
 	Monster = iter->second;
 	return Monster;
@@ -71,10 +76,12 @@ EnemyMonster* Gun::Shortest() {
 //锁定最近敌人算出角度
 float Gun::bindEnemy(EnemyMonster* monster1) {
 	//射击方向向量	
+
 	this->shootVector = monster1->Monster->getPosition() - this->getSprite()->getPosition();
 	float radians = atan2(-shootVector.y, shootVector.x);
 	float degree = CC_RADIANS_TO_DEGREES(radians);
 	return degree;
+
 }
 
 void Gun::myupdate(float dt) {
@@ -88,7 +95,12 @@ void Gun::myupdate(float dt) {
 void Gun::ColdWeaponUpdate(float dt) {
 	if (this->is_fire) {
 		if (this->is_coldWeapon) {
-			this->getSprite()->runAction(SwordAttack());
+			//跑动画
+			getSprite()->runAction(SwordAttack());
+			//skl
+			//skl
+			//skl
+
 
 
 			//挡子弹
@@ -100,32 +112,12 @@ void Gun::ColdWeaponUpdate(float dt) {
 						if (MapScene::sharedScene->Hero->direction == 1 && vector.x <= 0) {
 							bullet->isNeedFade = true;
 							bullet->getSprite()->setVisible(false);
-							Sprite* BulletBone;
-							BulletBone = Sprite::create("bullet6.png");
-							MapScene::sharedScene->map->addChild(BulletBone);
-							BulletBone->setScale(0.5f);
-							BulletBone->setPosition(Vec2(bullet->getSprite()->getPositionX(), bullet->getSprite()->getPositionY()));
-							/* 加载图片帧到缓存池 */
-							SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
-							frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
-							/* 用辅助工具创建动画 */
-							animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
-							BulletBone->runAction(Animate::create(animation_bullet));
+							bullet->CreateAnimation();
 						}
 						if (MapScene::sharedScene->Hero->direction == 2 && vector.x >= 0) {
 							bullet->isNeedFade = true;
 							bullet->getSprite()->setVisible(false);
-							Sprite* BulletBone;
-							BulletBone = Sprite::create("bullet6.png");
-							MapScene::sharedScene->map->addChild(BulletBone);
-							BulletBone->setScale(0.5f);
-							BulletBone->setPosition(Vec2(bullet->getSprite()->getPositionX(), bullet->getSprite()->getPositionY()));
-							/* 加载图片帧到缓存池 */
-							SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
-							frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
-							/* 用辅助工具创建动画 */
-							animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
-							BulletBone->runAction(Animate::create(animation_bullet));
+							bullet->CreateAnimation();
 						}
 					}
 				}
@@ -173,7 +165,7 @@ void Gun::ColdWeaponUpdate(float dt) {
 
 //几秒锁定一次怪物
 void Gun::bindMonsterupdate(float dt) {
-	if (MapScene::sharedScene->Hero->RoomPosition > 0 && (!MapScene::sharedScene->monster->isAllDead())) {
+	if ((MapScene::sharedScene->Hero->RoomPosition > 0 && (MapScene::sharedScene->Hero->RoomPosition < 4 && (!MapScene::sharedScene->monster->isAllDead()))) || (MapScene::sharedScene->Hero->RoomPosition == 4 && (!MapScene::sharedScene->monster->isAllDead() || MapScene::sharedScene->boss->blood > 0))) {
 		MapScene::sharedScene->Hero->bindedMonster = this->Shortest();
 	}
 }
@@ -182,11 +174,29 @@ Animate* Gun::SwordAttack()
 	auto* m_frameCache = SpriteFrameCache::getInstance();
 	m_frameCache->addSpriteFramesWithFile("swordattack.plist", "swordattack.png");
 	Vector<SpriteFrame*>frameArray;
-	for (int i = 1; i <=10; i++)
+	for (int i = 1; i <= 10; i++)
 	{
-		log("picture%d", i);
 		auto* frame = m_frameCache->getSpriteFrameByName(
-			StringUtils::format("sword%d.png",i));
+			StringUtils::format("sword%d.png", i));
+		frameArray.pushBack(frame);
+
+	}
+	Animation* animation = Animation::createWithSpriteFrames(frameArray);
+	animation->setLoops(1);
+	animation->setDelayPerUnit(0.1f);
+	return Animate::create(animation);
+}
+
+Animate* Gun::AxeAttack()
+{
+
+	auto* m_frameCache = SpriteFrameCache::getInstance();
+	m_frameCache->addSpriteFramesWithFile("axeattack.plist", "axeattack.png");
+	Vector<SpriteFrame*>frameArray;
+	for (int i = 1; i <= 8; i++)
+	{
+		auto* frame = m_frameCache->getSpriteFrameByName(
+			StringUtils::format("axe_attack%d.png", i));
 		frameArray.pushBack(frame);
 
 	}

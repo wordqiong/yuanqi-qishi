@@ -1,6 +1,9 @@
 #include "Bullet.h"
 #include<ctime>
 #include<cmath>
+#include"MapScene.h"
+
+class MapScene;
 
 bool Bullet::init() {
 	if (!Entity::init()) {
@@ -37,8 +40,21 @@ bool Bullet::is_hit_Monster(EnemyMonster* monster) {
 	Point BulletPos = this->getSprite()->getPosition();
 	return entityRect.containsPoint(BulletPos);
 }
-//bool Bullet::is_hit_Hero(Hero* hero) {
-//	Rect entityRect = hero->getSprite()->getBoundingBox();
-//	Point BulletPos = this->getSprite()->getPosition();
-//	return entityRect.containsPoint(BulletPos);
-//}
+
+
+
+void Bullet::CreateAnimation() {
+	Sprite* BulletBone;
+	BulletBone = Sprite::create("bullet6.png");
+	MapScene::sharedScene->map->addChild(BulletBone);
+	BulletBone->setScale(0.5f);
+	BulletBone->setPosition(Vec2(this->getSprite()->getPositionX(), this->getSprite()->getPositionY()));
+	/* 加载图片帧到缓存池 */
+	SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+	frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
+
+	/* 用辅助工具创建动画 */
+	Animation* animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+
+	BulletBone->runAction(Animate::create(animation_bullet));
+}

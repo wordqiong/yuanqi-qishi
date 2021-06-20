@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
+
 #include "BackGroundMusic.h"
 #include "SimpleAudioEngine.h"
 #include "ui/CocosGUI.h"
@@ -43,7 +44,7 @@ bool BackGroundMusic::init()
 {
     //////////////////////////////
     // 1. super init first
-    if (!Scene::init())
+    if ( !Scene::init() )
     {
         return false;
     }
@@ -80,15 +81,15 @@ bool BackGroundMusic::init()
         this->addChild(label, 1);
     }
 
+  
 
-
-    checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) {
-
+    checkbox->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) {  
+     
         switch (type)
         {
             case ui::Widget::TouchEventType::BEGAN:
                 log("checkbox 2 clicked");
-
+               
                 break;
             case ui::Widget::TouchEventType::ENDED:
 
@@ -99,12 +100,12 @@ bool BackGroundMusic::init()
                 }
                 else
                 {
-
-                    /*  loadingBar->setVisible(true);*/
-                      // set the direction of the loading bars progress
+                  
+                  /*  loadingBar->setVisible(true);*/
+                    // set the direction of the loading bars progress
                     schedule(CC_SCHEDULE_SELECTOR(BackGroundMusic::setValumn));
-                    audio->playBackgroundMusic("mymusic.mp3", true);
-                    log("play1 clicked");
+                  audio->playBackgroundMusic("mymusic.mp3", true);
+                  log("play1 clicked");
                 }
                 log("checkbox 1 clicked");
                 break;
@@ -115,17 +116,17 @@ bool BackGroundMusic::init()
     this->addChild(checkbox);
     checkbox->setPosition(Vec2(400, 585));
 
-
+      
     return true;
 }
 void BackGroundMusic::setValumn(float dt)
 {
-
+    
 
 
     if (audio->isBackgroundMusicPlaying())
     {
-        auto
+        auto 
             upArrow = EventKeyboard::KeyCode::KEY_8, downArrow = EventKeyboard::KeyCode::KEY_2;
         auto listener = EventListenerKeyboard::create();
         listener->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event* event)
@@ -143,8 +144,8 @@ void BackGroundMusic::setValumn(float dt)
 
         if (keys[upArrow])
         {
-            if (ChangeValumn >= 0)
-                ChangeValumn--;
+            if(ChangeValumn>=0)
+            ChangeValumn--;
 
             log("upupupup");
         }
@@ -160,9 +161,10 @@ void BackGroundMusic::setValumn(float dt)
         _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
     }
-    log("%f", 1.0 - ChangeValumn / 100);
+    log("%f",1.0 - ChangeValumn / 100);
 
     loadingBar->setPercent(audio->getBackgroundMusicVolume() * 100);
     audio->setBackgroundMusicVolume(1.0 - ChangeValumn / 100);
 }
+
 

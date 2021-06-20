@@ -1,9 +1,10 @@
+
 #pragma once
 #ifndef __BOSS_H__
 #define __BOSS_H__
 
-#define BossBlood1 500
-#define BossBlood2 400
+#define BossBlood1 50
+#define BossBlood2 40
 #define BossSpeed  10
 #include "Enemy.h"
 #include "MapScene.h"
@@ -21,7 +22,7 @@ public:
 
 	static Boss* createBoss();
 
-	cocos2d::Sprite* boss;//箱子的精灵实例 
+
 
 	void MoveBoss();
 
@@ -33,6 +34,7 @@ public:
 
 	void isDead();
 
+
 	bool isFade;
 
 	void DeadUpdate(float dt);
@@ -41,8 +43,8 @@ public:
 
 	void MoveUpdate(float dt);
 
-	void Level2_1AttackUpdate(float dt);//技能一
-	void Level2_2AttackUpdate(float dt);//技能二
+	void Level2_1AttackUpdate(float dt);//??????
+	void Level2_2AttackUpdate(float dt);//??????
 
 	Point BossShootVector;
 	Vector<Bullet*> BulletsVector;
@@ -57,4 +59,8 @@ public:
 	CREATE_FUNC(Boss);
 
 };
+
+
+
+
 #endif
