@@ -11,40 +11,40 @@ bool Gun::init() {
 	is_fire = false;//没开火
 	unsigned seed = time(0);
 	srand(seed);
-	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate),0.20);
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::myupdate), 0.20);
 	this->schedule(CC_SCHEDULE_SELECTOR(Gun::bindMonsterupdate), 2.0);//02秒绑定一次最近的怪物，防止枪抖动
-	this->schedule(CC_SCHEDULE_SELECTOR(Gun::ColdWeaponUpdate), 0.60);//挥剑
+	this->schedule(CC_SCHEDULE_SELECTOR(Gun::ColdWeaponUpdate), 1.0);//挥剑
 	return true;
 }
 
 //这个函数参数可以传枪支的坐标，这样让子弹的初始坐标在枪支前面一点。传枪和怪物的向量
-void Gun::createBullets(Point X_Y_of_Gun,Point direction_vector) {
-	Bullet* bullet = Bullet::create(); 
-	
+void Gun::createBullets(Point X_Y_of_Gun, Point direction_vector) {
+	Bullet* bullet = Bullet::create();
+
 	bullet->bindSprite(Sprite::create("fireBullet.png"));
 	int y = (int)direction_vector.y; int x = (int)direction_vector.x; int L = x * x + y * y;
 	int s = (int)sqrt((double)(L));
-	
-	
+
+
 	float f = (float)(rand() % bullet->Bullet_accuracy + 7) / 10;
 	bullet->numx = (f)*x;
 	bullet->numy = y;
 
 	bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Gun.x + 45 * (int)(direction_vector.x) / s), (float)(5 + (int)X_Y_of_Gun.y + 45 * (int)(direction_vector.y) / s)));//设置子弹的初始位置
-	
+
 	float radians = atan2(-direction_vector.y, direction_vector.x);//将弧度转换成角度
 	float degree = CC_RADIANS_TO_DEGREES(radians);
 	bullet->getSprite()->setRotation(degree);
 
 	this->addChild(bullet);//显示出子弹
-	
+
 	this->BulletsVector.pushBack(bullet);//把创建的子弹插到自己的vector中
-	
+
 }
 
 
 void Gun::Fire() {
-	this->createBullets(this->getSprite()->getPosition(),this->shootVector);
+	this->createBullets(this->getSprite()->getPosition(), this->shootVector);
 
 }
 
@@ -71,16 +71,16 @@ EnemyMonster* Gun::Shortest() {
 //锁定最近敌人算出角度
 float Gun::bindEnemy(EnemyMonster* monster1) {
 	//射击方向向量	
-	this->shootVector= monster1->Monster->getPosition() - this->getSprite()->getPosition();
+	this->shootVector = monster1->Monster->getPosition() - this->getSprite()->getPosition();
 	float radians = atan2(-shootVector.y, shootVector.x);
 	float degree = CC_RADIANS_TO_DEGREES(radians);
-    return degree;
+	return degree;
 }
 
 void Gun::myupdate(float dt) {
-	if (this->is_fire) {	
+	if (this->is_fire) {
 		if (!this->is_coldWeapon) {
-				this->Fire();	
+			this->Fire();
 		}
 	}
 }
@@ -88,12 +88,7 @@ void Gun::myupdate(float dt) {
 void Gun::ColdWeaponUpdate(float dt) {
 	if (this->is_fire) {
 		if (this->is_coldWeapon) {
-			//跑动画
-
-			//skl
-			//skl
-			//skl
-
+			this->getSprite()->runAction(SwordAttack());
 
 
 			//挡子弹
@@ -181,4 +176,22 @@ void Gun::bindMonsterupdate(float dt) {
 	if (MapScene::sharedScene->Hero->RoomPosition > 0 && (!MapScene::sharedScene->monster->isAllDead())) {
 		MapScene::sharedScene->Hero->bindedMonster = this->Shortest();
 	}
+}
+Animate* Gun::SwordAttack()
+{
+	auto* m_frameCache = SpriteFrameCache::getInstance();
+	m_frameCache->addSpriteFramesWithFile("swordattack.plist", "swordattack.png");
+	Vector<SpriteFrame*>frameArray;
+	for (int i = 1; i <=10; i++)
+	{
+		log("picture%d", i);
+		auto* frame = m_frameCache->getSpriteFrameByName(
+			StringUtils::format("sword%d.png",i));
+		frameArray.pushBack(frame);
+
+	}
+	Animation* animation = Animation::createWithSpriteFrames(frameArray);
+	animation->setLoops(1);
+	animation->setDelayPerUnit(0.1f);
+	return Animate::create(animation);
 }

@@ -36,7 +36,7 @@ public:
 	void bindMonsterupdate(float dt);
 	void ColdWeaponUpdate(float dt);
 	//string imagload_of_Bullet;//子弹的图片路径
+	Animate* SwordAttack();//剑的挥砍动画
 };
 
 #endif // !_GUN_H__
-
