@@ -38,7 +38,7 @@ public:
 
 	void HeroInit();
 
-	int RoomPosition;//ÈËÎï´¦ÔÚÄÄ¸ö·¿¼ä
+	int RoomPosition;//äººç‰©å¤„åœ¨å“ªä¸ªæˆ¿é—´
 
 	void HeroRoomUpdate(float dt);
 
@@ -48,20 +48,20 @@ public:
 
 	cocos2d::Animate* HeroDead();
 
-	int blood;//ÈËÎïµÄÑªÁ¿
+	int blood;//äººç‰©çš„è¡€é‡
 
-	int  Mp;//ÈËÎïÀ¶Á¿
+	int  Mp;//äººç‰©è“é‡
 
-	int Ac;//ÈËÎï»¤¼×
+	int Ac;//äººç‰©æŠ¤ç”²
+
+        void ChangeScene();//åˆ‡æ¢åœºæ™¯
 
 
+	int direction;//è·å–äººç‰©ç§»åŠ¨çš„æ–¹å‘
 
+	bool isStand;//åˆ¤æ–­äººç‰©æ˜¯å¦ç«™ç«‹ä¸åŠ¨
 
-	int direction;//»ñÈ¡ÈËÎïÒÆ¶¯µÄ·½Ïò
-
-	bool isStand;//ÅĞ¶ÏÈËÎïÊÇ·ñÕ¾Á¢²»¶¯
-
-	bool isDirectionChange;//ÅĞ¶ÏÈËÎïÒÆ¶¯·½ÏòÊÇ·ñ±ä»¯
+	bool isDirectionChange;//åˆ¤æ–­äººç‰©ç§»åŠ¨æ–¹å‘æ˜¯å¦å˜åŒ–
 
 	void update(float delta) override;
 
@@ -71,8 +71,8 @@ public:
 
 	cocos2d::Animate* createAnimate(int direction, int num);
 
-	void addGun(Gun* gun);//°ó¶¨ÕıÔÚÊ¹ÓÃµÄÇ¹Ö§
-	vector<Gun*> GunOfHero;//Ö÷½ÇµÄÇ¹;Ã¿´ÎÇĞ»»Ç¹¶¼°Ñµ±Ç°Ê¹ÓÃµÄÇ¹·ÅÔÚºóÃæ£¬ÒÔ±ãÓÚ³öÈİÆ÷
+	void addGun(Gun* gun);//ç»‘å®šæ­£åœ¨ä½¿ç”¨çš„æªæ”¯
+	vector<Gun*> GunOfHero;//ä¸»è§’çš„æª;æ¯æ¬¡åˆ‡æ¢æªéƒ½æŠŠå½“å‰ä½¿ç”¨çš„æªæ”¾åœ¨åé¢ï¼Œä»¥ä¾¿äºå‡ºå®¹å™¨
 	bool is_twoGun = false;
 	void deleteblood(int attack);
 	CREATE_FUNC(Hero);
