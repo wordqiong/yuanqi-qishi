@@ -1,11 +1,11 @@
 
-#pragma once
+
 #ifndef __ENEMY_H__
 #define __ENEMY_H__
 
-#define MonsterNumber 5
+#define MonsterNumber 1
 
-
+#include "Bullet.h"
 #include "cocos2d.h"
 class EnemyMonster : public cocos2d::Layer
 {
@@ -43,7 +43,7 @@ public:
 
     void start(int type, int positionX, int positionY);//设置小怪的种类和起始位置
 
-    void MoveMonster(int num);//小怪移动函数
+    void EnemyMonster::MoveMonster(int num);//小怪移动函数
 
     CREATE_FUNC(EnemyMonster);
 
@@ -55,7 +55,7 @@ public:
 
     virtual cocos2d::Animate* createAnimate_move(int MonsterType, int direction, int num);//创建移动动画
 
-    cocos2d::Animate* createAnimate_dead(int MonsterType, int direction, int num);//创建死亡动画
+    cocos2d::Animate* createAnimate_dead(int MonsterType, int direction, int num1, int num2, unsigned int time);//创建死亡动画
     
     void MonsterResume();
 

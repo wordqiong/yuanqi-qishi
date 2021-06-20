@@ -1,20 +1,27 @@
 #include"Hero.h"
 USING_NS_CC;
-
-
-
 bool Hero::init()
 {
-    if (!Sprite::init())
-    {
-        return false;
-    }
+	if (!Sprite::init())
+	{
+		return false;
+	}
     schedule(CC_SCHEDULE_SELECTOR(Hero::update));
     schedule(CC_SCHEDULE_SELECTOR(Hero::HeroRoomUpdate));
-    return true;
+	return true;
 
 }
 
+void Hero::addGun(Gun* gun) {
+    if (this->GunOfHero.size() == 1) {
+        this->GunOfHero.push_back(gun);
+    }
+    if (this->GunOfHero.size() == 2) {
+        this->GunOfHero.pop_back();
+        this->GunOfHero.push_back(gun);
+    }
+
+}
 Hero* Hero::createHero()
 {
     Hero* hero = new Hero();
@@ -23,7 +30,6 @@ Hero* Hero::createHero()
     {
         hero->autorelease();
         hero->HeroInit();
-
         return hero;
     }
     CC_SAFE_DELETE(hero);
@@ -42,8 +48,10 @@ void Hero::HeroInit()
     hero->setScale(0.6f);
     hero->setPosition(32 * 10.0f, 32 * 92.0f);//创建hero，将它放在地图中央
     blood = HeroBlood;
-    Mp = HeroMp;
     Ac = HeroAc;
+    Mp = HeroMp;
+ 
+    
 }
 
 Animate* Hero::createAnimate(int direction, int num)
@@ -90,11 +98,14 @@ void Hero::update(float delta)
     float offsetX = 0, offsetY = 0;
     if (keys[leftArrow])
     {
-        if (direction == 2)
+        if (this->RoomPosition==0||MapScene::sharedScene->monster->isAllDead())
         {
-            isDirectionChange = true;
+            if (direction == 2)
+            {
+                isDirectionChange = true;
+            }
+            direction = 1;//代表向左
         }
-        direction = 1;//代表向左
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = -1.41;
@@ -116,11 +127,14 @@ void Hero::update(float delta)
     }
     if (keys[rightArrow])
     {
-        if (direction == 1)
-        {
-            isDirectionChange = true;
+        if (this->RoomPosition == 0 || MapScene::sharedScene->monster->isAllDead()) {
+            if (direction == 1)
+            {
+                isDirectionChange = true;
+            }
+            direction = 2;//代表向右
         }
-        direction = 2;//代表向右
+        
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = 1.41;
@@ -189,11 +203,8 @@ void Hero::update(float delta)
         HeroResume();
         isStand = true;
     }
-
-
-
-
     offsetX = offsetY = 0;
+
 
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
@@ -216,7 +227,3 @@ void Hero::HeroRoomUpdate(float dt)
     else
         RoomPosition = 0;
 }
-
-
-
-
