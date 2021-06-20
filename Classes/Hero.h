@@ -51,7 +51,7 @@ public:
 	int Ac;//人物护甲
 
 
-
+	void Hero::deleteblood(int attack);
 
 	int direction;//获取人物移动的方向
 

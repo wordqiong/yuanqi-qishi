@@ -1197,9 +1197,7 @@ void  MapScene::Boardupdate()
 }
 void MapScene::BloodCreate()
 {
-    //////////////////////////////
-    if(Hero->blood!=HeroBlood)
-    BloodLabel->setVisible(false);
+    removeChild(BloodLabel);
     /*状态数字信息*/
     BloodNum = to_string(Hero->blood) + "/ " + to_string(HeroBlood);
     BloodLabel = Label::createWithTTF(BloodNum, "fonts/Marker Felt.ttf", 15);
@@ -1209,20 +1207,10 @@ void MapScene::BloodCreate()
     // something happened, change the percentage of the loading bar
     BloodLoadingBar->setPercent(TransPencent(1));
     BloodLoadingBar->setScale(0.5f);
-   
-
-   
-   
- 
-
 }
 void MapScene::MpCreate()
 {
-    //////////////////////////////
-
-    /*状态数字信息*/
-    if (Hero->Mp != HeroMp)
-        MPLabel->setVisible(false);
+    removeChild(MPLabel);
     MPNum = to_string(Hero->Mp) + "/ " + to_string(HeroMp);
     MPLabel = Label::createWithTTF(MPNum, "fonts/Marker Felt.ttf", 15);
     MPLabel->setPosition(Vec2(112, 555));
@@ -1233,30 +1221,47 @@ void MapScene::MpCreate()
     MpLoadingBar->setPercent(TransPencent(2));
     MpLoadingBar->setScale(0.5f);
 
-   
-    
-  
 }
 void MapScene::AcCreate()
 {
     //////////////////////////////
-
-
- 
+        removeChild(AcLabel);
     /*状态数字信息*/
-    if (Hero->Ac != HeroAc)
-        AcLabel->setVisible(false);
+    
     AcNum = to_string(Hero->Ac) + "/ " + to_string(HeroAc);
   
     AcLabel = Label::createWithTTF(AcNum, "fonts/Marker Felt.ttf", 15);
     AcLabel->setPosition(Vec2(112, 580));
+   
     this->addChild(AcLabel);
 
     // something happened, change the percentage of the loading bar
-    AcLoadingBar->setPercent(TransPencent(2));
+    AcLoadingBar->setPercent(TransPencent(3));
     AcLoadingBar->setScale(0.5f);
 
-   
-   
+}
+bool MapScene::isCanReachBoxJudge(float x, float y, char name)
+{
+    int mapX = (int)((x - 16) / 32 + 1);//地图宽从1开始
+    int mapY = (int)(99 - (y - 16) / 32);//地图长为100
+    if (mapX < 0 || mapX>73 || mapY < 0 || mapY>99)
+    {
+        return false;
+    }
+    int tileGid = box_create->getTileGIDAt(Vec2(mapX, mapY));
+    auto properties = map->getPropertiesForGID(tileGid);
+    auto mid = properties.asValueMap().at("box");
+    if (mid.asString().compare("true") == 0)
+    {
+        //TMXLayer* barrier = map->getLayer("box_create");
+        //barrier->removeTileAt(Vec2(mapX, mapY));
+        log("box is using");
+        return false;
+    }
+    else
+    {
+        log("box is using");
+        return true;
+    }
 
 }

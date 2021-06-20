@@ -147,6 +147,9 @@ public:
     cocos2d::TMXLayer* box_create;
     bool MapScene::isCanReach(float x, float y, char name = ' ');
     bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow);
+
+    bool MapScene::isCanReachBoxJudge(float x, float y, char name = ' ');
+
     void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3 = '-');
 protected:
     //自用
@@ -169,6 +172,10 @@ protected:
     bool MapScene::StateDoor(int ValueWall);
     int JudgeOpenTime = 0;
     int MapScene::JudgeWhichRoomIn();
+
+
+
+ 
 private:
     int Room[4] = { 1 ,1,1,1};//1表示未曾进入 0表示已经进入
 

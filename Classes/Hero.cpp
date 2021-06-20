@@ -232,6 +232,20 @@ void Hero::HeroRoomUpdate(float dt)
 void Hero::AcUpdate(float dt)
 {
     Ac++;
-    if (Ac > 5)
-        Ac = 5;
+    
+    if (Ac > HeroAc)
+        Ac = HeroAc;
+    MapScene::sharedScene->Boardupdate();
+}
+
+void Hero::deleteblood(int attack)
+{
+    if (attack <= Ac)
+        Ac = Ac - attack;
+    else
+    {
+        Ac = 0;
+        blood = blood - (attack - Ac);
+    }
+
 }
