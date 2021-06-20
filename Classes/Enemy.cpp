@@ -92,7 +92,7 @@ bool EnemyMonster::init()
 
 }
 
-void EnemyMonster::monsterInit()//¶ÔÀà½øĞĞ³õÊ¼»¯
+void EnemyMonster::monsterInit()//å¯¹ç±»è¿›è¡Œåˆå§‹åŒ–
 {
 	isAllFade = false;
 	for (int i = 0; i < MonsterNumber; i++)
@@ -104,19 +104,19 @@ void EnemyMonster::monsterInit()//¶ÔÀà½øĞĞ³õÊ¼»¯
 	}
 }
 
-void EnemyMonster::MonsterInit()//¶Ô¾«Áé½øĞĞ³õÊ¼»¯
+void EnemyMonster::MonsterInit()//å¯¹ç²¾çµè¿›è¡Œåˆå§‹åŒ–
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	direction = 1;//³õÊ¼×´Ì¬ÏòÓÒ
-	isStand = true;//³õÊ¼×´Ì¬ÎªÕ¾Á¢
+	direction = 1;//åˆå§‹çŠ¶æ€å‘å³
+	isStand = true;//åˆå§‹çŠ¶æ€ä¸ºç«™ç«‹
 	isFade = false;
 	for (int i = 1; i <= 3; i++)
-		inAttack[i] = false;//³õÊ¼×´Ì¬Îª²»¹¥»÷
+		inAttack[i] = false;//åˆå§‹çŠ¶æ€ä¸ºä¸æ”»å‡»
 	AttackTime[1] = attack_time_of_pig;
 	AttackTime[2] = attack_time_of_shooter;
-	AttackTime[3] = attack_time_of_archer;//ÉèÖÃ¹ÖÎï¹¥»÷¼ä¸ô
-	isDirectionChange = false;//³õÊ¼×´Ì¬Îª·½Ïò²»¸Ä±ä
+	AttackTime[3] = attack_time_of_archer;//è®¾ç½®æ€ªç‰©æ”»å‡»é—´éš”
+	isDirectionChange = false;//åˆå§‹çŠ¶æ€ä¸ºæ–¹å‘ä¸æ”¹å˜
 	OriginalPosition(MapScene::sharedScene->Hero->RoomPosition);
 	MonsterType = rand() % 3 + 1;
 }
@@ -255,7 +255,7 @@ void EnemyMonster::MonsterResume()
 	Monster->runAction(createAnimate_move(MonsterType, direction, 1));
 }
 
-void EnemyMonster::MoveUpdate(float dt)//ÒÆ¶¯ËùÓĞĞ¡¹Ö
+void EnemyMonster::MoveUpdate(float dt)//ç§»åŠ¨æ‰€æœ‰å°æ€ª
 {
 
 	for (int i = 0; i < MonsterNumber; i++)
@@ -300,7 +300,7 @@ void EnemyMonster::AllMonstersfade()
 
 void EnemyMonster::AttackUpdate(float dt)
 {
-	static int k = 1;//¼ÇÂ¼ÊÇ·ñ´¦ÓÚ¹¥»÷×´Ì¬
+	static int k = 1;//è®°å½•æ˜¯å¦å¤„äºæ”»å‡»çŠ¶æ€
 	k++;
 
 	for (int i = 0; i < MonsterNumber; i++)
@@ -321,8 +321,8 @@ void EnemyMonster::AttackUpdate(float dt)
 				{
 					if (Range_of_attack_pig >= s)
 					{
-						//ÕâÀïÊÇ²»ÊÇ¿ÉÒÔÅÜ¶¯»­»ò¶¯×÷
-						MapScene::sharedScene->Hero->blood = MapScene::sharedScene->Hero->blood - attack_of_pig;
+						//è¿™é‡Œæ˜¯ä¸æ˜¯å¯ä»¥è·‘åŠ¨ç”»æˆ–åŠ¨ä½œ
+						MapScene::sharedScene->Hero->deleteblood( attack_of_pig);
 
 					}
 				}
@@ -381,14 +381,14 @@ void EnemyMonster::createMonsterBullets(Point X_Y_of_Monster, Point direction_ve
 	bullet->numx = (f)*x;
 	bullet->numy = y;
 
-	bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Monster.x + 30 * (int)(direction_vector.x) / s), (float)(5 + (int)X_Y_of_Monster.y + 30 * (int)(direction_vector.y) / s)));//ÉèÖÃ×Óµ¯µÄ³õÊ¼Î»ÖÃ
-	float radians = atan2(-direction_vector.y, direction_vector.x);//½«»¡¶È×ª»»³É½Ç¶È
+	bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Monster.x + 30 * (int)(direction_vector.x) / s), (float)(5 + (int)X_Y_of_Monster.y + 30 * (int)(direction_vector.y) / s)));//è®¾ç½®å­å¼¹çš„åˆå§‹ä½ç½®
+	float radians = atan2(-direction_vector.y, direction_vector.x);//å°†å¼§åº¦è½¬æ¢æˆè§’åº¦
 	float degree = CC_RADIANS_TO_DEGREES(radians);
 	bullet->getSprite()->setRotation(degree);
 
-	MapScene::sharedScene->map->addChild(bullet);//ÏÔÊ¾³ö×Óµ¯
+	MapScene::sharedScene->map->addChild(bullet);//æ˜¾ç¤ºå‡ºå­å¼¹
 
-	MapScene::sharedScene->MonsterBulletsVector.pushBack(bullet);//°Ñ´´½¨µÄ×Óµ¯²åµ½×Ô¼ºµÄvectorÖĞ
+	MapScene::sharedScene->MonsterBulletsVector.pushBack(bullet);//æŠŠåˆ›å»ºçš„å­å¼¹æ’åˆ°è‡ªå·±çš„vectorä¸­
 }
 
 void EnemyMonster::MonsterFire() {
