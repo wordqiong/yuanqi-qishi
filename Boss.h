@@ -8,6 +8,7 @@
 #include "Enemy.h"
 #include "MapScene.h"
 #include "cocos2d.h"
+
 class EnemyMonster;
 class Boss :public  EnemyMonster
 {
@@ -20,7 +21,7 @@ public:
 
 	static Boss* createBoss();
 
-	cocos2d::Sprite*boss;//箱子的精灵实例 
+
 
 	void MoveBoss();
 
@@ -31,7 +32,8 @@ public:
 	cocos2d::Animate* createAnimate_attack(int BossType, int direction,int num);
 
 	void isDead();
-	
+
+
 	bool isFade;
 
 	void DeadUpdate(float dt);

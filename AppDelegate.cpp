@@ -1,6 +1,6 @@
 #include "AppDelegate.h"
 #include "MapScene.h"
-
+#include "HelloWorldScene.h"
 #include "SafeRoomMove.h"
 
 // #define USE_AUDIO_ENGINE 1

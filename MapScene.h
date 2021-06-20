@@ -1,5 +1,6 @@
-#ifndef __MAPSCENE_H__
-#define __MAPSCENE_H__
+#ifndef __MAP_SCENE_H__
+#define __MAP_SCENE_H__
+
 #define MAP_WALL 203
 #define MAP_LOBBY 12254
 #define MAP_BARRIER_TREE 1456
@@ -8,6 +9,8 @@
 #define MAP_ROOM_3 11853
 #define MAP_ROOM_4 11854
 #define MAP_DOOR 1217
+
+
 #include"Hero.h"
 #include "cocos2d.h"
 #include "Bullet.h"
@@ -17,12 +20,17 @@
 #include "ui/CocosGUI.h"
 #include "AnimationUtil.h"
 #include "BackGroundMusic.h"
-#include "Enemy.h"
 #include"box.h"
 #include"Boss.h"
+
+
+
 #include "ui\UIButton.h"
 #include<cmath>
 #include<string>
+
+
+
 class Hero;
 class Boss;
 class Box;
@@ -32,7 +40,10 @@ class MapScene : public cocos2d::Scene
 public:
 
 
-    static MapScene* sharedScene;//创建指向该场景的指针
+    Animation* animation_bullet;
+
+
+    static MapScene* sharedScene;//创建指向该场景的指针d
 
     static cocos2d::Scene* createScene();
 
@@ -41,6 +52,8 @@ public:
     void CreateUpdate(float dt);
 
     void GunUpdate(float dt);
+
+
 
     void touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type);//按钮监听
     
@@ -55,8 +68,8 @@ public:
     void addGun();
 
     vector<Gun*> GunsVector;//枪械容器
-    //Vector<Bullet*> MonsterBulletsVector//怪物子弹容器
     Vector<Bullet*> MonsterBulletsVector;
+    /*vector<Monster*> MonsterVector;*/
     vector<Potion*> PotionVector;
     Potion* BindedPotion;//消息按钮绑定的物品
     Gun* BindedGun;
@@ -72,7 +85,9 @@ public:
 
     EnemyMonster* monster;
 
-    Box* box[5]; 
+    Box* _box[5];
+
+    bool box_judge[5] = { 0,0,0,0,0 };
 
     Boss* boss;//创建实例
     //移动所需的语句
@@ -122,12 +137,19 @@ public:
     float MapScene::TransPencent(int type);
     void MapScene::MpCreate();
     void MapScene::AcCreate();
+
+
+
+
     void  MapScene::BoardCreate();
     void  MapScene::Boardupdate();
     //箱子所在图层
     cocos2d::TMXLayer* box_create;
     bool MapScene::isCanReach(float x, float y, char name = ' ');
     bool MapScene::JudgeBarrier(float offsetX, float offsetY, char key_arrow);
+
+    bool MapScene::isCanReachBoxJudge(float x, float y, char name = ' ');
+
     void MapScene::FinalMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3 = '-');
 protected:
     //自用
@@ -151,10 +173,25 @@ protected:
     int JudgeOpenTime = 0;
     int MapScene::JudgeWhichRoomIn();
 private:
-    int Room[4] = { 1 };//1表示未曾进入 0表示已经进入
+    int Room[4] = { 1 ,1,1,1};//1表示未曾进入 0表示已经进入
 
     ui::LoadingBar* BloodLoadingBar;
     ui::LoadingBar* MpLoadingBar;
     ui::LoadingBar* AcLoadingBar;
+
+    //open
+    Sprite* runSp[7];
+    //close
+    Sprite* runSp_2[7];
+
+
+    Label* BloodLabel;
+    Label* AcLabel;
+    Label* MPLabel;
+    //扣血数字
+    Label* BloodDelete;
+    string BloodNum;
+    string MPNum;
+    string AcNum;
 };
 #endif 

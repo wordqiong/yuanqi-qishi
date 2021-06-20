@@ -2,13 +2,14 @@
 USING_NS_CC;
 bool Hero::init()
 {
-	if (!Sprite::init())
-	{
-		return false;
-	}
+    if (!Sprite::init())
+    {
+        return false;
+    }
     schedule(CC_SCHEDULE_SELECTOR(Hero::update));
     schedule(CC_SCHEDULE_SELECTOR(Hero::HeroRoomUpdate));
-	return true;
+    schedule(CC_SCHEDULE_SELECTOR(Hero::AcUpdate),3.0f);
+    return true;
 
 }
 
@@ -48,8 +49,10 @@ void Hero::HeroInit()
     hero->setScale(0.6f);
     hero->setPosition(32 * 10.0f, 32 * 92.0f);//创建hero，将它放在地图中央
     blood = HeroBlood;
- 
-    
+    Ac = HeroAc;
+    Mp = HeroMp;
+
+
 }
 
 Animate* Hero::createAnimate(int direction, int num)
@@ -77,7 +80,7 @@ void Hero::HeroResume()
 
 void Hero::update(float delta)
 {
-    MapScene::sharedScene->Boardupdate();
+   
     Node::update(delta);
     auto leftArrow = EventKeyboard::KeyCode::KEY_A, rightArrow = EventKeyboard::KeyCode::KEY_D,
         upArrow = EventKeyboard::KeyCode::KEY_W, downArrow = EventKeyboard::KeyCode::KEY_S;
@@ -96,14 +99,14 @@ void Hero::update(float delta)
     float offsetX = 0, offsetY = 0;
     if (keys[leftArrow])
     {
-        if (this->RoomPosition == 0 || MapScene::sharedScene->monster->isAllDead()) {
+        if (this->RoomPosition == 0 || (MapScene::sharedScene->Hero->RoomPosition<4&&MapScene::sharedScene->monster->isAllDead())||(MapScene::sharedScene->Hero->RoomPosition==4&&MapScene::sharedScene->monster->isAllDead()&&MapScene::sharedScene->boss->blood<=0))
+        {
             if (direction == 2)
             {
                 isDirectionChange = true;
             }
             direction = 1;//代表向左
         }
-        
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = -1.41;
@@ -125,13 +128,14 @@ void Hero::update(float delta)
     }
     if (keys[rightArrow])
     {
-        if (this->RoomPosition == 0 || MapScene::sharedScene->monster->isAllDead()) {
+        if (this->RoomPosition == 0 || (MapScene::sharedScene->Hero->RoomPosition < 4 && MapScene::sharedScene->monster->isAllDead()) || (MapScene::sharedScene->Hero->RoomPosition == 4 && MapScene::sharedScene->monster->isAllDead() && MapScene::sharedScene->boss->blood <= 0)) {
             if (direction == 1)
             {
                 isDirectionChange = true;
             }
             direction = 2;//代表向右
         }
+
         if (keys[upArrow] || keys[downArrow])
         {
             offsetX = 1.41;
@@ -202,6 +206,7 @@ void Hero::update(float delta)
     }
     offsetX = offsetY = 0;
 
+
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
 }
@@ -222,4 +227,26 @@ void Hero::HeroRoomUpdate(float dt)
         RoomPosition = 4;
     else
         RoomPosition = 0;
+}
+
+void Hero::AcUpdate(float dt)
+{
+    Ac++;
+ 
+
+    if (Ac > HeroAc)
+        Ac = HeroAc;
+    MapScene::sharedScene->Boardupdate();
+}
+
+void Hero::deleteblood(int attack)
+{
+    if (attack <= Ac)
+        Ac = Ac - attack;
+    else
+    {
+        Ac = 0;
+        blood = blood - (attack - Ac);
+    }
+
 }

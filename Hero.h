@@ -1,7 +1,10 @@
+#pragma once
 #ifndef __HERO_H__
 #define __HERO_H__
 
 #define HeroBlood 7
+#define HeroAc 5
+#define HeroMp 200
 #define room1_x_min  35 * 32
 #define room1_x_max  68 * 32
 #define room1_y_min  79 * 32
@@ -18,18 +21,17 @@
 #define room4_x_max  70 * 32
 #define room4_y_min  4 * 32
 #define room4_y_max  25 * 32
-
+#include "MapScene.h"
 #include "MapScene.h"
 #include "cocos2d.h"
-#include"Gun.h"
+#include"gun.h"
 
-class Gun;
 
 class Hero : public cocos2d::Sprite
 {
 public:
-
-	cocos2d::Sprite* hero ;
+	EnemyMonster* bindedMonster;
+	cocos2d::Sprite* hero;
 
 	virtual bool init();
 
@@ -41,6 +43,8 @@ public:
 
 	void HeroRoomUpdate(float dt);
 
+	void AcUpdate(float dt);
+
 	int blood;//人物的血量
 
 	int  Mp;//人物蓝量
@@ -48,13 +52,13 @@ public:
 	int Ac;//人物护甲
 
 
+
+
 	int direction;//获取人物移动的方向
 
 	bool isStand;//判断人物是否站立不动
 
 	bool isDirectionChange;//判断人物移动方向是否变化
-
-	EnemyMonster* bindedMonster = NULL;//被绑定的怪
 
 	void update(float delta) override;
 
@@ -67,7 +71,7 @@ public:
 	void addGun(Gun* gun);//绑定正在使用的枪支
 	vector<Gun*> GunOfHero;//主角的枪;每次切换枪都把当前使用的枪放在后面，以便于出容器
 	bool is_twoGun = false;
-
+	void Hero::deleteblood(int attack);
 	CREATE_FUNC(Hero);
 };
 

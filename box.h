@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include "MapScene.h"
 #include "cocos2d.h"
+
 class Box :public  EnemyMonster
 {
 public:
@@ -33,6 +34,8 @@ public:
 	void isDead();
 
 	void DeadUpdate(float dt);
+	bool BoxJudgeFind(float x, float y);
+	int Box::FindBox(float x, float y);
 
 	void Fade();
 };

@@ -5,6 +5,7 @@
 #include <mmsystem.h>
 #include <string>
 
+
 namespace CocosDenshion {
 
 class MciPlayer
