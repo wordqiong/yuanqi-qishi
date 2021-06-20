@@ -8,7 +8,7 @@ bool Hero::init()
     }
     schedule(CC_SCHEDULE_SELECTOR(Hero::update));
     schedule(CC_SCHEDULE_SELECTOR(Hero::HeroRoomUpdate));
-    schedule(CC_SCHEDULE_SELECTOR(Hero::AcUpdate),3.0f);
+    schedule(CC_SCHEDULE_SELECTOR(Hero::AcUpdate), 3.0f);
     return true;
 
 }
@@ -80,7 +80,8 @@ void Hero::HeroResume()
 
 void Hero::update(float delta)
 {
-   
+    
+
     Node::update(delta);
     auto leftArrow = EventKeyboard::KeyCode::KEY_A, rightArrow = EventKeyboard::KeyCode::KEY_D,
         upArrow = EventKeyboard::KeyCode::KEY_W, downArrow = EventKeyboard::KeyCode::KEY_S;
@@ -232,6 +233,18 @@ void Hero::HeroRoomUpdate(float dt)
 void Hero::AcUpdate(float dt)
 {
     Ac++;
-    if (Ac > 5)
-        Ac = 5;
+    if (Ac > HeroAc)
+        Ac = HeroAc;
+}
+
+void Hero::deleteblood(int attack)
+{
+    if (attack <= Ac)
+        Ac = Ac - attack;
+    else
+    {
+        Ac = 0;
+        blood = blood - (attack - Ac);
+    }
+
 }

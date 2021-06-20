@@ -3,7 +3,7 @@
 #define __BOX_H__
 
 #define BoxNumber 10
-#define BoxBlood 10
+#define BoxBlood 5
 #include "Enemy.h"
 #include "MapScene.h"
 #include "cocos2d.h"
@@ -33,8 +33,6 @@ public:
 	void isDead();
 
 	void DeadUpdate(float dt);
-	bool BoxJudgeFind(float x, float y);
-	int Box::FindBox(float x, float y);
 
 	void Fade();
 };

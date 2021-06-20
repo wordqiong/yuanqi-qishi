@@ -22,8 +22,8 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __BackGroundMusic_H__
-#define __BackGroundMusic_H__
+#ifndef __HELLOWORLD_SCENE_H__
+#define __HELLOWORLD_SCENE_H__
 #include "ui/CocosGUI.h"
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
@@ -31,7 +31,7 @@ class BackGroundMusic : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
-   cocos2d::ui::LoadingBar* loadingBar;
+    cocos2d::ui::LoadingBar* loadingBar;
     virtual bool init();
     CocosDenshion::SimpleAudioEngine* audio;
     cocos2d::ui::CheckBox checkbox;
@@ -39,8 +39,8 @@ public:
     CREATE_FUNC(BackGroundMusic);
 private:
     float ChangeValumn = 0;
- 
-   
+
+
     std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
     void BackGroundMusic::setValumn(float dt);
 };

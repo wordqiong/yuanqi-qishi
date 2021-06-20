@@ -3,12 +3,12 @@
 
 #include"Hero.h"
 USING_NS_CC;
-#define Range_of_attack_pig 20
-#define Range_of_attack_shooter 100
-#define Range_of_attack_archer 200
-#define attack_of_pig 5
-#define attack_of_shooter 10
-#define attack_of_archer 15
+#define Range_of_attack_pig 32*1
+#define Range_of_attack_shooter 32*5
+#define Range_of_attack_archer 32*6
+#define attack_of_pig 2
+#define attack_of_shooter 2
+#define attack_of_archer 3
 #define attack_time_of_pig 3
 #define attack_time_of_shooter 4
 #define attack_time_of_archer 5
@@ -56,7 +56,7 @@ void EnemyMonster::OriginalPosition(int RoomNumber)
 		PositionX = rand() % (x_max - x_min) - 32 + x_min;
 		PositionY = rand() % (y_max - y_min) - 32 + y_min;
 	} while ((!MapScene::sharedScene->isCanReach(PositionX, PositionY, MAP_BARRIER_TREE)
-		/*|| ((!MapScene::sharedScene->isCanReach(PositionX, PositionY)))*/))
+		|| ((!MapScene::sharedScene->isCanReach(PositionX, PositionY)))))
 		;
 }
 
@@ -321,14 +321,14 @@ void EnemyMonster::AttackUpdate(float dt)
 					if (Range_of_attack_pig >= s)
 					{
 						//这里是不是可以跑动画或动作
-						MapScene::sharedScene->Hero->blood = MapScene::sharedScene->Hero->blood - attack_of_pig;
+						MapScene::sharedScene->Hero->deleteblood(attack_of_pig);
 
 					}
 				}
 				else if (monster[i]->MonsterType == 2)
 				{
 					if (Range_of_attack_shooter >= s) {
-						
+
 						monster[i]->MonsterFire();
 					}
 				}
@@ -363,14 +363,14 @@ void EnemyMonster::DeadUpdate(float dt)
 void EnemyMonster::createMonsterBullets(Point X_Y_of_Monster, Point direction_vector) {
 	Bullet* bullet = Bullet::create();
 	switch (this->MonsterType) {
-	case 2:
-		bullet->bindSprite(Sprite::create("canisterBullet.png"));
-		bullet->attack = 2;
-		break;
-	case 3:
-		bullet->bindSprite(Sprite::create("arrow.png"));
-		bullet->attack = 3;
-		break;
+		case 2:
+			bullet->bindSprite(Sprite::create("canisterBullet.png"));
+			bullet->attack = attack_of_shooter;
+			break;
+		case 3:
+			bullet->bindSprite(Sprite::create("arrow.png"));
+			bullet->attack = attack_of_archer;
+			break;
 	}
 
 	int y = (int)direction_vector.y; int x = (int)direction_vector.x; int L = x * x + y * y;
@@ -421,7 +421,7 @@ void EnemyMonster::HitHeroUpdate(float dt) {
 		for (auto Bullet : MapScene::sharedScene->MonsterBulletsVector) {
 			if (!Bullet->isNeedFade) {
 				if (this->is_hit_Hero(Bullet)) {
-					MapScene::sharedScene->Hero->blood -= Bullet->attack;
+					MapScene::sharedScene->Hero->deleteblood(Bullet->attack);
 					MapScene::sharedScene->BoardCreate();
 					log("%d", MapScene::sharedScene->Hero->blood);
 					MapScene::sharedScene->Hero->hero->setPositionX(MapScene::sharedScene->Hero->hero->getPositionX() + 8 * Bullet->numx / Bullet->S);

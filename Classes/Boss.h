@@ -21,7 +21,7 @@ public:
 
 	static Boss* createBoss();
 
-	cocos2d::Sprite*boss;//箱子的精灵实例 
+	cocos2d::Sprite* boss;//箱子的精灵实例 
 
 	void MoveBoss();
 
@@ -29,10 +29,10 @@ public:
 
 	cocos2d::Animate* createAnimate_move(int direction, int num);
 
-	cocos2d::Animate* createAnimate_attack(int BossType, int direction,int num);
+	cocos2d::Animate* createAnimate_attack(int BossType, int direction, int num);
 
 	void isDead();
-	
+
 	bool isFade;
 
 	void DeadUpdate(float dt);
@@ -57,8 +57,4 @@ public:
 	CREATE_FUNC(Boss);
 
 };
-
-
-
-
-#endif#pragma once
+#endif

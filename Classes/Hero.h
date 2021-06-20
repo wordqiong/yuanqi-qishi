@@ -70,7 +70,7 @@ public:
 	void addGun(Gun* gun);//绑定正在使用的枪支
 	vector<Gun*> GunOfHero;//主角的枪;每次切换枪都把当前使用的枪放在后面，以便于出容器
 	bool is_twoGun = false;
-
+	void deleteblood(int attack);
 	CREATE_FUNC(Hero);
 };
 

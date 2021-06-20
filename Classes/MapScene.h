@@ -56,9 +56,9 @@ public:
 
 
     void touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType type);//按钮监听
-    
+
     void menuCloseCallback(cocos2d::Ref* pSender);//信号按钮监听
-   
+
     void changeGunCallback(cocos2d::Ref* pSender);//信号按钮监听
 
     void flipped(int direction);//把枪反转
@@ -85,13 +85,11 @@ public:
 
     EnemyMonster* monster;
 
-    Box* _box[5];
-
-    bool box_judge[5] = { 0,0,0,0,0 };
+    Box* box[5];
 
     Boss* boss;//创建实例
     //移动所需的语句
-    
+
     std::map<cocos2d::EventKeyboard::KeyCode, bool> keys;
 
     virtual bool init();
@@ -106,11 +104,11 @@ public:
     *@author wyh
     */
     void OpenDoor();
-        /*
-       *@brief  close doors
-       *@author wyh
-       */
-        void CloseDoor();
+    /*
+   *@brief  close doors
+   *@author wyh
+   */
+    void CloseDoor();
     /*
    *@brief  create Mosters
    *@author wyh
@@ -137,10 +135,6 @@ public:
     float MapScene::TransPencent(int type);
     void MapScene::MpCreate();
     void MapScene::AcCreate();
-
-
-
-
     void  MapScene::BoardCreate();
     void  MapScene::Boardupdate();
     //箱子所在图层
@@ -156,7 +150,7 @@ protected:
     bool MapScene::JudgeWall(float offsetX, float offsetY, char key_arrow, int ValueWall);
     bool MapScene::WhetherHeroMove(float offsetX, float offsetY, char key_arrow_1, char key_arrow_2, char key_arrow_3, int ValueWall);
 
-   
+
     int MonsterNum;
     bool PositionDoor = true;//in room ->ture in lobby->false 
 
@@ -170,7 +164,7 @@ protected:
     int JudgeOpenTime = 0;
     int MapScene::JudgeWhichRoomIn();
 private:
-    int Room[4] = { 1 ,1,1,1};//1表示未曾进入 0表示已经进入
+    int Room[4] = { 1 ,1,1,1 };//1表示未曾进入 0表示已经进入
 
     ui::LoadingBar* BloodLoadingBar;
     ui::LoadingBar* MpLoadingBar;

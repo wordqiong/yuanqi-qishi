@@ -76,39 +76,6 @@ void Box::OriginalPosition(int RoomNumber)
 	}
 }
 
-bool Box::BoxJudgeFind(float x, float y)
-{
-	if (FindBox(x, y) < 100)
-		return true;
-	else
-		return false;
-}
-int Box::FindBox(float x, float y)
-{
-
-
-	int x1 = (x - 16) / 32;
-	x1 = x1 * 32;
-	int y1 = (y - 16) / 32;
-	y1 = y1 * 32;
-
-
-
-	for (int i = 0; i < BoxNumber; i++)
-	{
-		if (x1 + 32 == box[i]->_Box->getPositionX() && y1 + 32 == box[i]->_Box->getPositionY())
-		{
-			log("%d", i);
-			return i;
-		}
-	}
-	x1 = x1 / 32;
-	y1 = y1 / 32;
-	log("%d/32,%d/32 aabadaa", x1, y1);
-
-	return 10000;
-}
-
 void Box::BoxInit()
 {
 	OriginalPosition(MapScene::sharedScene->Hero->RoomPosition);

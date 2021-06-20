@@ -24,7 +24,7 @@ void Boss::BossInit(int BossType)
 	OriginalPosition(MapScene::sharedScene->Hero->RoomPosition);
 	if (BossType == 1)
 	{
-		isStand = true; 
+		isStand = true;
 		isDirectionChange = false;
 		blood = BossBlood1;
 		boss = Sprite::create("boss1.png");
@@ -56,15 +56,15 @@ bool Boss::init()
 
 	srand((unsigned)time(NULL));
 	BossInit(1);
-	if(BossType==1)
-	    schedule(CC_SCHEDULE_SELECTOR(Boss::MoveUpdate), 0.5f);
+	if (BossType == 1)
+		schedule(CC_SCHEDULE_SELECTOR(Boss::MoveUpdate), 0.5f);
 	schedule(CC_SCHEDULE_SELECTOR(Boss::AttackUpdate), 3.0f);
 	schedule(CC_SCHEDULE_SELECTOR(Boss::DeadUpdate), 0.1f);
 	return true;
 
 }
 
-Animate* Boss::createAnimate_attack(int BossType,int direction,int num)
+Animate* Boss::createAnimate_attack(int BossType, int direction, int num)
 {
 	auto* m_frameCache = SpriteFrameCache::getInstance();
 	m_frameCache->addSpriteFramesWithFile("bossattack.plist", "bossattack.png");
@@ -72,9 +72,9 @@ Animate* Boss::createAnimate_attack(int BossType,int direction,int num)
 	for (int i = 1; i <= num; i++)
 	{
 		auto* frame = m_frameCache->getSpriteFrameByName(
-			StringUtils::format("attack%d%d%d.png",BossType,direction, i));
+			StringUtils::format("attack%d%d%d.png", BossType, direction, i));
 		frameArray.pushBack(frame);
-		
+
 	}
 	Animation* animation = Animation::createWithSpriteFrames(frameArray);
 	animation->setLoops(1);
@@ -82,7 +82,7 @@ Animate* Boss::createAnimate_attack(int BossType,int direction,int num)
 	return Animate::create(animation);
 }
 
-Animate* Boss::createAnimate_move(int direction,int num)
+Animate* Boss::createAnimate_move(int direction, int num)
 {
 	auto* m_frameCache = SpriteFrameCache::getInstance();
 	m_frameCache->addSpriteFramesWithFile("bossrun.plist", "bossrun.png");
@@ -90,7 +90,7 @@ Animate* Boss::createAnimate_move(int direction,int num)
 	for (int i = 1; i <= num; i++)
 	{
 		auto* frame = m_frameCache->getSpriteFrameByName(
-			StringUtils::format("boss1%d%d.png",  direction, i));
+			StringUtils::format("boss1%d%d.png", direction, i));
 		frameArray.pushBack(frame);
 	}
 	Animation* animation = Animation::createWithSpriteFrames(frameArray);
@@ -158,13 +158,13 @@ void Boss::BossResume()
 {
 
 	boss->stopAllActions();
-	boss->runAction(createAnimate_attack(BossType,direction, 1));
+	boss->runAction(createAnimate_attack(BossType, direction, 1));
 }
 
 void Boss::MoveUpdate(float dt)
 {
-	if(!inAttack&&blood>0)
-	    MoveBoss();
+	if (!inAttack && blood > 0)
+		MoveBoss();
 }
 
 void Boss::AttackUpdate(float dt)
@@ -172,26 +172,26 @@ void Boss::AttackUpdate(float dt)
 	static int k = 1;//记录是否处于攻击状态
 	k++;
 	inAttack = false;
-	if (k % AttackTime[BossType] == 0&&blood>0)//开始攻击
+	if (k % AttackTime[BossType] == 0 && blood > 0)//开始攻击
 	{
 		inAttack = true;
 		BossResume();
-		auto* animate1 = createAnimate_attack(BossType,direction,7);
+		auto* animate1 = createAnimate_attack(BossType, direction, 7);
 		auto* animate2 = createAnimate_attack(BossType, direction, 1);
 		log("%d", BossType);
-		boss->runAction(Sequence::create(animate1, animate2,NULL));
+		boss->runAction(Sequence::create(animate1, animate2, NULL));
 		if (BossType == 1)
 		{
 			schedule(CC_SCHEDULE_SELECTOR(Boss::Level2_1AttackUpdate), 0.5f);
 			schedule(CC_SCHEDULE_SELECTOR(Boss::Level2_2AttackUpdate), 0.4f);
 			//mxy
 		}
-		else if(BossType==2)
+		else if (BossType == 2)
 		{
 			//mxy
 		}
 	}
-	
+
 }
 
 void Boss::Level2_1AttackUpdate(float dt) {
@@ -230,15 +230,15 @@ void Boss::BossCreateBullets1(Point X_Y_of_Boss, Point direction_vector) {
 		float radians = atan2(-direction_vector.y, direction_vector.x);
 
 		switch (i) {
-		case 0:
-			bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)cos(radians + 3.1415 / 5)), (float)(60 * sin(radians + 3.1415 / 5) + (int)X_Y_of_Boss.y)));//设置子弹的初始位置
-			break;
-		case 1:
-			bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)(direction_vector.x) / s), (float)(5 + (int)X_Y_of_Boss.y + 60 * (int)(direction_vector.y) / s)));
-			break;//设置子弹的初始位置
-		case 2:
-			bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)cos(radians + 3.1415 / 5)), (float)(5 + (int)X_Y_of_Boss.y + 60 * (int)sin(radians + 3.1415 / 5))));//设置子弹的初始位置
-			break;
+			case 0:
+				bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)cos(radians + 3.1415 / 5)), (float)(60 * sin(radians + 3.1415 / 5) + (int)X_Y_of_Boss.y)));//设置子弹的初始位置
+				break;
+			case 1:
+				bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)(direction_vector.x) / s), (float)(5 + (int)X_Y_of_Boss.y + 60 * (int)(direction_vector.y) / s)));
+				break;//设置子弹的初始位置
+			case 2:
+				bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)cos(radians + 3.1415 / 5)), (float)(5 + (int)X_Y_of_Boss.y + 60 * (int)sin(radians + 3.1415 / 5))));//设置子弹的初始位置
+				break;
 		}
 
 		bullet->getSprite()->setRotation(degree);
