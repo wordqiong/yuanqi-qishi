@@ -8,7 +8,8 @@ bool Hero::init()
     }
     schedule(CC_SCHEDULE_SELECTOR(Hero::update));
     schedule(CC_SCHEDULE_SELECTOR(Hero::HeroRoomUpdate));
-    schedule(CC_SCHEDULE_SELECTOR(Hero::AcUpdate),3.0f);
+    schedule(CC_SCHEDULE_SELECTOR(Hero::AcUpdate), 3.0f);
+    schedule(CC_SCHEDULE_SELECTOR(Hero::DeadUpdate));
     return true;
 
 }
@@ -47,7 +48,7 @@ void Hero::HeroInit()
     MapScene::sharedScene->map->addChild(hero);
     hero->setAnchorPoint(Vec2::ZERO);
     hero->setScale(0.6f);
-  
+    hero->setPosition(32 * 10.0f, 32 * 92.0f);//创建hero，将它放在地图中央
     blood = HeroBlood;
     Ac = HeroAc;
     Mp = HeroMp;
@@ -62,6 +63,7 @@ Animate* Hero::createAnimate(int direction, int num)
     Vector<SpriteFrame*>frameArray;
     for (int i = 1; i <= num; i++)
     {
+        
         auto* frame = m_frameCache->getSpriteFrameByName(
             StringUtils::format("%d%d.png", direction, i));
         frameArray.pushBack(frame);
@@ -78,8 +80,14 @@ void Hero::HeroResume()
     hero->runAction(createAnimate(this->direction, 1));
 }
 
+
+
+
+
+
 void Hero::update(float delta)
 {
+    
 
     Node::update(delta);
     auto leftArrow = EventKeyboard::KeyCode::KEY_A, rightArrow = EventKeyboard::KeyCode::KEY_D,
@@ -99,7 +107,7 @@ void Hero::update(float delta)
     float offsetX = 0, offsetY = 0;
     if (keys[leftArrow])
     {
-        if (this->RoomPosition == 0 || (MapScene::sharedScene->Hero->RoomPosition < 4 && MapScene::sharedScene->monster->isAllDead()) || (MapScene::sharedScene->Hero->RoomPosition == 4 && MapScene::sharedScene->monster->isAllDead() && MapScene::sharedScene->boss->blood <= 0))
+        if (this->RoomPosition == 0 || MapScene::sharedScene->monster->isAllDead())
         {
             if (direction == 2)
             {
@@ -128,7 +136,7 @@ void Hero::update(float delta)
     }
     if (keys[rightArrow])
     {
-        if (this->RoomPosition == 0 || (MapScene::sharedScene->Hero->RoomPosition < 4 && MapScene::sharedScene->monster->isAllDead()) || (MapScene::sharedScene->Hero->RoomPosition == 4 && MapScene::sharedScene->monster->isAllDead() && MapScene::sharedScene->boss->blood <= 0)) {
+        if (this->RoomPosition == 0 || MapScene::sharedScene->monster->isAllDead()) {
             if (direction == 1)
             {
                 isDirectionChange = true;
@@ -232,10 +240,9 @@ void Hero::HeroRoomUpdate(float dt)
 void Hero::AcUpdate(float dt)
 {
     Ac++;
-    
     if (Ac > HeroAc)
         Ac = HeroAc;
-    MapScene::sharedScene->Boardupdate();
+     MapScene::sharedScene->Boardupdate();
 }
 
 void Hero::deleteblood(int attack)
@@ -248,4 +255,30 @@ void Hero::deleteblood(int attack)
         blood = blood - (attack - Ac);
     }
 
+}
+
+void Hero::DeadUpdate(float dt)
+{
+    if (blood <= 0)
+    {
+        hero->runAction(HeroDead());
+    }
+
+}
+
+Animate* Hero::HeroDead()
+{
+    auto* m_frameCache = SpriteFrameCache::getInstance();
+    m_frameCache->addSpriteFramesWithFile("deadhero.plist", "deadhero.png");
+    Vector<SpriteFrame*>frameArray;
+    for (int i = 1; i <= 2; i++)
+    {
+        auto* frame = m_frameCache->getSpriteFrameByName(
+            StringUtils::format("deadhero%d.png", i));
+        frameArray.pushBack(frame);
+    }
+    Animation* animation = Animation::createWithSpriteFrames(frameArray);
+    animation->setLoops(1);
+    animation->setDelayPerUnit(2.0f);
+    return Animate::create(animation);
 }

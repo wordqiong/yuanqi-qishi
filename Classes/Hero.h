@@ -44,6 +44,10 @@ public:
 
 	void AcUpdate(float dt);
 
+	void DeadUpdate(float dt);
+
+	cocos2d::Animate* HeroDead();
+
 	int blood;//人物的血量
 
 	int  Mp;//人物蓝量
@@ -51,7 +55,7 @@ public:
 	int Ac;//人物护甲
 
 
-	void Hero::deleteblood(int attack);
+
 
 	int direction;//获取人物移动的方向
 
@@ -70,7 +74,7 @@ public:
 	void addGun(Gun* gun);//绑定正在使用的枪支
 	vector<Gun*> GunOfHero;//主角的枪;每次切换枪都把当前使用的枪放在后面，以便于出容器
 	bool is_twoGun = false;
-
+	void deleteblood(int attack);
 	CREATE_FUNC(Hero);
 };
 
