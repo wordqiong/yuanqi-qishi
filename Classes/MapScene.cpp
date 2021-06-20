@@ -768,8 +768,7 @@ bool MapScene::isCanReach(float x, float y, int Type_Wall)
         return false;
     }
     int tileGid = layer2->getTileGIDAt(Vec2(mapX, mapY));
-   /* log("e:%d\nY:%d,X:%d", tileGid, mapY, mapX);*/
-
+  
     if (tileGid == Type_Wall)
     {
         result = false;//不可移动
@@ -962,7 +961,7 @@ void MapScene::CloseDoor()
 bool MapScene::StateDoor(int ValueWall)
 {
     //当它踏上这块启动板
-    if (!isCanReach(Hero->hero->getPositionX(), Hero->hero->getPositionY(), ValueWall))
+    if ((!isCanReach(Hero->hero->getPositionX(), Hero->hero->getPositionY(), ValueWall)))
     {
         JudgeOpenTime++;
         PositionDoor = true;
@@ -975,7 +974,7 @@ bool MapScene::StateDoor(int ValueWall)
 
         return true;//此刻房间封锁
     }
-    else if (Hero->RoomPosition!=0&&monster->isAllDead()&& PositionDoor == true)
+    else if (Hero->RoomPosition != 0 && monster->isAllDead() && PositionDoor == true)
     {
         OpenDoor();
         PositionDoor = false;
@@ -1168,28 +1167,26 @@ void  MapScene::BoardCreate()
     MpLoadingBar->setDirection(ui::LoadingBar::Direction::LEFT);
 
     Boardupdate();
-    BloodLabel = Label::createWithTTF(BloodNum, "fonts/Marker Felt.ttf", 15);
+ 
     Node::addChild(BloodLoadingBar);
     BloodLoadingBar->setPosition(Vec2(112, 605));
 
-    MPLabel = Label::createWithTTF(MPNum, "fonts/Marker Felt.ttf", 15);
+   
     Node::addChild(MpLoadingBar);
     MpLoadingBar->setPosition(Vec2(112, 555));
 
-    AcLabel = Label::createWithTTF(AcNum, "fonts/Marker Felt.ttf", 15);
+  
     Node::addChild(AcLoadingBar);
     AcLoadingBar->setPosition(Vec2(112, 580));
 
     /*状态数字信息*/
   
+   
+   
+   
 
-    BloodLabel->setPosition(Vec2(112, 605));
-    AcLabel->setPosition(Vec2(112, 580));
-    MPLabel->setPosition(Vec2(112, 555));
-
-    this->addChild(BloodLabel);
-    this->addChild(AcLabel);
-    this->addChild(MPLabel);
+   
+    
 }
 
 void  MapScene::Boardupdate()
@@ -1201,15 +1198,19 @@ void  MapScene::Boardupdate()
 void MapScene::BloodCreate()
 {
     //////////////////////////////
+    if(Hero->blood!=HeroBlood)
+    BloodLabel->setVisible(false);
+    /*状态数字信息*/
+    BloodNum = to_string(Hero->blood) + "/ " + to_string(HeroBlood);
+    BloodLabel = Label::createWithTTF(BloodNum, "fonts/Marker Felt.ttf", 15);
+    BloodLabel->setPosition(Vec2(112, 605));
+    this->addChild(BloodLabel);
 
-   
     // something happened, change the percentage of the loading bar
     BloodLoadingBar->setPercent(TransPencent(1));
     BloodLoadingBar->setScale(0.5f);
+   
 
-
-    /*状态数字信息*/
-    BloodNum = to_string(Hero->blood) + "/ " + to_string(HeroBlood);
    
    
  
@@ -1219,13 +1220,20 @@ void MapScene::MpCreate()
 {
     //////////////////////////////
 
-   
+    /*状态数字信息*/
+    if (Hero->Mp != HeroMp)
+        MPLabel->setVisible(false);
+    MPNum = to_string(Hero->Mp) + "/ " + to_string(HeroMp);
+    MPLabel = Label::createWithTTF(MPNum, "fonts/Marker Felt.ttf", 15);
+    MPLabel->setPosition(Vec2(112, 555));
+    this->addChild(MPLabel);
+
     // something happened, change the percentage of the loading bar
+
     MpLoadingBar->setPercent(TransPencent(2));
     MpLoadingBar->setScale(0.5f);
 
-    /*状态数字信息*/
-    MPNum = to_string(Hero->Mp) + "/ " + to_string(HeroMp);
+   
     
   
 }
@@ -1234,12 +1242,21 @@ void MapScene::AcCreate()
     //////////////////////////////
 
 
+ 
+    /*状态数字信息*/
+    if (Hero->Ac != HeroAc)
+        AcLabel->setVisible(false);
+    AcNum = to_string(Hero->Ac) + "/ " + to_string(HeroAc);
+  
+    AcLabel = Label::createWithTTF(AcNum, "fonts/Marker Felt.ttf", 15);
+    AcLabel->setPosition(Vec2(112, 580));
+    this->addChild(AcLabel);
+
     // something happened, change the percentage of the loading bar
     AcLoadingBar->setPercent(TransPencent(2));
     AcLoadingBar->setScale(0.5f);
 
-    /*状态数字信息*/
-    AcNum = to_string(Hero->Ac) + "/ " + to_string(HeroAc);
+   
    
 
 }
