@@ -4,6 +4,8 @@
 #include"Hero.h"
 USING_NS_CC;
 #define Range_of_attack_pig 20
+#define Range_of_attack_shooter 100
+#define Range_of_attack_archer 200
 #define attack_of_pig 5
 #define attack_of_shooter 10
 #define attack_of_archer 15
@@ -83,8 +85,10 @@ bool EnemyMonster::init()
 
 	srand((unsigned)time(NULL));
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::MoveUpdate), 0.3f);
-	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::AttackUpdate), 3.0f);
+	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::AttackUpdate), 1.0f);
 	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::DeadUpdate), 0.1f);
+	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::EnemyBulletsMoveByLineUpdate));
+	schedule(CC_SCHEDULE_SELECTOR(EnemyMonster::HitHeroUpdate));
 	return true;
 
 }
@@ -309,25 +313,33 @@ void EnemyMonster::AttackUpdate(float dt)
 				monster[i]->inAttack[monster[i]->MonsterType] = false;
 			if (monster[i]->inAttack[monster[i]->MonsterType] == true)
 			{
-				auto ds = MapScene::sharedScene->Hero->hero->getPosition() - monster[i]->getPosition();
+				auto ds = MapScene::sharedScene->Hero->hero->getPosition() - monster[i]->Monster->getPosition();
 				auto s = ds.length();
 				monster[i]->MonsterResume();
-				/*if (monster[i]->MonsterType == 1)
+				if (monster[i]->MonsterType == 1)
 				{
 					if (Range_of_attack_pig >= s)
 					{
-						MapScene::sharedScene->heroblood = MapScene::sharedScene->heroblood - attack_of_pig;
+						//这里是不是可以跑动画或动作
+						MapScene::sharedScene->Hero->blood = MapScene::sharedScene->Hero->blood - attack_of_pig;
+
 					}
 				}
-				else if (MonsterType == 2)
+				else if (monster[i]->MonsterType == 2)
 				{
-
+					if (Range_of_attack_shooter >= s) {
+						
+						monster[i]->MonsterFire();
+					}
 				}
 
 				else
 				{
+					if (Range_of_attack_archer >= s) {
 
-				}*/
+						monster[i]->MonsterFire();
+					}
+				}
 			}
 		}
 	}
@@ -346,4 +358,78 @@ void EnemyMonster::DeadUpdate(float dt)
 	}
 	if (isAllDead() && (!isAllFade))
 		AllMonstersfade();
+}
+
+void EnemyMonster::createMonsterBullets(Point X_Y_of_Monster, Point direction_vector) {
+	Bullet* bullet = Bullet::create();
+	switch (this->MonsterType) {
+	case 2:
+		bullet->bindSprite(Sprite::create("canisterBullet.png"));
+		bullet->attack = 2;
+		break;
+	case 3:
+		bullet->bindSprite(Sprite::create("arrow.png"));
+		bullet->attack = 3;
+		break;
+	}
+
+	int y = (int)direction_vector.y; int x = (int)direction_vector.x; int L = x * x + y * y;
+	int s = (int)sqrt((double)(L));
+
+	float f = (float)(rand() % bullet->Bullet_accuracy + 7) / 10;
+	bullet->numx = (f)*x;
+	bullet->numy = y;
+
+	bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Monster.x + 30 * (int)(direction_vector.x) / s), (float)(5 + (int)X_Y_of_Monster.y + 30 * (int)(direction_vector.y) / s)));//设置子弹的初始位置
+	float radians = atan2(-direction_vector.y, direction_vector.x);//将弧度转换成角度
+	float degree = CC_RADIANS_TO_DEGREES(radians);
+	bullet->getSprite()->setRotation(degree);
+
+	MapScene::sharedScene->map->addChild(bullet);//显示出子弹
+
+	MapScene::sharedScene->MonsterBulletsVector.pushBack(bullet);//把创建的子弹插到自己的vector中
+}
+
+void EnemyMonster::MonsterFire() {
+	this->createMonsterBullets(this->Monster->getPosition(), MapScene::sharedScene->Hero->hero->getPosition() - this->Monster->getPosition());
+}
+
+void EnemyMonster::EnemyBulletsMoveByLineUpdate(float dt) {
+	if (!MapScene::sharedScene->MonsterBulletsVector.empty()) {
+		for (auto bullet : MapScene::sharedScene->MonsterBulletsVector) {
+			if (!bullet->isNeedFade) {
+				bullet->S = (int)sqrt((float)(bullet->numx * bullet->numx) + (float)(bullet->numy * bullet->numy));
+				bullet->getSprite()->setPositionX(bullet->getSprite()->getPositionX() + 5 * bullet->numx / bullet->S);
+				bullet->getSprite()->setPositionY(bullet->getSprite()->getPositionY() + 5 * bullet->numy / bullet->S);
+				if (!(MapScene::sharedScene->isCanReach(bullet->getSprite()->getPositionX() - 5, bullet->getSprite()->getPositionY() - 5, MAP_WALL))) {
+					bullet->getSprite()->setVisible(false);
+					bullet->isNeedFade = true;
+				}
+			}
+		}
+	}
+}
+
+bool EnemyMonster::is_hit_Hero(Bullet* bullet) {
+	Rect entityRect = MapScene::sharedScene->Hero->hero->getBoundingBox();
+	Point BulletPos = bullet->getSprite()->getPosition();
+	return entityRect.containsPoint(BulletPos);
+}
+
+void EnemyMonster::HitHeroUpdate(float dt) {
+	if (!MapScene::sharedScene->MonsterBulletsVector.empty()) {
+		for (auto Bullet : MapScene::sharedScene->MonsterBulletsVector) {
+			if (!Bullet->isNeedFade) {
+				if (this->is_hit_Hero(Bullet)) {
+					MapScene::sharedScene->Hero->blood -= Bullet->attack;
+					MapScene::sharedScene->Boardupdate();
+					log("%d", MapScene::sharedScene->Hero->blood);
+					MapScene::sharedScene->Hero->hero->setPositionX(MapScene::sharedScene->Hero->hero->getPositionX() + 8 * Bullet->numx / Bullet->S);
+					MapScene::sharedScene->Hero->hero->setPositionY(MapScene::sharedScene->Hero->hero->getPositionY() + 8 * Bullet->numy / Bullet->S);
+					Bullet->getSprite()->setVisible(false);
+					Bullet->isNeedFade = true;
+				}
+			}
+		}
+	}
 }

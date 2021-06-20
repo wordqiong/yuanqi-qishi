@@ -8,18 +8,18 @@ bool Bullet::init() {
 	}
 
 	return true;
-	
+
 }
 
 //这是暂定的x方向子弹
 void Bullet::MovebyLine() {
-	
+
 	this->S = (int)sqrt((float)(numx * numx) + (float)(numy * numy));
-	
+
 	this->getSprite()->setPositionX(this->getSprite()->getPositionX() + 20 * numx / S);
 	this->getSprite()->setPositionY(this->getSprite()->getPositionY() + 20 * numy / S);
 }
-	
+
 ////再写个根据小怪位置定向的MovebyLine函数,传入方向参数X和Y和速度参数V,此函数暂定！！！
 
 //void Bullet::MovebyLine(int X,int Y,int V) {
@@ -31,3 +31,14 @@ void Bullet::MovebyLine() {
 void Bullet::Fade() {
 
 }
+
+bool Bullet::is_hit_Monster(EnemyMonster* monster) {
+	Rect entityRect = monster->Monster->getBoundingBox();
+	Point BulletPos = this->getSprite()->getPosition();
+	return entityRect.containsPoint(BulletPos);
+}
+//bool Bullet::is_hit_Hero(Hero* hero) {
+//	Rect entityRect = hero->getSprite()->getBoundingBox();
+//	Point BulletPos = this->getSprite()->getPosition();
+//	return entityRect.containsPoint(BulletPos);
+//}

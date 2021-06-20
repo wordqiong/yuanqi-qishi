@@ -22,8 +22,6 @@ public:
 
 	bool isFade;
 
-	int blood;
-
 	void OriginalPosition(int RoomNumber);//生成初始位置
 
 	cocos2d::Sprite* _Box;//箱子的精灵实例 
@@ -35,9 +33,10 @@ public:
 	void isDead();
 
 	void DeadUpdate(float dt);
-	bool Box::BoxJudgeFind(float x, float y);
-	void Fade();
+	bool BoxJudgeFind(float x, float y);
 	int Box::FindBox(float x, float y);
+
+	void Fade();
 };
 
 

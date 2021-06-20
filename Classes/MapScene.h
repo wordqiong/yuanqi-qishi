@@ -40,7 +40,7 @@ class MapScene : public cocos2d::Scene
 public:
 
 
-    
+    Animation* animation_bullet;
 
 
     static MapScene* sharedScene;//创建指向该场景的指针d
@@ -68,6 +68,7 @@ public:
     void addGun();
 
     vector<Gun*> GunsVector;//枪械容器
+    Vector<Bullet*> MonsterBulletsVector;
     /*vector<Monster*> MonsterVector;*/
     vector<Potion*> PotionVector;
     Potion* BindedPotion;//消息按钮绑定的物品
@@ -84,7 +85,7 @@ public:
 
     EnemyMonster* monster;
 
-    Box* _box[5]; 
+    Box* _box[5];
 
     bool box_judge[5] = { 0,0,0,0,0 };
 
@@ -136,6 +137,10 @@ public:
     float MapScene::TransPencent(int type);
     void MapScene::MpCreate();
     void MapScene::AcCreate();
+
+
+
+
     void  MapScene::BoardCreate();
     void  MapScene::Boardupdate();
     //箱子所在图层
@@ -182,6 +187,8 @@ private:
     Label* MPLabel;
     //扣血数字
     Label* BloodDelete;
-
+    string BloodNum;
+    string MPNum;
+    string AcNum;
 };
 #endif 

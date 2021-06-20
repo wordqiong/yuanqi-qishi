@@ -2,7 +2,7 @@
 #ifndef __HERO_H__
 #define __HERO_H__
 
-#define HeroBlood 100
+#define HeroBlood 7
 #define HeroAc 5
 #define HeroMp 200
 #define room1_x_min  35 * 32
@@ -30,7 +30,7 @@ class Hero : public cocos2d::Sprite
 {
 public:
 	EnemyMonster* bindedMonster;
-	cocos2d::Sprite* hero ;
+	cocos2d::Sprite* hero;
 
 	virtual bool init();
 
@@ -42,11 +42,15 @@ public:
 
 	void HeroRoomUpdate(float dt);
 
+	void AcUpdate(float dt);
+
 	int blood;//人物的血量
 
 	int  Mp;//人物蓝量
 
 	int Ac;//人物护甲
+
+
 
 
 	int direction;//获取人物移动的方向

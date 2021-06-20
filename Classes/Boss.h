@@ -8,6 +8,8 @@
 #include "Enemy.h"
 #include "MapScene.h"
 #include "cocos2d.h"
+
+class EnemyMonster;
 class Boss :public  EnemyMonster
 {
 public:
@@ -38,6 +40,15 @@ public:
 	void AttackUpdate(float dt);
 
 	void MoveUpdate(float dt);
+
+	void Level2_1AttackUpdate(float dt);//技能一
+	void Level2_2AttackUpdate(float dt);//技能二
+
+	Point BossShootVector;
+	Vector<Bullet*> BulletsVector;
+
+	void BossCreateBullets1(Point X_Y_of_Boss, Point direction_vector);
+	void BossCreateBullets2(Point X_Y_of_Boss);
 
 	int AttackTime[3];
 

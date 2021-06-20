@@ -163,7 +163,7 @@ void Boss::BossResume()
 
 void Boss::MoveUpdate(float dt)
 {
-	if(!inAttack)
+	if(!inAttack&&blood>0)
 	    MoveBoss();
 }
 
@@ -172,7 +172,7 @@ void Boss::AttackUpdate(float dt)
 	static int k = 1;//记录是否处于攻击状态
 	k++;
 	inAttack = false;
-	if (k % AttackTime[BossType] == 0)//开始攻击
+	if (k % AttackTime[BossType] == 0&&blood>0)//开始攻击
 	{
 		inAttack = true;
 		BossResume();
@@ -182,6 +182,8 @@ void Boss::AttackUpdate(float dt)
 		boss->runAction(Sequence::create(animate1, animate2,NULL));
 		if (BossType == 1)
 		{
+			schedule(CC_SCHEDULE_SELECTOR(Boss::Level2_1AttackUpdate), 0.5f);
+			schedule(CC_SCHEDULE_SELECTOR(Boss::Level2_2AttackUpdate), 0.4f);
 			//mxy
 		}
 		else if(BossType==2)
@@ -192,6 +194,18 @@ void Boss::AttackUpdate(float dt)
 	
 }
 
+void Boss::Level2_1AttackUpdate(float dt) {
+	if (this->inAttack) {
+		this->BossCreateBullets1(this->boss->getPosition(), MapScene::sharedScene->Hero->hero->getPosition() - this->boss->getPosition());
+	}
+}
+
+void Boss::Level2_2AttackUpdate(float dt) {
+	if (this->inAttack) {
+		this->BossCreateBullets2(this->boss->getPosition());
+	}
+}
+
 void Boss::DeadUpdate(float dt)
 {
 	if (isFade == false && blood <= 0)
@@ -200,4 +214,53 @@ void Boss::DeadUpdate(float dt)
 		isFade = true;
 	}
 
+}
+
+void Boss::BossCreateBullets1(Point X_Y_of_Boss, Point direction_vector) {
+	float radians = atan2(-direction_vector.y, direction_vector.x);//将弧度转换成角度
+	float degree = CC_RADIANS_TO_DEGREES(radians);
+	for (int i = 0; i < 3; i++) {
+		Bullet* bullet = Bullet::create();
+		bullet->bindSprite(Sprite::create("bossBullet.png"));
+		bullet->getSprite()->setAnchorPoint(Point(1.0, 0.5));
+		int y = (int)direction_vector.y; int x = (int)direction_vector.x; int L = x * x + y * y;
+		int s = (int)sqrt((double)(L));
+		bullet->numx = x;
+		bullet->numy = y;
+		float radians = atan2(-direction_vector.y, direction_vector.x);
+
+		switch (i) {
+		case 0:
+			bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)cos(radians + 3.1415 / 5)), (float)(60 * sin(radians + 3.1415 / 5) + (int)X_Y_of_Boss.y)));//设置子弹的初始位置
+			break;
+		case 1:
+			bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)(direction_vector.x) / s), (float)(5 + (int)X_Y_of_Boss.y + 60 * (int)(direction_vector.y) / s)));
+			break;//设置子弹的初始位置
+		case 2:
+			bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 60 * (int)cos(radians + 3.1415 / 5)), (float)(5 + (int)X_Y_of_Boss.y + 60 * (int)sin(radians + 3.1415 / 5))));//设置子弹的初始位置
+			break;
+		}
+
+		bullet->getSprite()->setRotation(degree);
+		MapScene::sharedScene->map->addChild(bullet);//显示出子弹
+		MapScene::sharedScene->MonsterBulletsVector.pushBack(bullet);//把创建的子弹插到vector中
+	}
+
+}
+
+void Boss::BossCreateBullets2(Point X_Y_of_Boss) {
+	static float hudu = 0;
+	for (int i = 0; i < 8; i++) {
+		Bullet* bullet = Bullet::create();
+		bullet->bindSprite(Sprite::create("canisterBullet.png"));
+		bullet->getSprite()->setAnchorPoint(Point(1.0, 0.5));
+		float x = 10 * cos(i * 3.1415 / 4);
+		float y = 10 * sin(i * 3.1415 / 4);
+		bullet->numx = x;
+		bullet->numy = y;
+		bullet->getSprite()->setPosition(Vec2((float)((int)X_Y_of_Boss.x + 5 * x), (float)(5 * y + (int)X_Y_of_Boss.y)));
+		MapScene::sharedScene->map->addChild(bullet);//显示出子弹
+		MapScene::sharedScene->MonsterBulletsVector.pushBack(bullet);
+	}
+	hudu += 3.1415 / 6;
 }
