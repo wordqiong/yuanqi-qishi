@@ -180,12 +180,14 @@ bool MapScene::init()
     //创建hero，将它放在地图中央
     Hero = Hero::createHero();
     addChild(Hero);
-    Gun* fireGun = Gun::create();
-    fireGun->bindSprite(Sprite::create("fireGun.png"));
-    fireGun->getSprite()->setPosition(Point(MapScene::sharedScene->Hero->hero->getPositionX() - 200, MapScene::sharedScene->Hero->hero->getPositionY() - 100));//暂时先固定位置
-    fireGun->getSprite()->setAnchorPoint(Point(0.5, 0.45));
-    MapScene::sharedScene->map->addChild(fireGun);
-    MapScene::sharedScene->GunsVector.push_back(fireGun);
+    Gun* Sword = Gun::create();
+    Sword->bindSprite(Sprite::create("sword.png"));
+    Sword->getSprite()->setPosition(Point(MapScene::sharedScene->Hero->hero->getPositionX() - 200, MapScene::sharedScene->Hero->hero->getPositionY() - 100));//暂时先固定位置
+    Sword->getSprite()->setAnchorPoint(Point(0.4, 0.45));
+    Sword->is_coldWeapon = true;
+    Sword->coldWeaponLength = 80;
+    MapScene::sharedScene->map->addChild(Sword);
+    MapScene::sharedScene->GunsVector.push_back(Sword);
     
     this->addGun();
     this->addPotion();//生成血瓶
@@ -267,7 +269,7 @@ void MapScene::touchCallBack(Ref* sender, cocos2d::ui::Widget::TouchEventType ty
 bool MapScene::isCanReach(float x, float y, char name)
 {
 
-    if ( Hero->RoomPosition != 0 && isMonsterCreated[Hero->RoomPosition] == false)
+    if (Hero->RoomPosition != 0 && isMonsterCreated[Hero->RoomPosition] == false)
     {
         if (_box[Hero->RoomPosition]->box[_box[Hero->RoomPosition]->FindBox(x, y)]->blood > 0)
         {
@@ -310,12 +312,12 @@ bool MapScene::isCanReach(float x, float y, char name)
         int tileGid = box_create->getTileGIDAt(Vec2(mapX, mapY));
         auto properties = map->getPropertiesForGID(tileGid);
         auto mid = properties.asValueMap().at("box");
-        if (mid.asString().compare("true") == 0 )
+        if (mid.asString().compare("true") == 0)
         {
-            log("%f,%f aabababababdaa", x, y);
+           /* log("%f,%f aabababababdaa", x, y);*/
             if (_box[Hero->RoomPosition]->BoxJudgeFind(x, y))
             {
-                
+
                 if (_box[Hero->RoomPosition]->box[_box[Hero->RoomPosition]->FindBox(x, y)]->blood > 0)
                     return false;
                 else {
@@ -326,24 +328,25 @@ bool MapScene::isCanReach(float x, float y, char name)
             else
             {
                 return true;
-                
+
             }
-        
-            log("box is using");
+
+           /* log("box is using");*/
             return false;
         }
         else
         {
-            log("box is using");
+           /* log("box is using");*/
             return true;
         }
 
     }
     else
         return true;
-   
+
 
 }
+
 
 
 
@@ -372,11 +375,24 @@ void MapScene::GunUpdate(float dt)
             for (auto Bullet : this->Hero->GunOfHero[0]->BulletsVector) {
                 if (!Bullet->isNeedFade) {
                     Bullet->MovebyLine();
-                    if (!(MapScene::isCanReach(Bullet->getSprite()->getPositionX() - 5, Bullet->getSprite()->getPositionY() - 5, MAP_WALL))) {
+                    if (!(MapScene::isCanReach(Bullet->getSprite()->getPositionX() - 5, Bullet->getSprite()->getPositionY() - 5, MAP_WALL))||(!MapScene::sharedScene->isCanReach(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY() , MAP_BARRIER_TREE))) {
                         /*this->GunsVector.at(0)->removeChild(Bullet,true);*///+2 * (Bullet->numx / Bullet->S)
                         Bullet->getSprite()->setVisible(false);
                         Bullet->isNeedFade = true;
+                        Sprite* BulletBone;
+                        BulletBone = Sprite::create("bullet6.png");
+                        map->addChild(BulletBone);
+                        BulletBone->setScale(0.5f);
+                        BulletBone->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY()));
+                        /* 加载图片帧到缓存池 */
+                        SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+                        frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
 
+                        /* 用辅助工具创建动画 */
+                        animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+
+
+                        BulletBone->runAction(Animate::create(animation_bullet));
                     }
                 }
 
@@ -388,10 +404,24 @@ void MapScene::GunUpdate(float dt)
             for (auto Bullet : this->Hero->GunOfHero[1]->BulletsVector) {
                 if (!Bullet->isNeedFade) {
                     Bullet->MovebyLine();
-                    if (!(MapScene::isCanReach(Bullet->getSprite()->getPositionX() - 5, Bullet->getSprite()->getPositionY() - 5, MAP_WALL))) {
+                    if (!(MapScene::isCanReach(Bullet->getSprite()->getPositionX() - 5, Bullet->getSprite()->getPositionY() - 5, MAP_WALL)) || (!MapScene::sharedScene->isCanReach(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY(), MAP_BARRIER_TREE))) {
                         /*this->GunsVector.at(0)->removeChild(Bullet,true);*///+2 * (Bullet->numx / Bullet->S)
                         Bullet->getSprite()->setVisible(false);
                         Bullet->isNeedFade = true;
+                        Sprite* BulletBone;
+                        BulletBone = Sprite::create("bullet6.png");
+                        map->addChild(BulletBone);
+                        BulletBone->setScale(0.5f);
+                        BulletBone->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY()));
+                        /* 加载图片帧到缓存池 */
+                        SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+                        frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
+
+                        /* 用辅助工具创建动画 */
+                        animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+
+
+                        BulletBone->runAction(Animate::create(animation_bullet));
 
                     }
                 }
@@ -406,7 +436,20 @@ void MapScene::GunUpdate(float dt)
                         /*this->GunsVector.at(0)->removeChild(Bullet,true);*///+2 * (Bullet->numx / Bullet->S)
                         Bullet->getSprite()->setVisible(false);
                         Bullet->isNeedFade = true;
+                        Sprite* BulletBone;
+                        BulletBone = Sprite::create("bullet6.png");
+                        map->addChild(BulletBone);
+                        BulletBone->setScale(0.5f);
+                        BulletBone->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY()));
+                        /* 加载图片帧到缓存池 */
+                        SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+                        frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
 
+                        /* 用辅助工具创建动画 */
+                        animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+
+
+                        BulletBone->runAction(Animate::create(animation_bullet));
                     }
                 }
 
@@ -541,7 +584,6 @@ void MapScene::GunUpdate(float dt)
                                     SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
                                     frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
 
-                                    Animation* animation_bullet;
                                     /* 用辅助工具创建动画 */
                                     animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
 
@@ -551,6 +593,8 @@ void MapScene::GunUpdate(float dt)
 
                                    
                                     monster->monster[i]->blood -= 3;
+                                    /*monster->monster[i]->Monster->setPositionX(monster->monster[i]->Monster->getPositionX() + 5 * Bullet->numx / Bullet->S);
+                                    monster->monster[i]->Monster->setPositionY(monster->monster[i]->Monster->getPositionY() + 1 * Bullet->numy / Bullet->S);*/
 
                                 }
                             }
@@ -564,8 +608,38 @@ void MapScene::GunUpdate(float dt)
                                 if (Bullet->is_hit_Monster(monster->monster[i])) {
                                     Bullet->isNeedFade = true;
                                     Bullet->getSprite()->setVisible(false);
-                                    monster->monster[i]->blood -= 3;
+                                    //扣血数字
+                                    Sprite* Blood;
 
+                                    Blood = Sprite::create("bloodDelete2.png");
+                                    Blood->setScale(1.5f);
+                                    map->addChild(Blood);
+                                    Blood->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY() + 40));
+                                    SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
+                                    frameCache->addSpriteFramesWithFile("bloodDelete.plist", "bloodDelete.png");
+
+                                    Animation* animation = AnimationUtil::createAnimWithFrameNameAndNum("bloodDelete", 2, 1.0f, 1);
+
+                                    Blood->runAction(Animate::create(animation));
+
+
+                                    Sprite* BulletBone;
+                                    BulletBone = Sprite::create("bullet6.png");
+                                    map->addChild(BulletBone);
+                                    BulletBone->setScale(0.5f);
+                                    BulletBone->setPosition(Vec2(Bullet->getSprite()->getPositionX(), Bullet->getSprite()->getPositionY()));
+                                    /* 加载图片帧到缓存池 */
+                                    SpriteFrameCache* frameCache_2 = SpriteFrameCache::getInstance();
+                                    frameCache_2->addSpriteFramesWithFile("bullet.plist", "bullet.png");
+
+                                    /* 用辅助工具创建动画 */
+                                    animation_bullet = AnimationUtil::createAnimWithFrameNameAndNum("bullet", 6, 0.1f, 1);
+
+
+                                    BulletBone->runAction(Animate::create(animation_bullet));
+                                    monster->monster[i]->blood -= 3;
+                                   /* monster->monster[i]->Monster->setPositionX(monster->monster[i]->Monster->getPositionX() + 15 * Bullet->numx / Bullet->S);
+                                    monster->monster[i]->Monster->setPositionY(monster->monster[i]->Monster->getPositionY() + 15 * Bullet->numy / Bullet->S);*/
                                 }
                             }
                         }
@@ -640,7 +714,7 @@ void MapScene::CreateUpdate(float dt)
         _box[Hero->RoomPosition] = Box::createBox();
         addChild(_box[Hero->RoomPosition]);
         isMonsterCreated[Hero->RoomPosition] = true;
-        box_judge[Hero->RoomPosition]=true;
+        box_judge[Hero->RoomPosition] = true;
         if (Hero->RoomPosition == 4)
         {
             boss = Boss::createBoss();
@@ -694,7 +768,7 @@ bool MapScene::isCanReach(float x, float y, int Type_Wall)
         return false;
     }
     int tileGid = layer2->getTileGIDAt(Vec2(mapX, mapY));
-    log("e:%d\nY:%d,X:%d", tileGid, mapY, mapX);
+   /* log("e:%d\nY:%d,X:%d", tileGid, mapY, mapX);*/
 
     if (tileGid == Type_Wall)
     {
@@ -1059,15 +1133,16 @@ float MapScene::TransPencent(int type)
     //1为血量 2为蓝条 3 为护甲
     if (type == 1)
     {
-        return (Hero->blood / HeroBlood * 100);
+        log(Hero->blood / HeroBlood * 100);
+        return (float(Hero->blood) / HeroBlood * 100);
     }
     if (type == 2)
     {
-        return (Hero->Mp / HeroMp * 100);
+        return (float(Hero->Mp) / HeroMp * 100);
     }
     if (type == 3)
     {
-        return (Hero->Ac / HeroAc * 100);
+        return (float(Hero->Ac) / HeroAc * 100);
     }
 }
 
@@ -1077,13 +1152,31 @@ float MapScene::TransPencent(int type)
 //当人物受刚进入场景需要调用此函数
 void  MapScene::BoardCreate()
 {
+    BloodLoadingBar = ui::LoadingBar::create("blood.png", 100);
+
+    // set the direction of the loading bars progress
+    BloodLoadingBar->setDirection(ui::LoadingBar::Direction::LEFT);
+
+    AcLoadingBar = ui::LoadingBar::create("Ac.png", 100);
+
+    // set the direction of the loading bars progress
+    AcLoadingBar->setDirection(ui::LoadingBar::Direction::LEFT);
+
+    MpLoadingBar = ui::LoadingBar::create("Mp.png", 100);
+
+    // set the direction of the loading bars progress
+    MpLoadingBar->setDirection(ui::LoadingBar::Direction::LEFT);
+
     Boardupdate();
+    BloodLabel = Label::createWithTTF(BloodNum, "fonts/Marker Felt.ttf", 15);
     Node::addChild(BloodLoadingBar);
     BloodLoadingBar->setPosition(Vec2(112, 605));
 
+    MPLabel = Label::createWithTTF(MPNum, "fonts/Marker Felt.ttf", 15);
     Node::addChild(MpLoadingBar);
     MpLoadingBar->setPosition(Vec2(112, 555));
 
+    AcLabel = Label::createWithTTF(AcNum, "fonts/Marker Felt.ttf", 15);
     Node::addChild(AcLoadingBar);
     AcLoadingBar->setPosition(Vec2(112, 580));
 
@@ -1109,19 +1202,16 @@ void MapScene::BloodCreate()
 {
     //////////////////////////////
 
-    BloodLoadingBar = ui::LoadingBar::create("blood.png", 100);
-
-    // set the direction of the loading bars progress
-    BloodLoadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+   
     // something happened, change the percentage of the loading bar
     BloodLoadingBar->setPercent(TransPencent(1));
     BloodLoadingBar->setScale(0.5f);
 
 
     /*状态数字信息*/
-    string BloodNum = to_string(Hero->blood) + "/ " + to_string(HeroBlood);
+    BloodNum = to_string(Hero->blood) + "/ " + to_string(HeroBlood);
    
-    BloodLabel = Label::createWithTTF(BloodNum, "fonts/Marker Felt.ttf", 15);
+   
  
 
 }
@@ -1129,33 +1219,27 @@ void MapScene::MpCreate()
 {
     //////////////////////////////
 
-    MpLoadingBar = ui::LoadingBar::create("Mp.png", 100);
-
-    // set the direction of the loading bars progress
-    MpLoadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
+   
     // something happened, change the percentage of the loading bar
     MpLoadingBar->setPercent(TransPencent(2));
     MpLoadingBar->setScale(0.5f);
 
     /*状态数字信息*/
-    string MPNum = to_string(Hero->Mp) + "/ " + to_string(HeroMp);
+    MPNum = to_string(Hero->Mp) + "/ " + to_string(HeroMp);
     
-    MPLabel = Label::createWithTTF(MPNum, "fonts/Marker Felt.ttf", 15);
+  
 }
 void MapScene::AcCreate()
 {
     //////////////////////////////
 
-    AcLoadingBar = ui::LoadingBar::create("Ac.png", 100);
 
-    // set the direction of the loading bars progress
-    AcLoadingBar->setDirection(ui::LoadingBar::Direction::RIGHT);
     // something happened, change the percentage of the loading bar
     AcLoadingBar->setPercent(TransPencent(2));
     AcLoadingBar->setScale(0.5f);
 
     /*状态数字信息*/
-    string AcNum = to_string(Hero->Ac) + "/ " + to_string(HeroAc);
-    AcLabel = Label::createWithTTF(AcNum, "fonts/Marker Felt.ttf", 15);
+    AcNum = to_string(Hero->Ac) + "/ " + to_string(HeroAc);
+   
 
 }
