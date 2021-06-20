@@ -103,7 +103,6 @@ void Boss::isDead()
 {
 	auto* animate = FadeOut::create(3.0f);
 	Monster->runAction(animate);
-	CC_SAFE_DELETE(Monster);
 }
 
 void Boss::MoveBoss()

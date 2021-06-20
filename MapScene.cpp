@@ -180,14 +180,32 @@ bool MapScene::init()
     //创建hero，将它放在地图中央
     Hero = Hero::createHero();
     addChild(Hero);
+
     Gun* Sword = Gun::create();
     Sword->bindSprite(Sprite::create("sword.png"));
     Sword->getSprite()->setPosition(Point(MapScene::sharedScene->Hero->hero->getPositionX() - 200, MapScene::sharedScene->Hero->hero->getPositionY() - 100));//暂时先固定位置
     Sword->getSprite()->setAnchorPoint(Point(0.4, 0.45));
-    Sword->is_coldWeapon = true;
+    Sword->is_coldWeapon1 = true;
     Sword->coldWeaponLength = 80;
     MapScene::sharedScene->map->addChild(Sword);
     MapScene::sharedScene->GunsVector.push_back(Sword);
+    //斧头
+    Gun* axe = Gun::create();
+    axe->bindSprite(Sprite::create("axe.png"));
+    axe->getSprite()->setPosition(Point(MapScene::sharedScene->Hero->hero->getPositionX() - 100, MapScene::sharedScene->Hero->hero->getPositionY() - 50));//暂时先固定位置
+    axe->getSprite()->setAnchorPoint(Point(0.4, 0.45));
+    axe->is_coldWeapon2 = true;
+    axe->coldWeaponLength = 100;
+    MapScene::sharedScene->map->addChild(axe);
+    MapScene::sharedScene->GunsVector.push_back(axe);
+
+    Gun* canister = Gun::create();
+    canister->bindSprite(Sprite::create("canister.png"));
+    canister->getSprite()->setPosition(Point(MapScene::sharedScene->Hero->hero->getPositionX() +50, MapScene::sharedScene->Hero->hero->getPositionY() - 50));//暂时先固定位置
+    canister->getSprite()->setAnchorPoint(Point(0.4, 0.45));
+    canister->is_canister = true;
+    MapScene::sharedScene->map->addChild(canister);
+    MapScene::sharedScene->GunsVector.push_back(canister);
     
     this->addGun();
     this->addPotion();//生成血瓶
@@ -499,8 +517,10 @@ void MapScene::GunUpdate(float dt)
         }
     }
 
+    int BindedGunNum = 0;//计数
     for (auto gun : this->GunsVector) {
-        if (gun->is_can_be_used) {
+        
+        if (gun->is_can_be_used) {         
             int x = (int)gun->getSprite()->getPositionX() - 30 - (int)Hero->hero->getPositionX();
             int y = (int)gun->getSprite()->getPositionY() - 30 - (int)Hero->hero->getPositionY();
             int s_s = x * x + y * y;
@@ -508,18 +528,22 @@ void MapScene::GunUpdate(float dt)
             int s = (int)sqrt((float)s_s);
             /*log("%d", s)*/;
             if (s <= 40) {
+                BindedGunNum += 1;
                 this->BindedGun = gun;
-                this->is_Bind_Gun = true;
-                this->signalItem->setVisible(true);
             }
-            else {
-                this->is_Bind_Gun = false;
-                if (!this->is_Bind_Potion) {
-                    this->signalItem->setVisible(false);
-                }
-
-            }
+           
         }
+    }
+    if (BindedGunNum == 1) {
+        this->is_Bind_Gun = true;
+        this->signalItem->setVisible(true);
+    }
+    else {
+        this->is_Bind_Gun = false;
+        if (!this->is_Bind_Potion) {
+            this->signalItem->setVisible(false);
+        }
+
     }
 
     //子弹与怪物碰撞
@@ -591,7 +615,7 @@ void MapScene::GunUpdate(float dt)
         
     }
 
-    if (this->Hero->RoomPosition == 4) {
+    if (this->Hero->RoomPosition == 4&&this->boss->blood>0) {
         //子弹与boss碰撞
         if (this->Hero->GunOfHero.size() == 1) {
             if (!this->Hero->GunOfHero[0]->BulletsVector.empty()) {
@@ -781,9 +805,9 @@ void MapScene::menuCloseCallback(Ref* pSender)
         //加血加蓝之后加函数
 
     }
-    if (this->is_Bind_Gun) {
-        this->BindedGun->is_can_be_used = false;
+    if (this->is_Bind_Gun) {     
         this->Hero->addGun(this->BindedGun);//枪插入hero的枪组
+        this->BindedGun->is_can_be_used = false;
         this->is_Bind_Gun = false;
         this->signalItem->setVisible(false);//捡起枪后隐藏信号按钮
     }

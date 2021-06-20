@@ -73,6 +73,7 @@ public:
     vector<Potion*> PotionVector;
     Potion* BindedPotion;//消息按钮绑定的物品
     Gun* BindedGun;
+
     bool is_Bind_Potion = false;
     bool is_Bind_Gun = false;
     MenuItemImage* signalItem;//信号按钮

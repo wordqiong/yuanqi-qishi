@@ -16,8 +16,10 @@ bool Hero::init()
 void Hero::addGun(Gun* gun) {
     if (this->GunOfHero.size() == 1) {
         this->GunOfHero.push_back(gun);
+       
     }
     if (this->GunOfHero.size() == 2) {
+        this->GunOfHero[1]->is_can_be_used = true;
         this->GunOfHero.pop_back();
         this->GunOfHero.push_back(gun);
     }

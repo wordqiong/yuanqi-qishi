@@ -28,10 +28,14 @@ public:
 	bool is_be_binded = false;//是否已经被hero绑定了
 	/*string GunImageLoad = "fireGun.png";*/
 	bool is_can_be_used = true;
+	bool is_can_be_count = true;
 	EnemyMonster* Shortest();
 	//稍后设为private，再给个函数接口调就好啦
 	bool is_fire;//
-	bool is_coldWeapon = false;//是否近战武器
+	bool is_canister = false;//是否为霰弹枪
+	int canisterBulletsNum = 5;
+	bool is_coldWeapon1 = false;//是否近战武器1
+	bool is_coldWeapon2 = false;//是否近战武器2
 	float coldWeaponLength = 30;//剑长
 	Vector<Bullet*> BulletsVector;//用于储存子弹
 	string imgload_of_Gun;//枪的图片路径

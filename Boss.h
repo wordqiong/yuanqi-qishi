@@ -2,8 +2,8 @@
 #ifndef __BOSS_H__
 #define __BOSS_H__
 
-#define BossBlood1 500
-#define BossBlood2 400
+#define BossBlood1 50
+#define BossBlood2 40
 #define BossSpeed  10
 #include "Enemy.h"
 #include "MapScene.h"
